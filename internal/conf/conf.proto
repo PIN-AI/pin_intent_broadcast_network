@@ -8,6 +8,8 @@ import "google/protobuf/duration.proto";
 message Bootstrap {
   Server server = 1;
   Data data = 2;
+  P2P p2p = 3;
+  Transport transport = 4;
 }
 
 message Server {
@@ -38,4 +40,29 @@ message Data {
   }
   Database database = 1;
   Redis redis = 2;
+}
+
+message P2P {
+  repeated string listen_addresses = 1;
+  repeated string bootstrap_peers = 2;
+  string protocol_id = 3;
+  bool enable_mdns = 4;
+  bool enable_dht = 5;
+  string data_dir = 6;
+  int32 max_connections = 7;
+  bool enable_signing = 8;
+}
+
+message Transport {
+  bool enable_gossipsub = 1;
+  google.protobuf.Duration gossipsub_heartbeat_interval = 2;
+  int32 gossipsub_d = 3;
+  int32 gossipsub_d_lo = 4;
+  int32 gossipsub_d_hi = 5;
+  google.protobuf.Duration gossipsub_fanout_ttl = 6;
+  bool enable_message_signing = 7;
+  bool enable_strict_signature_verification = 8;
+  int32 message_id_cache_size = 9;
+  google.protobuf.Duration message_ttl = 10;
+  int32 max_message_size = 11;
 }

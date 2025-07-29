@@ -13,3 +13,26 @@ data:
     addr: 127.0.0.1:6379
     read_timeout: 0.2s
     write_timeout: 0.2s
+p2p:
+  listen_addresses:
+    - /ip4/0.0.0.0/tcp/9001
+    - /ip4/0.0.0.0/udp/9001/quic
+  bootstrap_peers: []
+  protocol_id: "/intent-broadcast/1.0.0"
+  enable_mdns: true
+  enable_dht: true
+  data_dir: "./data/p2p"
+  max_connections: 100
+  enable_signing: true
+transport:
+  enable_gossipsub: true
+  gossipsub_heartbeat_interval: 1000ms
+  gossipsub_d: 6
+  gossipsub_d_lo: 4
+  gossipsub_d_hi: 12
+  gossipsub_fanout_ttl: 60000ms
+  enable_message_signing: true
+  enable_strict_signature_verification: true
+  message_id_cache_size: 1000
+  message_ttl: 300000ms
+  max_message_size: 1048576

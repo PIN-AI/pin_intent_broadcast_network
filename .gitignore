@@ -25,6 +25,9 @@ go.work
 # Debug
 .kiro
 docs
+CLAUDE.md
+README.dev.md
+pin_intent_broadcast_network
 
 # OS General
 Thumbs.db
