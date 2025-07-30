@@ -2,6 +2,7 @@ package server
 
 import (
 	v1 "pin_intent_broadcast_network/api/helloworld/v1"
+	intentv1 "pin_intent_broadcast_network/api/pinai_intent/v1"
 	"pin_intent_broadcast_network/internal/conf"
 	"pin_intent_broadcast_network/internal/service"
 
@@ -11,7 +12,7 @@ import (
 )
 
 // NewGRPCServer new a gRPC server.
-func NewGRPCServer(c *conf.Server, greeter *service.GreeterService, logger log.Logger) *grpc.Server {
+func NewGRPCServer(c *conf.Server, greeter *service.GreeterService, intent *service.IntentService, logger log.Logger) *grpc.Server {
 	var opts = []grpc.ServerOption{
 		grpc.Middleware(
 			recovery.Recovery(),
@@ -28,5 +29,6 @@ func NewGRPCServer(c *conf.Server, greeter *service.GreeterService, logger log.L
 	}
 	srv := grpc.NewServer(opts...)
 	v1.RegisterGreeterServer(srv, greeter)
+	intentv1.RegisterIntentServiceServer(srv, intent)
 	return srv
 }

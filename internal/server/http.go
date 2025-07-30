@@ -2,6 +2,7 @@ package server
 
 import (
 	v1 "pin_intent_broadcast_network/api/helloworld/v1"
+	intentv1 "pin_intent_broadcast_network/api/pinai_intent/v1"
 	"pin_intent_broadcast_network/internal/conf"
 	"pin_intent_broadcast_network/internal/service"
 
@@ -11,7 +12,7 @@ import (
 )
 
 // NewHTTPServer new an HTTP server.
-func NewHTTPServer(c *conf.Server, greeter *service.GreeterService, logger log.Logger) *http.Server {
+func NewHTTPServer(c *conf.Server, greeter *service.GreeterService, intent *service.IntentService, logger log.Logger) *http.Server {
 	var opts = []http.ServerOption{
 		http.Middleware(
 			recovery.Recovery(),
@@ -28,5 +29,6 @@ func NewHTTPServer(c *conf.Server, greeter *service.GreeterService, logger log.L
 	}
 	srv := http.NewServer(opts...)
 	v1.RegisterGreeterHTTPServer(srv, greeter)
+	intentv1.RegisterIntentServiceHTTPServer(srv, intent)
 	return srv
 }

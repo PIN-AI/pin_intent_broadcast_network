@@ -3,15 +3,13 @@
 
 openapi: 3.0.3
 info:
-    title: Greeter API
-    description: The greeting service definition.
+    title: ""
     version: 0.0.1
 paths:
     /helloworld/{name}:
         get:
             tags:
                 - Greeter
-                - subgroup
             description: Sends a greeting
             operationId: Greeter_SayHello
             parameters:
@@ -27,8 +25,208 @@ paths:
                         application/json:
                             schema:
                                 $ref: '#/components/schemas/helloworld.v1.HelloReply'
+    /pinai_intent/intent/broadcast:
+        post:
+            tags:
+                - IntentService
+            description: Broadcast an intent
+            operationId: IntentService_BroadcastIntent
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/api.pinai_intent.v1.BroadcastIntentRequest'
+                required: true
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/api.pinai_intent.v1.BroadcastIntentResponse'
+    /pinai_intent/intent/create:
+        post:
+            tags:
+                - IntentService
+            description: Create a new intent
+            operationId: IntentService_CreateIntent
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/api.pinai_intent.v1.CreateIntentRequest'
+                required: true
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/api.pinai_intent.v1.CreateIntentResponse'
+    /pinai_intent/intent/list:
+        get:
+            tags:
+                - IntentService
+            description: Query intents with filters
+            operationId: IntentService_QueryIntents
+            parameters:
+                - name: type
+                  in: query
+                  schema:
+                    type: string
+                - name: status
+                  in: query
+                  schema:
+                    type: integer
+                    format: enum
+                - name: startTime
+                  in: query
+                  schema:
+                    type: string
+                - name: endTime
+                  in: query
+                  schema:
+                    type: string
+                - name: limit
+                  in: query
+                  schema:
+                    type: integer
+                    format: int32
+                - name: offset
+                  in: query
+                  schema:
+                    type: integer
+                    format: int32
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/api.pinai_intent.v1.QueryIntentsResponse'
+    /pinai_intent/intent/status:
+        get:
+            tags:
+                - IntentService
+            description: Get intent status by ID
+            operationId: IntentService_GetIntentStatus
+            parameters:
+                - name: intentId
+                  in: query
+                  schema:
+                    type: string
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/api.pinai_intent.v1.GetIntentStatusResponse'
 components:
     schemas:
+        api.pinai_intent.v1.BroadcastIntentRequest:
+            type: object
+            properties:
+                intentId:
+                    type: string
+                topic:
+                    type: string
+            description: BroadcastIntent request message
+        api.pinai_intent.v1.BroadcastIntentResponse:
+            type: object
+            properties:
+                success:
+                    type: boolean
+                intentId:
+                    type: string
+                topic:
+                    type: string
+                message:
+                    type: string
+            description: BroadcastIntent response message
+        api.pinai_intent.v1.CreateIntentRequest:
+            type: object
+            properties:
+                type:
+                    type: string
+                payload:
+                    type: string
+                    format: bytes
+                senderId:
+                    type: string
+                metadata:
+                    type: object
+                    additionalProperties:
+                        type: string
+                priority:
+                    type: integer
+                    format: int32
+                ttl:
+                    type: string
+            description: CreateIntent request message
+        api.pinai_intent.v1.CreateIntentResponse:
+            type: object
+            properties:
+                intent:
+                    $ref: '#/components/schemas/api.pinai_intent.v1.Intent'
+                success:
+                    type: boolean
+                message:
+                    type: string
+            description: CreateIntent response message
+        api.pinai_intent.v1.GetIntentStatusResponse:
+            type: object
+            properties:
+                intent:
+                    $ref: '#/components/schemas/api.pinai_intent.v1.Intent'
+            description: GetIntentStatus response message
+        api.pinai_intent.v1.Intent:
+            type: object
+            properties:
+                id:
+                    type: string
+                type:
+                    type: string
+                payload:
+                    type: string
+                    format: bytes
+                timestamp:
+                    type: string
+                senderId:
+                    type: string
+                signature:
+                    type: string
+                    format: bytes
+                signatureAlgorithm:
+                    type: string
+                metadata:
+                    type: object
+                    additionalProperties:
+                        type: string
+                status:
+                    type: integer
+                    format: enum
+                priority:
+                    type: integer
+                    format: int32
+                ttl:
+                    type: string
+                processedAt:
+                    type: string
+                error:
+                    type: string
+            description: Intent message structure
+        api.pinai_intent.v1.QueryIntentsResponse:
+            type: object
+            properties:
+                intents:
+                    type: array
+                    items:
+                        $ref: '#/components/schemas/api.pinai_intent.v1.Intent'
+                total:
+                    type: integer
+                    format: int32
+            description: QueryIntents response message
         helloworld.v1.HelloReply:
             type: object
             properties:
@@ -37,3 +235,6 @@ components:
             description: The response message containing the greetings
 tags:
     - name: Greeter
+      description: The greeting service definition.
+    - name: IntentService
+      description: Intent service definition

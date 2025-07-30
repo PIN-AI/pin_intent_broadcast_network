@@ -23,6 +23,11 @@ type TransportManager interface {
 	GetMessageSerializer() MessageSerializer
 	// GetMessageRouter returns the message router
 	GetMessageRouter() MessageRouter
+	
+	// PublishMessage publishes a message to a topic (high-level API)
+	PublishMessage(ctx context.Context, topic string, msg *TransportMessage) error
+	// SubscribeToTopic subscribes to a topic with automatic message deserialization
+	SubscribeToTopic(topic string, handler func(*TransportMessage) error) (Subscription, error)
 }
 
 // PubSubManager manages GossipSub publish/subscribe operations
