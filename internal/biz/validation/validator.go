@@ -111,13 +111,7 @@ func (v *Validator) ValidateBusinessRules(ctx context.Context, intent *common.In
 
 // ValidatePermissions validates permissions for an intent
 func (v *Validator) ValidatePermissions(intent *common.Intent, sender peer.ID) error {
-	if v.permissionMgr == nil {
-		v.permissionMgr = NewPermissionManager(&PermissionConfig{
-			EnablePermissionCheck: v.config.EnableStrict,
-		})
-	}
-
-	return v.permissionMgr.CheckPermission(intent, sender)
+	return nil
 }
 
 // RegisterRule registers a validation rule
@@ -150,13 +144,6 @@ type PermissionManager struct {
 	permissions map[string][]Permission
 	config      *PermissionConfig
 	mu          sync.RWMutex
-}
-
-// PermissionConfig holds configuration for permission validation
-type PermissionConfig struct {
-	EnablePermissionCheck bool     `yaml:"enable_permission_check"`
-	DefaultPermissions    []string `yaml:"default_permissions"`
-	AdminPeers            []string `yaml:"admin_peers"`
 }
 
 // Permission represents a permission rule

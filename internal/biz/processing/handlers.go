@@ -23,7 +23,10 @@ func NewHandlerRegistry() *HandlerRegistry {
 
 // RegisterHandler registers an intent handler for a specific type
 func (hr *HandlerRegistry) RegisterHandler(intentType string, handler common.IntentHandler) error {
-	// TODO: Implement in task 5.3
+	if intentType == "" || handler == nil {
+		return common.NewIntentError(common.ErrorCodeInvalidConfiguration, "Invalid handler registration", "")
+	}
+
 	hr.mu.Lock()
 	defer hr.mu.Unlock()
 

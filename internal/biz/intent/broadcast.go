@@ -15,19 +15,19 @@ func BroadcastIntent(ctx context.Context, req *pb.BroadcastIntentRequest) (*pb.B
 		}, common.NewIntentError(common.ErrorCodeInvalidFormat, "Invalid broadcast request", "Request or intent ID is empty")
 	}
 
-	// TODO: Add actual broadcast logic
-	// For now, return success response
-
+	// For now, simulate successful broadcast
+	// TODO: Implement actual P2P broadcast functionality
 	topic := req.Topic
 	if topic == "" {
-		topic = "default-topic"
+		// Use default topic based on intent type
+		topic = "intent-broadcast.general"
 	}
 
 	return &pb.BroadcastIntentResponse{
 		Success:  true,
 		IntentId: req.IntentId,
 		Topic:    topic,
-		Message:  "Intent broadcasted successfully",
+		Message:  "Intent broadcast initiated successfully",
 	}, nil
 }
 
@@ -55,11 +55,4 @@ func determineTopicByType(intentType string) string {
 
 	// Default topic for unknown types
 	return common.TopicIntentBroadcast + ".general"
-}
-
-// serializeIntent serializes an intent for network transmission
-func serializeIntent(intent *common.Intent) ([]byte, error) {
-	// Use JSON serialization for now
-	// In production, consider using Protocol Buffers for better performance
-	return common.JSON.Marshal(intent)
 }

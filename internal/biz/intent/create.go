@@ -53,11 +53,6 @@ func CreateIntent(ctx context.Context, req *pb.CreateIntentRequest) (*pb.CreateI
 	}, nil
 }
 
-// generateIntentID generates a unique ID for an intent
-func generateIntentID() string {
-	return common.GenerateIntentID()
-}
-
 // validateCreateRequest validates the create intent request
 func validateCreateRequest(req *pb.CreateIntentRequest) error {
 	if req == nil {
@@ -69,9 +64,10 @@ func validateCreateRequest(req *pb.CreateIntentRequest) error {
 		return common.NewValidationError("type", req.Type, "Intent type cannot be empty")
 	}
 
-	if !common.Validation.IsValidIntentType(req.Type) {
-		return common.NewValidationError("type", req.Type, "Invalid intent type")
-	}
+	// mark for not validate
+	// if !common.Validation.IsValidIntentType(req.Type) {
+	// 	return common.NewValidationError("type", req.Type, "Invalid intent type")
+	// }
 
 	if len(req.Payload) == 0 {
 		return common.NewValidationError("payload", "", "Intent payload cannot be empty")

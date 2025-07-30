@@ -23,7 +23,6 @@ go.work
 *.so
 
 # Debug
-CLAUDE.md
 README.dev.md
 pin_intent_broadcast_network
 

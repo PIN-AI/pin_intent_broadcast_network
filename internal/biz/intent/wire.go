@@ -10,6 +10,7 @@ import (
 	"github.com/google/wire"
 
 	"pin_intent_broadcast_network/internal/biz/common"
+	"pin_intent_broadcast_network/internal/transport"
 )
 
 // ProviderSet is intent providers.
@@ -27,19 +28,22 @@ func NewManager(
 	processor common.IntentProcessor,
 	matcher common.IntentMatcher,
 	lifecycle common.LifecycleManager,
+	transportMgr transport.TransportManager,
 	config *Config,
 	logger log.Logger,
 ) *Manager {
 	return &Manager{
-		validator: validator,
-		signer:    signer,
-		processor: processor,
-		matcher:   matcher,
-		lifecycle: lifecycle,
-		config:    config,
-		metrics:   &Metrics{},
-		logger:    log.NewHelper(logger),
-		intents:   make(map[string]*common.Intent),
+		validator:     validator,
+		signer:        signer,
+		processor:     processor,
+		matcher:       matcher,
+		lifecycle:     lifecycle,
+		transportMgr:  transportMgr,
+		config:        config,
+		metrics:       &Metrics{},
+		logger:        log.NewHelper(logger),
+		intents:       make(map[string]*common.Intent),
+		subscriptions: make(map[string]chan *common.Intent),
 	}
 }
 
