@@ -1,0 +1,127 @@
+syntax = "proto3";
+
+package api.pinai_intent.v1;
+
+import "google/api/annotations.proto";
+
+option go_package = "github.com/pin-project/pin_intent_broadcast_network/api/pinai_intent/v1;v1";
+
+// Intent status enumeration
+enum IntentStatus {
+  INTENT_STATUS_UNSPECIFIED = 0;
+  INTENT_STATUS_CREATED = 1;
+  INTENT_STATUS_VALIDATED = 2;
+  INTENT_STATUS_BROADCASTED = 3;
+  INTENT_STATUS_PROCESSED = 4;
+  INTENT_STATUS_MATCHED = 5;
+  INTENT_STATUS_COMPLETED = 6;
+  INTENT_STATUS_FAILED = 7;
+  INTENT_STATUS_EXPIRED = 8;
+}
+
+// Intent message structure
+message Intent {
+  string id = 1;
+  string type = 2;
+  bytes payload = 3;
+  int64 timestamp = 4;
+  string sender_id = 5;
+  bytes signature = 6;
+  string signature_algorithm = 7;
+  map<string, string> metadata = 8;
+  IntentStatus status = 9;
+  int32 priority = 10;
+  int64 ttl = 11;
+  int64 processed_at = 12;
+  string error = 13;
+}
+
+// CreateIntent request message
+message CreateIntentRequest {
+  string type = 1;
+  bytes payload = 2;
+  string sender_id = 3;
+  map<string, string> metadata = 4;
+  int32 priority = 5;
+  int64 ttl = 6;
+}
+
+// CreateIntent response message
+message CreateIntentResponse {
+  Intent intent = 1;
+  bool success = 2;
+  string message = 3;
+}
+
+// BroadcastIntent request message
+message BroadcastIntentRequest {
+  string intent_id = 1;
+  string topic = 2;
+}
+
+// BroadcastIntent response message
+message BroadcastIntentResponse {
+  bool success = 1;
+  string intent_id = 2;
+  string topic = 3;
+  string message = 4;
+}
+
+// QueryIntents request message
+message QueryIntentsRequest {
+  string type = 1;
+  IntentStatus status = 2;
+  int64 start_time = 3;
+  int64 end_time = 4;
+  int32 limit = 5;
+  int32 offset = 6;
+}
+
+// QueryIntents response message
+message QueryIntentsResponse {
+  repeated Intent intents = 1;
+  int32 total = 2;
+}
+
+// GetIntentStatus request message
+message GetIntentStatusRequest {
+  string intent_id = 1;
+}
+
+// GetIntentStatus response message
+message GetIntentStatusResponse {
+  Intent intent = 1;
+}
+
+// Intent service definition
+service IntentService {
+  // Create a new intent
+  rpc CreateIntent(CreateIntentRequest) returns (CreateIntentResponse) {
+    option (google.api.http) = {
+      post: "/pinai_intent/intent/create"
+      body: "*"
+    };
+  }
+
+  // Broadcast an intent
+  rpc BroadcastIntent(BroadcastIntentRequest) returns (BroadcastIntentResponse) {
+    option (google.api.http) = {
+      post: "/pinai_intent/intent/broadcast"
+      body: "*"
+    };
+  }
+
+  // Query intents with filters
+  rpc QueryIntents(QueryIntentsRequest) returns (QueryIntentsResponse) {
+    option (google.api.http) = {
+      get: "/pinai_intent/intent/list"
+    };
+  }
+
+  // Get intent status by ID
+  rpc GetIntentStatus(GetIntentStatusRequest) returns (GetIntentStatusResponse) {
+    option (google.api.http) = {
+      get: "/pinai_intent/intent/status"
+    };
+  }
+}
