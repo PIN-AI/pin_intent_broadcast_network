@@ -307,8 +307,10 @@ type Transport struct {
 	MessageIdCacheSize                int32                  `protobuf:"varint,9,opt,name=message_id_cache_size,json=messageIdCacheSize,proto3" json:"message_id_cache_size,omitempty"`
 	MessageTtl                        *durationpb.Duration   `protobuf:"bytes,10,opt,name=message_ttl,json=messageTtl,proto3" json:"message_ttl,omitempty"`
 	MaxMessageSize                    int32                  `protobuf:"varint,11,opt,name=max_message_size,json=maxMessageSize,proto3" json:"max_message_size,omitempty"`
-	unknownFields                     protoimpl.UnknownFields
-	sizeCache                         protoimpl.SizeCache
+	// Intent monitoring configuration
+	IntentMonitoring *IntentMonitoring `protobuf:"bytes,20,opt,name=intent_monitoring,json=intentMonitoring,proto3" json:"intent_monitoring,omitempty"`
+	unknownFields    protoimpl.UnknownFields
+	sizeCache        protoimpl.SizeCache
 }
 
 func (x *Transport) Reset() {
@@ -418,6 +420,322 @@ func (x *Transport) GetMaxMessageSize() int32 {
 	return 0
 }
 
+func (x *Transport) GetIntentMonitoring() *IntentMonitoring {
+	if x != nil {
+		return x.IntentMonitoring
+	}
+	return nil
+}
+
+// Intent monitoring configuration
+type IntentMonitoring struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// Subscription mode: "wildcard", "explicit", "all", "disabled"
+	// Default is "all" - listen to all topics
+	SubscriptionMode string `protobuf:"bytes,1,opt,name=subscription_mode,json=subscriptionMode,proto3" json:"subscription_mode,omitempty"`
+	// Explicit topic list (used in explicit mode)
+	ExplicitTopics []string `protobuf:"bytes,2,rep,name=explicit_topics,json=explicitTopics,proto3" json:"explicit_topics,omitempty"`
+	// Wildcard pattern list for topic matching
+	WildcardPatterns []string `protobuf:"bytes,3,rep,name=wildcard_patterns,json=wildcardPatterns,proto3" json:"wildcard_patterns,omitempty"`
+	// Intent filter configuration
+	Filter *IntentFilter `protobuf:"bytes,4,opt,name=filter,proto3" json:"filter,omitempty"`
+	// Statistics configuration
+	Statistics *StatisticsConfig `protobuf:"bytes,5,opt,name=statistics,proto3" json:"statistics,omitempty"`
+	// Performance configuration
+	Performance   *PerformanceConfig `protobuf:"bytes,6,opt,name=performance,proto3" json:"performance,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *IntentMonitoring) Reset() {
+	*x = IntentMonitoring{}
+	mi := &file_conf_conf_proto_msgTypes[5]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *IntentMonitoring) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*IntentMonitoring) ProtoMessage() {}
+
+func (x *IntentMonitoring) ProtoReflect() protoreflect.Message {
+	mi := &file_conf_conf_proto_msgTypes[5]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use IntentMonitoring.ProtoReflect.Descriptor instead.
+func (*IntentMonitoring) Descriptor() ([]byte, []int) {
+	return file_conf_conf_proto_rawDescGZIP(), []int{5}
+}
+
+func (x *IntentMonitoring) GetSubscriptionMode() string {
+	if x != nil {
+		return x.SubscriptionMode
+	}
+	return ""
+}
+
+func (x *IntentMonitoring) GetExplicitTopics() []string {
+	if x != nil {
+		return x.ExplicitTopics
+	}
+	return nil
+}
+
+func (x *IntentMonitoring) GetWildcardPatterns() []string {
+	if x != nil {
+		return x.WildcardPatterns
+	}
+	return nil
+}
+
+func (x *IntentMonitoring) GetFilter() *IntentFilter {
+	if x != nil {
+		return x.Filter
+	}
+	return nil
+}
+
+func (x *IntentMonitoring) GetStatistics() *StatisticsConfig {
+	if x != nil {
+		return x.Statistics
+	}
+	return nil
+}
+
+func (x *IntentMonitoring) GetPerformance() *PerformanceConfig {
+	if x != nil {
+		return x.Performance
+	}
+	return nil
+}
+
+// Intent filter configuration
+type IntentFilter struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// Allowed intent types (empty means allow all)
+	AllowedTypes []string `protobuf:"bytes,1,rep,name=allowed_types,json=allowedTypes,proto3" json:"allowed_types,omitempty"`
+	// Blocked intent types
+	BlockedTypes []string `protobuf:"bytes,2,rep,name=blocked_types,json=blockedTypes,proto3" json:"blocked_types,omitempty"`
+	// Sender filter rules
+	AllowedSenders []string `protobuf:"bytes,3,rep,name=allowed_senders,json=allowedSenders,proto3" json:"allowed_senders,omitempty"`
+	BlockedSenders []string `protobuf:"bytes,4,rep,name=blocked_senders,json=blockedSenders,proto3" json:"blocked_senders,omitempty"`
+	// Priority filter
+	MinPriority   int32 `protobuf:"varint,5,opt,name=min_priority,json=minPriority,proto3" json:"min_priority,omitempty"`
+	MaxPriority   int32 `protobuf:"varint,6,opt,name=max_priority,json=maxPriority,proto3" json:"max_priority,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *IntentFilter) Reset() {
+	*x = IntentFilter{}
+	mi := &file_conf_conf_proto_msgTypes[6]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *IntentFilter) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*IntentFilter) ProtoMessage() {}
+
+func (x *IntentFilter) ProtoReflect() protoreflect.Message {
+	mi := &file_conf_conf_proto_msgTypes[6]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use IntentFilter.ProtoReflect.Descriptor instead.
+func (*IntentFilter) Descriptor() ([]byte, []int) {
+	return file_conf_conf_proto_rawDescGZIP(), []int{6}
+}
+
+func (x *IntentFilter) GetAllowedTypes() []string {
+	if x != nil {
+		return x.AllowedTypes
+	}
+	return nil
+}
+
+func (x *IntentFilter) GetBlockedTypes() []string {
+	if x != nil {
+		return x.BlockedTypes
+	}
+	return nil
+}
+
+func (x *IntentFilter) GetAllowedSenders() []string {
+	if x != nil {
+		return x.AllowedSenders
+	}
+	return nil
+}
+
+func (x *IntentFilter) GetBlockedSenders() []string {
+	if x != nil {
+		return x.BlockedSenders
+	}
+	return nil
+}
+
+func (x *IntentFilter) GetMinPriority() int32 {
+	if x != nil {
+		return x.MinPriority
+	}
+	return 0
+}
+
+func (x *IntentFilter) GetMaxPriority() int32 {
+	if x != nil {
+		return x.MaxPriority
+	}
+	return 0
+}
+
+// Statistics configuration
+type StatisticsConfig struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// Enable statistics collection
+	Enabled bool `protobuf:"varint,1,opt,name=enabled,proto3" json:"enabled,omitempty"`
+	// Statistics data retention period
+	RetentionPeriod *durationpb.Duration `protobuf:"bytes,2,opt,name=retention_period,json=retentionPeriod,proto3" json:"retention_period,omitempty"`
+	// Statistics aggregation interval
+	AggregationInterval *durationpb.Duration `protobuf:"bytes,3,opt,name=aggregation_interval,json=aggregationInterval,proto3" json:"aggregation_interval,omitempty"`
+	unknownFields       protoimpl.UnknownFields
+	sizeCache           protoimpl.SizeCache
+}
+
+func (x *StatisticsConfig) Reset() {
+	*x = StatisticsConfig{}
+	mi := &file_conf_conf_proto_msgTypes[7]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *StatisticsConfig) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*StatisticsConfig) ProtoMessage() {}
+
+func (x *StatisticsConfig) ProtoReflect() protoreflect.Message {
+	mi := &file_conf_conf_proto_msgTypes[7]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use StatisticsConfig.ProtoReflect.Descriptor instead.
+func (*StatisticsConfig) Descriptor() ([]byte, []int) {
+	return file_conf_conf_proto_rawDescGZIP(), []int{7}
+}
+
+func (x *StatisticsConfig) GetEnabled() bool {
+	if x != nil {
+		return x.Enabled
+	}
+	return false
+}
+
+func (x *StatisticsConfig) GetRetentionPeriod() *durationpb.Duration {
+	if x != nil {
+		return x.RetentionPeriod
+	}
+	return nil
+}
+
+func (x *StatisticsConfig) GetAggregationInterval() *durationpb.Duration {
+	if x != nil {
+		return x.AggregationInterval
+	}
+	return nil
+}
+
+// Performance configuration
+type PerformanceConfig struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// Maximum concurrent subscriptions
+	MaxSubscriptions int32 `protobuf:"varint,1,opt,name=max_subscriptions,json=maxSubscriptions,proto3" json:"max_subscriptions,omitempty"`
+	// Message processing buffer size
+	MessageBufferSize int32 `protobuf:"varint,2,opt,name=message_buffer_size,json=messageBufferSize,proto3" json:"message_buffer_size,omitempty"`
+	// Batch processing size
+	BatchSize     int32 `protobuf:"varint,3,opt,name=batch_size,json=batchSize,proto3" json:"batch_size,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *PerformanceConfig) Reset() {
+	*x = PerformanceConfig{}
+	mi := &file_conf_conf_proto_msgTypes[8]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *PerformanceConfig) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*PerformanceConfig) ProtoMessage() {}
+
+func (x *PerformanceConfig) ProtoReflect() protoreflect.Message {
+	mi := &file_conf_conf_proto_msgTypes[8]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use PerformanceConfig.ProtoReflect.Descriptor instead.
+func (*PerformanceConfig) Descriptor() ([]byte, []int) {
+	return file_conf_conf_proto_rawDescGZIP(), []int{8}
+}
+
+func (x *PerformanceConfig) GetMaxSubscriptions() int32 {
+	if x != nil {
+		return x.MaxSubscriptions
+	}
+	return 0
+}
+
+func (x *PerformanceConfig) GetMessageBufferSize() int32 {
+	if x != nil {
+		return x.MessageBufferSize
+	}
+	return 0
+}
+
+func (x *PerformanceConfig) GetBatchSize() int32 {
+	if x != nil {
+		return x.BatchSize
+	}
+	return 0
+}
+
 type Server_HTTP struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	Network       string                 `protobuf:"bytes,1,opt,name=network,proto3" json:"network,omitempty"`
@@ -429,7 +747,7 @@ type Server_HTTP struct {
 
 func (x *Server_HTTP) Reset() {
 	*x = Server_HTTP{}
-	mi := &file_conf_conf_proto_msgTypes[5]
+	mi := &file_conf_conf_proto_msgTypes[9]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -441,7 +759,7 @@ func (x *Server_HTTP) String() string {
 func (*Server_HTTP) ProtoMessage() {}
 
 func (x *Server_HTTP) ProtoReflect() protoreflect.Message {
-	mi := &file_conf_conf_proto_msgTypes[5]
+	mi := &file_conf_conf_proto_msgTypes[9]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -489,7 +807,7 @@ type Server_GRPC struct {
 
 func (x *Server_GRPC) Reset() {
 	*x = Server_GRPC{}
-	mi := &file_conf_conf_proto_msgTypes[6]
+	mi := &file_conf_conf_proto_msgTypes[10]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -501,7 +819,7 @@ func (x *Server_GRPC) String() string {
 func (*Server_GRPC) ProtoMessage() {}
 
 func (x *Server_GRPC) ProtoReflect() protoreflect.Message {
-	mi := &file_conf_conf_proto_msgTypes[6]
+	mi := &file_conf_conf_proto_msgTypes[10]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -548,7 +866,7 @@ type Data_Database struct {
 
 func (x *Data_Database) Reset() {
 	*x = Data_Database{}
-	mi := &file_conf_conf_proto_msgTypes[7]
+	mi := &file_conf_conf_proto_msgTypes[11]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -560,7 +878,7 @@ func (x *Data_Database) String() string {
 func (*Data_Database) ProtoMessage() {}
 
 func (x *Data_Database) ProtoReflect() protoreflect.Message {
-	mi := &file_conf_conf_proto_msgTypes[7]
+	mi := &file_conf_conf_proto_msgTypes[11]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -602,7 +920,7 @@ type Data_Redis struct {
 
 func (x *Data_Redis) Reset() {
 	*x = Data_Redis{}
-	mi := &file_conf_conf_proto_msgTypes[8]
+	mi := &file_conf_conf_proto_msgTypes[12]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -614,7 +932,7 @@ func (x *Data_Redis) String() string {
 func (*Data_Redis) ProtoMessage() {}
 
 func (x *Data_Redis) ProtoReflect() protoreflect.Message {
-	mi := &file_conf_conf_proto_msgTypes[8]
+	mi := &file_conf_conf_proto_msgTypes[12]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -702,7 +1020,7 @@ const file_conf_conf_proto_rawDesc = "" +
 	"enable_dht\x18\x05 \x01(\bR\tenableDht\x12\x19\n" +
 	"\bdata_dir\x18\x06 \x01(\tR\adataDir\x12'\n" +
 	"\x0fmax_connections\x18\a \x01(\x05R\x0emaxConnections\x12%\n" +
-	"\x0eenable_signing\x18\b \x01(\bR\renableSigning\"\xed\x04\n" +
+	"\x0eenable_signing\x18\b \x01(\bR\renableSigning\"\xb8\x05\n" +
 	"\tTransport\x12)\n" +
 	"\x10enable_gossipsub\x18\x01 \x01(\bR\x0fenableGossipsub\x12[\n" +
 	"\x1cgossipsub_heartbeat_interval\x18\x02 \x01(\v2\x19.google.protobuf.DurationR\x1agossipsubHeartbeatInterval\x12\x1f\n" +
@@ -717,7 +1035,33 @@ const file_conf_conf_proto_rawDesc = "" +
 	"\vmessage_ttl\x18\n" +
 	" \x01(\v2\x19.google.protobuf.DurationR\n" +
 	"messageTtl\x12(\n" +
-	"\x10max_message_size\x18\v \x01(\x05R\x0emaxMessageSizeB1Z/pin_intent_broadcast_network/internal/conf;confb\x06proto3"
+	"\x10max_message_size\x18\v \x01(\x05R\x0emaxMessageSize\x12I\n" +
+	"\x11intent_monitoring\x18\x14 \x01(\v2\x1c.kratos.api.IntentMonitoringR\x10intentMonitoring\"\xc6\x02\n" +
+	"\x10IntentMonitoring\x12+\n" +
+	"\x11subscription_mode\x18\x01 \x01(\tR\x10subscriptionMode\x12'\n" +
+	"\x0fexplicit_topics\x18\x02 \x03(\tR\x0eexplicitTopics\x12+\n" +
+	"\x11wildcard_patterns\x18\x03 \x03(\tR\x10wildcardPatterns\x120\n" +
+	"\x06filter\x18\x04 \x01(\v2\x18.kratos.api.IntentFilterR\x06filter\x12<\n" +
+	"\n" +
+	"statistics\x18\x05 \x01(\v2\x1c.kratos.api.StatisticsConfigR\n" +
+	"statistics\x12?\n" +
+	"\vperformance\x18\x06 \x01(\v2\x1d.kratos.api.PerformanceConfigR\vperformance\"\xf0\x01\n" +
+	"\fIntentFilter\x12#\n" +
+	"\rallowed_types\x18\x01 \x03(\tR\fallowedTypes\x12#\n" +
+	"\rblocked_types\x18\x02 \x03(\tR\fblockedTypes\x12'\n" +
+	"\x0fallowed_senders\x18\x03 \x03(\tR\x0eallowedSenders\x12'\n" +
+	"\x0fblocked_senders\x18\x04 \x03(\tR\x0eblockedSenders\x12!\n" +
+	"\fmin_priority\x18\x05 \x01(\x05R\vminPriority\x12!\n" +
+	"\fmax_priority\x18\x06 \x01(\x05R\vmaxPriority\"\xc0\x01\n" +
+	"\x10StatisticsConfig\x12\x18\n" +
+	"\aenabled\x18\x01 \x01(\bR\aenabled\x12D\n" +
+	"\x10retention_period\x18\x02 \x01(\v2\x19.google.protobuf.DurationR\x0fretentionPeriod\x12L\n" +
+	"\x14aggregation_interval\x18\x03 \x01(\v2\x19.google.protobuf.DurationR\x13aggregationInterval\"\x8f\x01\n" +
+	"\x11PerformanceConfig\x12+\n" +
+	"\x11max_subscriptions\x18\x01 \x01(\x05R\x10maxSubscriptions\x12.\n" +
+	"\x13message_buffer_size\x18\x02 \x01(\x05R\x11messageBufferSize\x12\x1d\n" +
+	"\n" +
+	"batch_size\x18\x03 \x01(\x05R\tbatchSizeB1Z/pin_intent_broadcast_network/internal/conf;confb\x06proto3"
 
 var (
 	file_conf_conf_proto_rawDescOnce sync.Once
@@ -731,40 +1075,50 @@ func file_conf_conf_proto_rawDescGZIP() []byte {
 	return file_conf_conf_proto_rawDescData
 }
 
-var file_conf_conf_proto_msgTypes = make([]protoimpl.MessageInfo, 9)
+var file_conf_conf_proto_msgTypes = make([]protoimpl.MessageInfo, 13)
 var file_conf_conf_proto_goTypes = []any{
 	(*Bootstrap)(nil),           // 0: kratos.api.Bootstrap
 	(*Server)(nil),              // 1: kratos.api.Server
 	(*Data)(nil),                // 2: kratos.api.Data
 	(*P2P)(nil),                 // 3: kratos.api.P2P
 	(*Transport)(nil),           // 4: kratos.api.Transport
-	(*Server_HTTP)(nil),         // 5: kratos.api.Server.HTTP
-	(*Server_GRPC)(nil),         // 6: kratos.api.Server.GRPC
-	(*Data_Database)(nil),       // 7: kratos.api.Data.Database
-	(*Data_Redis)(nil),          // 8: kratos.api.Data.Redis
-	(*durationpb.Duration)(nil), // 9: google.protobuf.Duration
+	(*IntentMonitoring)(nil),    // 5: kratos.api.IntentMonitoring
+	(*IntentFilter)(nil),        // 6: kratos.api.IntentFilter
+	(*StatisticsConfig)(nil),    // 7: kratos.api.StatisticsConfig
+	(*PerformanceConfig)(nil),   // 8: kratos.api.PerformanceConfig
+	(*Server_HTTP)(nil),         // 9: kratos.api.Server.HTTP
+	(*Server_GRPC)(nil),         // 10: kratos.api.Server.GRPC
+	(*Data_Database)(nil),       // 11: kratos.api.Data.Database
+	(*Data_Redis)(nil),          // 12: kratos.api.Data.Redis
+	(*durationpb.Duration)(nil), // 13: google.protobuf.Duration
 }
 var file_conf_conf_proto_depIdxs = []int32{
 	1,  // 0: kratos.api.Bootstrap.server:type_name -> kratos.api.Server
 	2,  // 1: kratos.api.Bootstrap.data:type_name -> kratos.api.Data
 	3,  // 2: kratos.api.Bootstrap.p2p:type_name -> kratos.api.P2P
 	4,  // 3: kratos.api.Bootstrap.transport:type_name -> kratos.api.Transport
-	5,  // 4: kratos.api.Server.http:type_name -> kratos.api.Server.HTTP
-	6,  // 5: kratos.api.Server.grpc:type_name -> kratos.api.Server.GRPC
-	7,  // 6: kratos.api.Data.database:type_name -> kratos.api.Data.Database
-	8,  // 7: kratos.api.Data.redis:type_name -> kratos.api.Data.Redis
-	9,  // 8: kratos.api.Transport.gossipsub_heartbeat_interval:type_name -> google.protobuf.Duration
-	9,  // 9: kratos.api.Transport.gossipsub_fanout_ttl:type_name -> google.protobuf.Duration
-	9,  // 10: kratos.api.Transport.message_ttl:type_name -> google.protobuf.Duration
-	9,  // 11: kratos.api.Server.HTTP.timeout:type_name -> google.protobuf.Duration
-	9,  // 12: kratos.api.Server.GRPC.timeout:type_name -> google.protobuf.Duration
-	9,  // 13: kratos.api.Data.Redis.read_timeout:type_name -> google.protobuf.Duration
-	9,  // 14: kratos.api.Data.Redis.write_timeout:type_name -> google.protobuf.Duration
-	15, // [15:15] is the sub-list for method output_type
-	15, // [15:15] is the sub-list for method input_type
-	15, // [15:15] is the sub-list for extension type_name
-	15, // [15:15] is the sub-list for extension extendee
-	0,  // [0:15] is the sub-list for field type_name
+	9,  // 4: kratos.api.Server.http:type_name -> kratos.api.Server.HTTP
+	10, // 5: kratos.api.Server.grpc:type_name -> kratos.api.Server.GRPC
+	11, // 6: kratos.api.Data.database:type_name -> kratos.api.Data.Database
+	12, // 7: kratos.api.Data.redis:type_name -> kratos.api.Data.Redis
+	13, // 8: kratos.api.Transport.gossipsub_heartbeat_interval:type_name -> google.protobuf.Duration
+	13, // 9: kratos.api.Transport.gossipsub_fanout_ttl:type_name -> google.protobuf.Duration
+	13, // 10: kratos.api.Transport.message_ttl:type_name -> google.protobuf.Duration
+	5,  // 11: kratos.api.Transport.intent_monitoring:type_name -> kratos.api.IntentMonitoring
+	6,  // 12: kratos.api.IntentMonitoring.filter:type_name -> kratos.api.IntentFilter
+	7,  // 13: kratos.api.IntentMonitoring.statistics:type_name -> kratos.api.StatisticsConfig
+	8,  // 14: kratos.api.IntentMonitoring.performance:type_name -> kratos.api.PerformanceConfig
+	13, // 15: kratos.api.StatisticsConfig.retention_period:type_name -> google.protobuf.Duration
+	13, // 16: kratos.api.StatisticsConfig.aggregation_interval:type_name -> google.protobuf.Duration
+	13, // 17: kratos.api.Server.HTTP.timeout:type_name -> google.protobuf.Duration
+	13, // 18: kratos.api.Server.GRPC.timeout:type_name -> google.protobuf.Duration
+	13, // 19: kratos.api.Data.Redis.read_timeout:type_name -> google.protobuf.Duration
+	13, // 20: kratos.api.Data.Redis.write_timeout:type_name -> google.protobuf.Duration
+	21, // [21:21] is the sub-list for method output_type
+	21, // [21:21] is the sub-list for method input_type
+	21, // [21:21] is the sub-list for extension type_name
+	21, // [21:21] is the sub-list for extension extendee
+	0,  // [0:21] is the sub-list for field type_name
 }
 
 func init() { file_conf_conf_proto_init() }
@@ -778,7 +1132,7 @@ func file_conf_conf_proto_init() {
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_conf_conf_proto_rawDesc), len(file_conf_conf_proto_rawDesc)),
 			NumEnums:      0,
-			NumMessages:   9,
+			NumMessages:   13,
 			NumExtensions: 0,
 			NumServices:   0,
 		},

@@ -199,6 +199,55 @@ transport:
   message_id_cache_size: 1000
   message_ttl: 300s
   max_message_size: 1048576
+
+  # Intent monitoring configuration
+  intent_monitoring:
+    # Subscription mode: "wildcard" | "explicit" | "all" | "disabled"
+    # Default is "all" - listen to all intent broadcast topics
+    subscription_mode: "all"
+
+    # Wildcard patterns for topic matching (used in wildcard mode)
+    wildcard_patterns:
+      - "intent-broadcast.*"
+      - "intent-matching.*"
+
+    # Explicit topic list (used in explicit mode)
+    explicit_topics:
+      - "intent-broadcast.trade"
+      - "intent-broadcast.swap"
+      - "intent-broadcast.exchange"
+      - "intent-broadcast.transfer"
+      - "intent-broadcast.send"
+      - "intent-broadcast.payment"
+      - "intent-broadcast.lending"
+      - "intent-broadcast.borrow"
+      - "intent-broadcast.loan"
+      - "intent-broadcast.investment"
+      - "intent-broadcast.staking"
+      - "intent-broadcast.yield"
+      - "intent-broadcast.general"
+
+    # Intent filter configuration
+    filter:
+      allowed_types: [] # Empty means allow all types
+      blocked_types: []
+      allowed_senders: []
+      blocked_senders: []
+      min_priority: 0
+      max_priority: 10
+
+    # Statistics configuration
+    statistics:
+      enabled: true
+      retention_period: "24h"
+      aggregation_interval: "1m"
+
+    # Performance configuration
+    performance:
+      max_subscriptions: 100
+      message_buffer_size: 1000
+      batch_size: 10
+  max_message_size: 1048576
 EOF
 }
 

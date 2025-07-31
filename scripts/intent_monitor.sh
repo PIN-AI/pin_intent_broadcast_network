@@ -60,6 +60,16 @@ log_stats() {
     echo -e "${MAGENTA}[STATS]${NC} $1"
 }
 
+# 检查是否为有效数字
+is_valid_number() {
+    local value="$1"
+    if [[ "$value" =~ ^[0-9]+$ ]] && [ "$value" -ge 0 ]; then
+        return 0
+    else
+        return 1
+    fi
+}
+
 # 显示监控器头部信息
 show_monitor_header() {
     clear
@@ -73,6 +83,65 @@ show_monitor_header() {
     echo "  最大显示数量: $MAX_DISPLAY_INTENTS"
     echo "  启动时间: $(date '+%Y-%m-%d %H:%M:%S')"
     echo ""
+}
+
+# 显示监控配置信息
+show_monitoring_config() {
+    local config_data="$1"
+    
+    echo -e "${WHITE}┌─────────────────────────────────────────────────────────────┐${NC}"
+    echo -e "${WHITE}│                      监控配置信息                            │${NC}"
+    echo -e "${WHITE}├─────────────────────────────────────────────────────────────┤${NC}"
+    
+    if [ -n "$config_data" ]; then
+        # 解析配置信息（简单的文本处理）
+        local mode=$(echo "$config_data" | grep -o '"subscription_mode":"[^"]*"' | cut -d'"' -f4)
+        local stats_enabled=$(echo "$config_data" | grep -o '"statistics_enabled":[^,}]*' | cut -d':' -f2 | tr -d ' ')
+        
+        mode=${mode:-"unknown"}
+        stats_enabled=${stats_enabled:-"false"}
+        
+        printf "${WHITE}│${NC} 订阅模式: %-20s                              ${WHITE}│${NC}\n" "$mode"
+        printf "${WHITE}│${NC} 统计功能: %-20s                              ${WHITE}│${NC}\n" "$stats_enabled"
+    else
+        printf "${WHITE}│${NC} %-50s                     ${WHITE}│${NC}\n" "配置信息不可用"
+    fi
+    
+    echo -e "${WHITE}└─────────────────────────────────────────────────────────────┘${NC}"
+}
+
+# 显示订阅状态
+show_subscription_status() {
+    local subscription_data="$1"
+    
+    echo -e "${WHITE}┌─────────────────────────────────────────────────────────────┐${NC}"
+    echo -e "${WHITE}│                      订阅状态信息                            │${NC}"
+    echo -e "${WHITE}├─────────────────────────────────────────────────────────────┤${NC}"
+    
+    if [ -n "$subscription_data" ]; then
+        # 解析订阅信息
+        local active_count=$(echo "$subscription_data" | grep -o '"active_subscriptions":\[[^]]*\]' | grep -o ',' | wc -l)
+        active_count=$((active_count + 1))
+        
+        # 如果没有逗号，检查是否有内容
+        if echo "$subscription_data" | grep -q '"active_subscriptions":\[\]'; then
+            active_count=0
+        fi
+        
+        local total_messages=$(echo "$subscription_data" | grep -o '"total_messages":[0-9]*' | cut -d':' -f2)
+        local total_errors=$(echo "$subscription_data" | grep -o '"total_errors":[0-9]*' | cut -d':' -f2)
+        
+        total_messages=${total_messages:-0}
+        total_errors=${total_errors:-0}
+        
+        printf "${WHITE}│${NC} 活跃订阅数: %-3d                                        ${WHITE}│${NC}\n" "$active_count"
+        printf "${WHITE}│${NC} 总消息数: %-6d                                       ${WHITE}│${NC}\n" "$total_messages"
+        printf "${WHITE}│${NC} 错误数: %-6d                                         ${WHITE}│${NC}\n" "$total_errors"
+    else
+        printf "${WHITE}│${NC} %-50s                     ${WHITE}│${NC}\n" "订阅状态不可用"
+    fi
+    
+    echo -e "${WHITE}└─────────────────────────────────────────────────────────────┘${NC}"
 }
 
 # 检查节点可用性
@@ -112,6 +181,42 @@ query_intents() {
     fi
 }
 
+# 查询监控统计信息
+query_monitoring_stats() {
+    local response=$(curl -s "http://localhost:$NODE_PORT/debug/intent-monitoring/stats" 2>/dev/null)
+    
+    if [ $? -eq 0 ] && [ -n "$response" ]; then
+        echo "$response"
+        return 0
+    else
+        return 1
+    fi
+}
+
+# 查询订阅状态
+query_subscription_status() {
+    local response=$(curl -s "http://localhost:$NODE_PORT/debug/intent-monitoring/subscriptions" 2>/dev/null)
+    
+    if [ $? -eq 0 ] && [ -n "$response" ]; then
+        echo "$response"
+        return 0
+    else
+        return 1
+    fi
+}
+
+# 查询配置信息
+query_monitoring_config() {
+    local response=$(curl -s "http://localhost:$NODE_PORT/debug/intent-monitoring/config" 2>/dev/null)
+    
+    if [ $? -eq 0 ] && [ -n "$response" ]; then
+        echo "$response"
+        return 0
+    else
+        return 1
+    fi
+}
+
 # 解析 Intent 数据
 parse_intent_data() {
     local json_data="$1"
@@ -125,10 +230,15 @@ parse_intent_data() {
             # 提取字段
             local id=$(echo "$intent_line" | grep -o '"id":"[^"]*"' | cut -d'"' -f4)
             local type=$(echo "$intent_line" | grep -o '"type":"[^"]*"' | cut -d'"' -f4)
-            local sender_id=$(echo "$intent_line" | grep -o '"sender_id":"[^"]*"' | cut -d'"' -f4)
-            local timestamp=$(echo "$intent_line" | grep -o '"timestamp":[0-9]*' | cut -d':' -f2)
-            local status=$(echo "$intent_line" | grep -o '"status":[0-9]*' | cut -d':' -f2)
+            local sender_id=$(echo "$intent_line" | grep -o '"senderId":"[^"]*"' | cut -d'"' -f4)
+            local timestamp=$(echo "$intent_line" | grep -o '"timestamp":"[^"]*"' | cut -d'"' -f4)
+            local status=$(echo "$intent_line" | grep -o '"status":"[^"]*"' | cut -d'"' -f4)
             local priority=$(echo "$intent_line" | grep -o '"priority":[0-9]*' | cut -d':' -f2)
+            
+            # 设置默认值
+            timestamp=${timestamp:-0}
+            status=${status:-0}
+            priority=${priority:-0}
             
             # 输出解析结果
             echo "$id|$type|$sender_id|$timestamp|$status|$priority"
@@ -204,7 +314,7 @@ update_statistics() {
             # 检查是否是新的 Intent
             if [ -z "${LAST_SEEN_INTENTS[$id]}" ]; then
                 LAST_SEEN_INTENTS[$id]="$timestamp"
-                if [ "$timestamp" -gt "$LAST_RECEIVED_TIME" ]; then
+                if is_valid_number "$timestamp" && is_valid_number "$LAST_RECEIVED_TIME" && [ "$timestamp" -gt "$LAST_RECEIVED_TIME" ]; then
                     LAST_RECEIVED_TIME=$timestamp
                 fi
             fi
@@ -259,6 +369,76 @@ show_statistics() {
     echo -e "${WHITE}└─────────────────────────────────────────────────────────────┘${NC}"
 }
 
+# 显示增强的统计信息（使用新的监控API）
+show_enhanced_statistics() {
+    local stats_data="$1"
+    local current_time=$(date +%s)
+    local running_time=$((current_time - START_TIME))
+    local hours=$((running_time / 3600))
+    local minutes=$(((running_time % 3600) / 60))
+    local seconds=$((running_time % 60))
+    
+    echo -e "${WHITE}┌─────────────────────────────────────────────────────────────┐${NC}"
+    echo -e "${WHITE}│                    增强监控统计信息                          │${NC}"
+    echo -e "${WHITE}├─────────────────────────────────────────────────────────────┤${NC}"
+    printf "${WHITE}│${NC} 运行时间: %02dh %02dm %02ds                                   ${WHITE}│${NC}\n" $hours $minutes $seconds
+    
+    if [ -n "$stats_data" ]; then
+        # 解析增强统计信息
+        local total_received=$(echo "$stats_data" | grep -o '"total_received":[0-9]*' | cut -d':' -f2)
+        local total_filtered=$(echo "$stats_data" | grep -o '"total_filtered":[0-9]*' | cut -d':' -f2)
+        local total_duplicates=$(echo "$stats_data" | grep -o '"total_duplicates":[0-9]*' | cut -d':' -f2)
+        
+        total_received=${total_received:-0}
+        total_filtered=${total_filtered:-0}
+        total_duplicates=${total_duplicates:-0}
+        
+        printf "${WHITE}│${NC} 总接收数: %-6d                                       ${WHITE}│${NC}\n" "$total_received"
+        printf "${WHITE}│${NC} 过滤数: %-6d                                         ${WHITE}│${NC}\n" "$total_filtered"
+        printf "${WHITE}│${NC} 重复数: %-6d                                         ${WHITE}│${NC}\n" "$total_duplicates"
+    else
+        printf "${WHITE}│${NC} 当前Intent数量: %-3d                                      ${WHITE}│${NC}\n" $LAST_INTENT_COUNT
+        printf "${WHITE}│${NC} 总接收数量: %-3d                                          ${WHITE}│${NC}\n" $TOTAL_RECEIVED
+    fi
+    
+    if [ $LAST_RECEIVED_TIME -gt 0 ]; then
+        local last_received_ago=$(time_ago $LAST_RECEIVED_TIME)
+        printf "${WHITE}│${NC} 最后接收: %-20s                              ${WHITE}│${NC}\n" "$last_received_ago"
+    else
+        printf "${WHITE}│${NC} 最后接收: %-20s                              ${WHITE}│${NC}\n" "无"
+    fi
+    
+    echo -e "${WHITE}├─────────────────────────────────────────────────────────────┤${NC}"
+    echo -e "${WHITE}│                      按类型统计                             │${NC}"
+    echo -e "${WHITE}├─────────────────────────────────────────────────────────────┤${NC}"
+    
+    # 尝试解析按类型统计（如果可用）
+    local has_type_stats=false
+    if [ -n "$stats_data" ] && echo "$stats_data" | grep -q '"by_type"'; then
+        # 这里可以添加更复杂的JSON解析逻辑
+        # 目前显示基本信息
+        printf "${WHITE}│${NC} %-50s                     ${WHITE}│${NC}\n" "详细类型统计可通过API获取"
+        has_type_stats=true
+    fi
+    
+    # 回退到本地统计
+    if [ "$has_type_stats" = false ]; then
+        local has_types=false
+        for type in "${!INTENT_TYPE_COUNTS[@]}"; do
+            if [ "${INTENT_TYPE_COUNTS[$type]}" -gt 0 ]; then
+                printf "${WHITE}│${NC} %-15s: %-3d                                      ${WHITE}│${NC}\n" "$type" "${INTENT_TYPE_COUNTS[$type]}"
+                has_types=true
+            fi
+        done
+        
+        if [ "$has_types" = false ]; then
+            printf "${WHITE}│${NC} %-50s                     ${WHITE}│${NC}\n" "暂无数据"
+        fi
+    fi
+    
+    echo -e "${WHITE}└─────────────────────────────────────────────────────────────┘${NC}"
+}
+
 # 显示 Intent 列表
 show_intent_list() {
     local intent_data="$1"
@@ -289,7 +469,7 @@ show_intent_list() {
                 local short_ago=$(echo "$time_ago_str" | cut -c1-24)
                 
                 # 高亮新接收的 Intent
-                if [ "$timestamp" -gt $(($(date +%s) - 30)) ]; then
+                if is_valid_number "$timestamp" && [ "$timestamp" -gt $(($(date +%s) - 30)) ]; then
                     printf "${WHITE}│${GREEN} %-24s ${WHITE}│${GREEN} %-8s ${WHITE}│${GREEN} %-19s ${WHITE}│${GREEN} %-19s ${WHITE}│${GREEN} %-8s ${WHITE}│${GREEN} %-6s ${WHITE}│${GREEN} %-24s ${WHITE}│${NC}\n" \
                         "$short_id" "$short_type" "$short_sender" "$short_time" "$short_status" "$priority" "$short_ago"
                 else
@@ -335,6 +515,20 @@ main_monitor_loop() {
         clear
         show_monitor_header
         
+        # 查询监控配置信息
+        local config_data=$(query_monitoring_config)
+        if [ $? -eq 0 ] && [ -n "$config_data" ]; then
+            show_monitoring_config "$config_data"
+            echo ""
+        fi
+        
+        # 查询订阅状态
+        local subscription_data=$(query_subscription_status)
+        if [ $? -eq 0 ] && [ -n "$subscription_data" ]; then
+            show_subscription_status "$subscription_data"
+            echo ""
+        fi
+        
         # 查询 Intent 数据
         local response=$(query_intents $MAX_DISPLAY_INTENTS)
         
@@ -356,13 +550,20 @@ main_monitor_loop() {
                 show_waiting_status
             fi
         else
-            log_error "无法获取 Intent 数据"
-            show_waiting_status
+            # 尝试使用新的监控统计API
+            local monitoring_stats=$(query_monitoring_stats)
+            if [ $? -eq 0 ] && [ -n "$monitoring_stats" ]; then
+                show_enhanced_statistics "$monitoring_stats"
+            else
+                show_statistics
+                show_waiting_status
+            fi
         fi
         
         # 显示刷新信息
         echo ""
         echo -e "${BLUE}[刷新]${NC} 下次刷新: ${REFRESH_INTERVAL}秒后 | 按 Ctrl+C 停止监控"
+        echo -e "${CYAN}[提示]${NC} 新功能: 显示监控配置和订阅状态 | 支持增强的统计信息"
         
         # 等待刷新间隔
         sleep $REFRESH_INTERVAL

@@ -9,24 +9,26 @@ import (
 	"github.com/go-kratos/kratos/v2/log"
 
 	"pin_intent_broadcast_network/internal/biz/common"
+	"pin_intent_broadcast_network/internal/biz/monitoring"
 	"pin_intent_broadcast_network/internal/transport"
 )
 
 // Manager implements the IntentManager interface
 // It coordinates all intent-related operations including creation, validation, processing, and lifecycle management
 type Manager struct {
-	validator     common.IntentValidator
-	signer        common.IntentSigner
-	processor     common.IntentProcessor
-	matcher       common.IntentMatcher
-	lifecycle     common.LifecycleManager
-	transportMgr  transport.TransportManager
-	config        *Config
-	metrics       *Metrics
-	logger        *log.Helper
-	mu            sync.RWMutex
-	intents       map[string]*common.Intent      // In-memory intent storage for quick access
-	subscriptions map[string]chan *common.Intent // Intent event subscriptions
+	validator           common.IntentValidator
+	signer              common.IntentSigner
+	processor           common.IntentProcessor
+	matcher             common.IntentMatcher
+	lifecycle           common.LifecycleManager
+	transportMgr        transport.TransportManager
+	intentMonitoringMgr monitoring.IntentMonitoringManager // Intent monitoring manager
+	config              *Config
+	metrics             *Metrics
+	logger              *log.Helper
+	mu                  sync.RWMutex
+	intents             map[string]*common.Intent      // In-memory intent storage for quick access
+	subscriptions       map[string]chan *common.Intent // Intent event subscriptions
 }
 
 // Config holds configuration for the Intent Manager
@@ -58,18 +60,27 @@ func NewManager(
 	logger log.Logger,
 ) *Manager {
 	return &Manager{
-		validator:     validator,
-		signer:        signer,
-		processor:     processor,
-		matcher:       matcher,
-		lifecycle:     lifecycle,
-		transportMgr:  transportMgr,
-		config:        config,
-		metrics:       &Metrics{},
-		logger:        log.NewHelper(logger),
-		intents:       make(map[string]*common.Intent),
-		subscriptions: make(map[string]chan *common.Intent),
+		validator:           validator,
+		signer:              signer,
+		processor:           processor,
+		matcher:             matcher,
+		lifecycle:           lifecycle,
+		transportMgr:        transportMgr,
+		intentMonitoringMgr: nil, // Will be set later if needed
+		config:              config,
+		metrics:             &Metrics{},
+		logger:              log.NewHelper(logger),
+		intents:             make(map[string]*common.Intent),
+		subscriptions:       make(map[string]chan *common.Intent),
 	}
+}
+
+// SetIntentMonitoringManager sets the intent monitoring manager
+func (m *Manager) SetIntentMonitoringManager(intentMonitoringMgr monitoring.IntentMonitoringManager) {
+	m.mu.Lock()
+	defer m.mu.Unlock()
+	m.intentMonitoringMgr = intentMonitoringMgr
+	m.logger.Info("Intent monitoring manager set successfully")
 }
 
 // ProcessIntent processes an incoming intent
@@ -704,13 +715,33 @@ func (m *Manager) StartIntentSubscription(ctx context.Context) error {
 		return nil
 	}
 
-	// Subscribe to all intent broadcast topics
+	// Use the new monitoring system if available
+	if m.intentMonitoringMgr != nil {
+		m.logger.Info("Using intent monitoring manager for topic subscriptions")
+		return m.intentMonitoringMgr.Start(ctx)
+	}
+
+	// Fallback to legacy subscription method with expanded topic list
+	m.logger.Info("Using legacy subscription method with all known topics")
+
+	// Subscribe to all known intent broadcast topics (expanded list)
 	topics := []string{
 		"intent-broadcast.trade",
 		"intent-broadcast.swap",
 		"intent-broadcast.exchange",
 		"intent-broadcast.transfer",
+		"intent-broadcast.send",
+		"intent-broadcast.payment",
+		"intent-broadcast.lending",
+		"intent-broadcast.borrow",
+		"intent-broadcast.loan",
+		"intent-broadcast.investment",
+		"intent-broadcast.staking",
+		"intent-broadcast.yield",
 		"intent-broadcast.general",
+		"intent-broadcast.matching",
+		"intent-broadcast.notification",
+		"intent-broadcast.status",
 	}
 
 	for _, topic := range topics {
@@ -724,6 +755,7 @@ func (m *Manager) StartIntentSubscription(ctx context.Context) error {
 		m.logger.Infof("Subscribed to intent broadcast topic: %s", topic)
 	}
 
+	m.logger.Infof("Successfully subscribed to %d intent broadcast topics", len(topics))
 	return nil
 }
 

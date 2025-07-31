@@ -1,0 +1,52 @@
+# Intent Monitoring Configuration Example - Explicit Mode
+# This configuration explicitly lists topics to subscribe to
+
+transport:
+  enable_gossipsub: true
+  gossipsub_heartbeat_interval: 1s
+  gossipsub_d: 6
+  gossipsub_d_lo: 4
+  gossipsub_d_hi: 12
+  gossipsub_fanout_ttl: 60s
+  enable_message_signing: true
+  enable_strict_signature_verification: true
+  message_id_cache_size: 1000
+  message_ttl: 300s
+  max_message_size: 1048576
+
+  # Intent monitoring configuration - Explicit Mode
+  intent_monitoring:
+    # Explicitly list topics to subscribe to
+    subscription_mode: "explicit"
+
+    # Explicit topic list - only these topics will be monitored
+    explicit_topics:
+      - "intent-broadcast.trade"
+      - "intent-broadcast.swap"
+      - "intent-broadcast.exchange"
+      - "intent-broadcast.general"
+
+    # Intent filter configuration
+    filter:
+      allowed_types: [] # Empty means allow all types
+      blocked_types:
+        - "spam"
+        - "test"
+      allowed_senders: []
+      blocked_senders:
+        - "blocked-peer-id-1"
+        - "blocked-peer-id-2"
+      min_priority: 0
+      max_priority: 10
+
+    # Statistics configuration
+    statistics:
+      enabled: true
+      retention_period: "6h"
+      aggregation_interval: "1m"
+
+    # Performance configuration
+    performance:
+      max_subscriptions: 20
+      message_buffer_size: 200
+      batch_size: 3
