@@ -6,6 +6,15 @@ import (
 	"pin_intent_broadcast_network/internal/biz/common"
 )
 
+// intentManager is a global reference to the intent manager
+// This will be set during application startup
+var intentManager common.IntentManager
+
+// SetIntentManager sets the global intent manager reference
+func SetIntentManager(manager common.IntentManager) {
+	intentManager = manager
+}
+
 // BroadcastIntent implements the intent broadcasting logic for API layer
 func BroadcastIntent(ctx context.Context, req *pb.BroadcastIntentRequest) (*pb.BroadcastIntentResponse, error) {
 	if req == nil || req.IntentId == "" {
@@ -15,19 +24,60 @@ func BroadcastIntent(ctx context.Context, req *pb.BroadcastIntentRequest) (*pb.B
 		}, common.NewIntentError(common.ErrorCodeInvalidFormat, "Invalid broadcast request", "Request or intent ID is empty")
 	}
 
-	// For now, simulate successful broadcast
-	// TODO: Implement actual P2P broadcast functionality
+	// Check if intent manager is available
+	if intentManager == nil {
+		// Fallback to simulation mode
+		topic := req.Topic
+		if topic == "" {
+			topic = "intent-broadcast.general"
+		}
+
+		return &pb.BroadcastIntentResponse{
+			Success:  true,
+			IntentId: req.IntentId,
+			Topic:    topic,
+			Message:  "Intent broadcast initiated successfully (simulation mode)",
+		}, nil
+	}
+
+	// Get the intent first
+	intent, err := intentManager.GetIntentStatus(ctx, req.IntentId)
+	if err != nil {
+		return &pb.BroadcastIntentResponse{
+			Success:  false,
+			IntentId: req.IntentId,
+			Message:  "Intent not found: " + err.Error(),
+		}, err
+	}
+
+	// Determine topic if not provided
 	topic := req.Topic
 	if topic == "" {
-		// Use default topic based on intent type
-		topic = "intent-broadcast.general"
+		topic = determineTopicByType(intent.Type)
+	}
+
+	// Create broadcast request
+	broadcastReq := &common.BroadcastIntentRequest{
+		Intent: intent,
+		Topic:  topic,
+	}
+
+	// Call the intent manager's broadcast method
+	response, err := intentManager.BroadcastIntent(ctx, broadcastReq)
+	if err != nil {
+		return &pb.BroadcastIntentResponse{
+			Success:  false,
+			IntentId: req.IntentId,
+			Topic:    topic,
+			Message:  "Broadcast failed: " + err.Error(),
+		}, err
 	}
 
 	return &pb.BroadcastIntentResponse{
-		Success:  true,
-		IntentId: req.IntentId,
-		Topic:    topic,
-		Message:  "Intent broadcast initiated successfully",
+		Success:  response.Success,
+		IntentId: response.IntentID,
+		Topic:    response.Topic,
+		Message:  response.Message,
 	}, nil
 }
 

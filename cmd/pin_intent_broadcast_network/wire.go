@@ -17,17 +17,36 @@ import (
 	"github.com/go-kratos/kratos/v2"
 	"github.com/go-kratos/kratos/v2/log"
 	"github.com/google/wire"
+	"go.uber.org/zap"
 )
 
 // wireApp init kratos application.
-func wireApp(*conf.Server, *conf.Data, log.Logger) (*kratos.App, func(), error) {
+func wireApp(*conf.Bootstrap, log.Logger) (*kratos.App, func(), error) {
 	panic(wire.Build(
-		server.ProviderSet, 
-		data.ProviderSet, 
-		biz.ProviderSet, 
+		// Extract individual configs from Bootstrap
+		wire.FieldsOf(new(*conf.Bootstrap), "Server", "Data"),
+
+		// Core providers
+		server.ProviderSet,
+		data.ProviderSet,
+		biz.ProviderSet,
 		service.ProviderSet,
+
+		// P2P and Transport providers (they use full bootstrap config)
 		p2p.ProviderSet,
 		transport.ProviderSet,
+
+		// Zap logger provider
+		NewZapLogger,
+
 		newApp,
 	))
+}
+
+// NewZapLogger creates a zap logger from kratos logger
+func NewZapLogger(logger log.Logger) *zap.Logger {
+	// For now, create a simple zap logger
+	// In production, you might want to configure this more carefully
+	zapLogger, _ := zap.NewProduction()
+	return zapLogger
 }

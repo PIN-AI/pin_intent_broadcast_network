@@ -1,29 +1,31 @@
 server:
   http:
-    addr: 0.0.0.0:8000
+    addr: 0.0.0.0:8011
     timeout: 1s
   grpc:
-    addr: 0.0.0.0:9000
+    addr: 0.0.0.0:9011
     timeout: 1s
+
 data:
   database:
-    driver: mysql
-    source: root:root@tcp(127.0.0.1:3306)/test?parseTime=True&loc=Local
+    driver: sqlite
+    source: "test_data/node2/data.db"
   redis:
     addr: 127.0.0.1:6379
     read_timeout: 0.2s
     write_timeout: 0.2s
+
 p2p:
   listen_addresses:
-    - /ip4/0.0.0.0/tcp/9001
-    - /ip4/0.0.0.0/udp/9001/quic
+    - "/ip4/0.0.0.0/tcp/9012"
   bootstrap_peers: []
   protocol_id: "/intent-broadcast/1.0.0"
   enable_mdns: true
   enable_dht: true
-  data_dir: "./data/p2p"
-  max_connections: 100
+  data_dir: "test_data/node2/p2p"
+  max_connections: 50
   enable_signing: true
+
 transport:
   enable_gossipsub: true
   gossipsub_heartbeat_interval: 1s

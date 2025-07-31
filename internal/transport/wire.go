@@ -10,7 +10,7 @@ import (
 
 // ProviderSet Transport module wire provider set
 var ProviderSet = wire.NewSet(
-	NewTransportManager,
+	NewTransportManagerWithP2P,
 	NewTransportConfig,
 )
 
@@ -19,7 +19,7 @@ func NewTransportConfig(c *conf.Bootstrap) (*TransportConfig, error) {
 	if c.Transport == nil {
 		return DefaultTransportConfig(), nil
 	}
-	
+
 	config := &TransportConfig{
 		EnableGossipSub:                   c.Transport.EnableGossipsub,
 		GossipSubHeartbeatInterval:        c.Transport.GossipsubHeartbeatInterval.AsDuration(),
@@ -33,7 +33,7 @@ func NewTransportConfig(c *conf.Bootstrap) (*TransportConfig, error) {
 		MessageTTL:                        c.Transport.MessageTtl.AsDuration(),
 		MaxMessageSize:                    int(c.Transport.MaxMessageSize),
 	}
-	
+
 	return config, nil
 }
 
@@ -43,18 +43,18 @@ func NewTransportManagerWithP2P(networkManager p2p.NetworkManager, logger *zap.L
 		logger.Error("Network manager is nil, cannot create transport manager")
 		return nil
 	}
-	
+
 	hostManager := networkManager.GetHostManager()
 	if hostManager == nil {
 		logger.Error("Host manager is nil, cannot create transport manager")
 		return nil
 	}
-	
+
 	host := hostManager.GetHost()
 	if host == nil {
 		logger.Error("Libp2p host is nil, cannot create transport manager")
 		return nil
 	}
-	
+
 	return NewTransportManager(host, logger)
 }

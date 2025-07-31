@@ -65,4 +65,70 @@ message Transport {
   int32 message_id_cache_size = 9;
   google.protobuf.Duration message_ttl = 10;
   int32 max_message_size = 11;
+  
+  // Intent monitoring configuration
+  IntentMonitoring intent_monitoring = 20;
+}
+
+// Intent monitoring configuration
+message IntentMonitoring {
+  // Subscription mode: "wildcard", "explicit", "all", "disabled"
+  // Default is "all" - listen to all topics
+  string subscription_mode = 1;
+  
+  // Explicit topic list (used in explicit mode)
+  repeated string explicit_topics = 2;
+  
+  // Wildcard pattern list for topic matching
+  repeated string wildcard_patterns = 3;
+  
+  // Intent filter configuration
+  IntentFilter filter = 4;
+  
+  // Statistics configuration
+  StatisticsConfig statistics = 5;
+  
+  // Performance configuration
+  PerformanceConfig performance = 6;
+}
+
+// Intent filter configuration
+message IntentFilter {
+  // Allowed intent types (empty means allow all)
+  repeated string allowed_types = 1;
+  
+  // Blocked intent types
+  repeated string blocked_types = 2;
+  
+  // Sender filter rules
+  repeated string allowed_senders = 3;
+  repeated string blocked_senders = 4;
+  
+  // Priority filter
+  int32 min_priority = 5;
+  int32 max_priority = 6;
+}
+
+// Statistics configuration
+message StatisticsConfig {
+  // Enable statistics collection
+  bool enabled = 1;
+  
+  // Statistics data retention period
+  google.protobuf.Duration retention_period = 2;
+  
+  // Statistics aggregation interval
+  google.protobuf.Duration aggregation_interval = 3;
+}
+
+// Performance configuration
+message PerformanceConfig {
+  // Maximum concurrent subscriptions
+  int32 max_subscriptions = 1;
+  
+  // Message processing buffer size
+  int32 message_buffer_size = 2;
+  
+  // Batch processing size
+  int32 batch_size = 3;
 }

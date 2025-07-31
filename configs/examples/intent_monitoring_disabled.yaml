@@ -1,0 +1,45 @@
+# Intent Monitoring Configuration Example - Disabled Mode
+# This configuration disables intent monitoring
+
+transport:
+  enable_gossipsub: true
+  gossipsub_heartbeat_interval: 1s
+  gossipsub_d: 6
+  gossipsub_d_lo: 4
+  gossipsub_d_hi: 12
+  gossipsub_fanout_ttl: 60s
+  enable_message_signing: true
+  enable_strict_signature_verification: true
+  message_id_cache_size: 1000
+  message_ttl: 300s
+  max_message_size: 1048576
+
+  # Intent monitoring configuration - Disabled Mode
+  intent_monitoring:
+    # Disable intent monitoring completely
+    subscription_mode: "disabled"
+
+    # These settings are ignored when disabled, but kept for reference
+    wildcard_patterns: []
+    explicit_topics: []
+
+    # Intent filter configuration (ignored when disabled)
+    filter:
+      allowed_types: []
+      blocked_types: []
+      allowed_senders: []
+      blocked_senders: []
+      min_priority: 0
+      max_priority: 10
+
+    # Statistics configuration (ignored when disabled)
+    statistics:
+      enabled: false
+      retention_period: "1h"
+      aggregation_interval: "1m"
+
+    # Performance configuration (ignored when disabled)
+    performance:
+      max_subscriptions: 0
+      message_buffer_size: 0
+      batch_size: 1

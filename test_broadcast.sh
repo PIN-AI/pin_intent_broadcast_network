@@ -11,7 +11,7 @@ echo "=== Intent 广播多节点测试 ==="
 BASE_PORT=8000
 P2P_BASE_PORT=9001
 NODE_COUNT=2
-TEST_INTENT_TYPE="test-123"
+TEST_INTENT_TYPE="trade"
 TEST_PAYLOAD="dGVzdCBwYXlsb2Fk"  # base64 encoded "test payload"
 
 # 创建测试数据目录
@@ -137,8 +137,8 @@ create_intent() {
     
     echo "创建响应: $response" >&2
     
-    # 提取 Intent ID
-    local intent_id=$(echo $response | grep -o '"id":"[^"]*"' | cut -d'"' -f4)
+    # 提取 Intent ID (从intent对象中)
+    local intent_id=$(echo $response | grep -o '"intent":{"id":"[^"]*"' | cut -d'"' -f6)
     echo "Intent ID: $intent_id" >&2
     echo $intent_id
 }
