@@ -15,18 +15,18 @@ import (
 // Manager implements the IntentManager interface
 // It coordinates all intent-related operations including creation, validation, processing, and lifecycle management
 type Manager struct {
-	validator       common.IntentValidator
-	signer          common.IntentSigner
-	processor       common.IntentProcessor
-	matcher         common.IntentMatcher
-	lifecycle       common.LifecycleManager
-	transportMgr    transport.TransportManager
-	config          *Config
-	metrics         *Metrics
-	logger          *log.Helper
-	mu              sync.RWMutex
-	intents         map[string]*common.Intent // In-memory intent storage for quick access
-	subscriptions   map[string]chan *common.Intent // Intent event subscriptions
+	validator     common.IntentValidator
+	signer        common.IntentSigner
+	processor     common.IntentProcessor
+	matcher       common.IntentMatcher
+	lifecycle     common.LifecycleManager
+	transportMgr  transport.TransportManager
+	config        *Config
+	metrics       *Metrics
+	logger        *log.Helper
+	mu            sync.RWMutex
+	intents       map[string]*common.Intent      // In-memory intent storage for quick access
+	subscriptions map[string]chan *common.Intent // Intent event subscriptions
 }
 
 // Config holds configuration for the Intent Manager
@@ -469,7 +469,7 @@ func (m *Manager) BroadcastIntent(ctx context.Context, req *common.BroadcastInte
 		Priority:  intent.Priority,
 		Metadata:  make(map[string]string),
 	}
-	
+
 	// Generate message ID after setting other fields
 	transportMsg.ID = transport.GenerateMessageID(transportMsg)
 
@@ -486,7 +486,7 @@ func (m *Manager) BroadcastIntent(ctx context.Context, req *common.BroadcastInte
 	// Publish to P2P network
 	if err := m.transportMgr.PublishMessage(ctx, topic, transportMsg); err != nil {
 		m.logger.Errorf("Failed to broadcast intent %s: %v", intent.ID, err)
-		
+
 		// Revert intent status on failure
 		m.mu.Lock()
 		if storedIntent, exists := m.intents[intent.ID]; exists {
@@ -521,18 +521,6 @@ func (m *Manager) BroadcastIntent(ctx context.Context, req *common.BroadcastInte
 	}, nil
 }
 
-// serializeIntentForTransport serializes intent for transport layer
-func serializeIntentForTransport(intent *common.Intent) []byte {
-	// Use JSON serialization for now
-	// In production, consider using Protocol Buffers for better performance
-	data, err := common.JSON.Marshal(intent)
-	if err != nil {
-		// Fallback to basic serialization
-		return []byte(fmt.Sprintf(`{"id":"%s","type":"%s","error":"serialization_failed"}`, intent.ID, intent.Type))
-	}
-	return data
-}
-
 // notifySubscribers notifies all intent subscribers
 func (m *Manager) notifySubscribers(intent *common.Intent) {
 	m.mu.RLock()
@@ -556,14 +544,14 @@ func (m *Manager) QueryIntents(ctx context.Context, req *common.QueryIntentsRequ
 	defer m.mu.RUnlock()
 
 	var filteredIntents []*common.Intent
-	
+
 	// Filter intents based on request criteria
 	for _, intent := range m.intents {
 		// Filter by type if specified
 		if req.Type != "" && intent.Type != req.Type {
 			continue
 		}
-		
+
 		// Filter by time range if specified
 		if req.StartTime > 0 && intent.Timestamp < req.StartTime {
 			continue
@@ -571,7 +559,7 @@ func (m *Manager) QueryIntents(ctx context.Context, req *common.QueryIntentsRequ
 		if req.EndTime > 0 && intent.Timestamp > req.EndTime {
 			continue
 		}
-		
+
 		filteredIntents = append(filteredIntents, intent)
 	}
 
@@ -622,14 +610,14 @@ func (m *Manager) SubscribeIntents(ctx context.Context, req *common.SubscribeInt
 	// Start a goroutine to handle subscription cleanup
 	go func() {
 		<-ctx.Done()
-		
+
 		m.mu.Lock()
 		if ch, exists := m.subscriptions[subscriptionID]; exists {
 			close(ch)
 			delete(m.subscriptions, subscriptionID)
 		}
 		m.mu.Unlock()
-		
+
 		m.logger.Debugf("Subscription %s cleaned up", subscriptionID)
 	}()
 
@@ -697,6 +685,97 @@ func (m *Manager) deserializeIntentFromTransport(payload []byte) (*common.Intent
 	var intent common.Intent
 	if err := common.JSON.Unmarshal(payload, &intent); err != nil {
 		return nil, fmt.Errorf("failed to deserialize intent: %w", err)
+	}
+	return &intent, nil
+}
+
+// SetTransportManager sets the transport manager for the intent manager
+func (m *Manager) SetTransportManager(transportMgr transport.TransportManager) {
+	m.mu.Lock()
+	defer m.mu.Unlock()
+	m.transportMgr = transportMgr
+	m.logger.Info("Transport manager updated successfully")
+}
+
+// StartIntentSubscription starts subscribing to intent broadcast topics
+func (m *Manager) StartIntentSubscription(ctx context.Context) error {
+	if m.transportMgr == nil {
+		m.logger.Warn("Transport manager not available, skipping intent subscription")
+		return nil
+	}
+
+	// Subscribe to all intent broadcast topics
+	topics := []string{
+		"intent-broadcast.trade",
+		"intent-broadcast.swap",
+		"intent-broadcast.exchange",
+		"intent-broadcast.transfer",
+		"intent-broadcast.general",
+	}
+
+	for _, topic := range topics {
+		_, err := m.transportMgr.SubscribeToTopic(topic, func(msg *transport.TransportMessage) error {
+			return m.handleIncomingIntentBroadcast(ctx, msg)
+		})
+		if err != nil {
+			m.logger.Errorf("Failed to subscribe to topic %s: %v", topic, err)
+			continue
+		}
+		m.logger.Infof("Subscribed to intent broadcast topic: %s", topic)
+	}
+
+	return nil
+}
+
+// handleIncomingIntentBroadcast handles incoming intent broadcast messages
+func (m *Manager) handleIncomingIntentBroadcast(ctx context.Context, msg *transport.TransportMessage) error {
+	if msg.Type != "intent_broadcast" {
+		return nil // Not an intent broadcast message
+	}
+
+	// Deserialize intent from message payload
+	intent, err := deserializeIntentFromTransport(msg.Payload)
+	if err != nil {
+		m.logger.Errorf("Failed to deserialize intent from transport message: %v", err)
+		return err
+	}
+
+	// Check if we already have this intent
+	m.mu.Lock()
+	if _, exists := m.intents[intent.ID]; exists {
+		m.mu.Unlock()
+		m.logger.Debugf("Intent %s already exists, skipping", intent.ID)
+		return nil
+	}
+
+	// Store the received intent
+	intent.Status = common.IntentStatusReceived
+	m.intents[intent.ID] = intent
+	m.mu.Unlock()
+
+	m.logger.Infof("Received intent broadcast: id=%s, type=%s, sender=%s", intent.ID, intent.Type, intent.SenderID)
+
+	// Notify local subscribers
+	m.notifySubscribers(intent)
+
+	return nil
+}
+
+// serializeIntentForTransport serializes an intent for transport
+func serializeIntentForTransport(intent *common.Intent) []byte {
+	// Use JSON serialization for now
+	data, err := common.JSON.Marshal(intent)
+	if err != nil {
+		return nil
+	}
+	return data
+}
+
+// deserializeIntentFromTransport deserializes an intent from transport data
+func deserializeIntentFromTransport(data []byte) (*common.Intent, error) {
+	var intent common.Intent
+	if err := common.JSON.Unmarshal(data, &intent); err != nil {
+		return nil, err
 	}
 	return &intent, nil
 }

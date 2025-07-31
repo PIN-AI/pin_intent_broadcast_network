@@ -29,6 +29,7 @@ const (
 	IntentStatusCreated IntentStatus = iota
 	IntentStatusValidated
 	IntentStatusBroadcasted
+	IntentStatusReceived
 	IntentStatusProcessed
 	IntentStatusMatched
 	IntentStatusCompleted

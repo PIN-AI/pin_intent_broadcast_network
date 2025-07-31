@@ -42,8 +42,33 @@ func CreateIntent(ctx context.Context, req *pb.CreateIntentRequest) (*pb.CreateI
 		intent.Ttl = int64(common.DefaultTTL.Seconds())
 	}
 
-	// TODO: Add validation, signing, and lifecycle management
-	// For now, return the created intent
+	// Store the intent in the intent manager if available
+	if intentManager != nil {
+		// Create intent request for the manager using the same ID
+		createReq := &common.CreateIntentRequest{
+			Type:     intent.Type,
+			Payload:  intent.Payload,
+			SenderID: intent.SenderId,
+			Metadata: intent.Metadata,
+			Priority: intent.Priority,
+			TTL:      intent.Ttl,
+		}
+
+		// Process the intent through the manager
+		response, err := intentManager.CreateIntent(ctx, createReq)
+		if err != nil {
+			return &pb.CreateIntentResponse{
+				Success: false,
+				Message: "Failed to store intent: " + err.Error(),
+			}, err
+		}
+
+		// Use the Intent ID from the manager
+		if response.Intent != nil {
+			intent.Id = response.Intent.ID
+		}
+	}
+
 	_ = startTime // Use startTime to avoid unused variable error
 
 	return &pb.CreateIntentResponse{

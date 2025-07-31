@@ -9,11 +9,15 @@ package main
 import (
 	"github.com/go-kratos/kratos/v2"
 	"github.com/go-kratos/kratos/v2/log"
+	"go.uber.org/zap"
 	"pin_intent_broadcast_network/internal/biz"
+	"pin_intent_broadcast_network/internal/biz/intent"
 	"pin_intent_broadcast_network/internal/conf"
 	"pin_intent_broadcast_network/internal/data"
+	"pin_intent_broadcast_network/internal/p2p"
 	"pin_intent_broadcast_network/internal/server"
 	"pin_intent_broadcast_network/internal/service"
+	"pin_intent_broadcast_network/internal/transport"
 )
 
 import (
@@ -23,7 +27,9 @@ import (
 // Injectors from wire.go:
 
 // wireApp init kratos application.
-func wireApp(confServer *conf.Server, confData *conf.Data, logger log.Logger) (*kratos.App, func(), error) {
+func wireApp(bootstrap *conf.Bootstrap, logger log.Logger) (*kratos.App, func(), error) {
+	confServer := bootstrap.Server
+	confData := bootstrap.Data
 	dataData, cleanup, err := data.NewData(confData, logger)
 	if err != nil {
 		return nil, nil, err
@@ -34,8 +40,22 @@ func wireApp(confServer *conf.Server, confData *conf.Data, logger log.Logger) (*
 	intentService := service.NewIntentService(logger)
 	grpcServer := server.NewGRPCServer(confServer, greeterService, intentService, logger)
 	httpServer := server.NewHTTPServer(confServer, greeterService, intentService, logger)
-	app := newApp(logger, grpcServer, httpServer)
+	zapLogger := NewZapLogger(logger)
+	networkManager := p2p.NewNetworkManager(zapLogger)
+	transportManager := transport.NewTransportManagerWithP2P(networkManager, zapLogger)
+	config := intent.NewConfig()
+	manager := intent.NewManagerWithDefaults(transportManager, config, logger)
+	app := newApp(logger, grpcServer, httpServer, networkManager, transportManager, manager, bootstrap)
 	return app, func() {
 		cleanup()
 	}, nil
+}
+
+// wire.go:
+
+// NewZapLogger creates a zap logger from kratos logger
+func NewZapLogger(logger log.Logger) *zap.Logger {
+
+	zapLogger, _ := zap.NewProduction()
+	return zapLogger
 }

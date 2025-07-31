@@ -16,9 +16,53 @@ func QueryIntents(ctx context.Context, req *pb.QueryIntentsRequest) (*pb.QueryIn
 		}, common.NewIntentError(common.ErrorCodeInvalidFormat, "Query request cannot be nil", "")
 	}
 
-	// TODO: Add actual query logic
-	// For now, return mock data
+	// Use intent manager if available
+	if intentManager != nil {
+		// Create query request for the manager
+		queryReq := &common.QueryIntentsRequest{
+			Type:      req.Type,
+			StartTime: req.StartTime,
+			EndTime:   req.EndTime,
+			Limit:     req.Limit,
+			Offset:    req.Offset,
+		}
 
+		// Query intents from the manager
+		response, err := intentManager.QueryIntents(ctx, queryReq)
+		if err != nil {
+			return &pb.QueryIntentsResponse{
+				Intents: []*pb.Intent{},
+				Total:   0,
+			}, err
+		}
+
+		// Convert common.Intent to pb.Intent
+		pbIntents := make([]*pb.Intent, len(response.Intents))
+		for i, intent := range response.Intents {
+			pbIntents[i] = &pb.Intent{
+				Id:                 intent.ID,
+				Type:               intent.Type,
+				Payload:            intent.Payload,
+				Timestamp:          intent.Timestamp,
+				SenderId:           intent.SenderID,
+				Signature:          intent.Signature,
+				SignatureAlgorithm: intent.SignatureAlgorithm,
+				Metadata:           intent.Metadata,
+				Status:             pb.IntentStatus(intent.Status),
+				Priority:           intent.Priority,
+				Ttl:                intent.TTL,
+				ProcessedAt:        intent.ProcessedAt,
+				Error:              intent.Error,
+			}
+		}
+
+		return &pb.QueryIntentsResponse{
+			Intents: pbIntents,
+			Total:   response.Total,
+		}, nil
+	}
+
+	// Fallback to mock data if intent manager is not available
 	mockIntents := []*pb.Intent{
 		{
 			Id:        "mock-intent-1",

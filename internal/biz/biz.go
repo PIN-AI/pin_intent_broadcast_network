@@ -15,7 +15,11 @@ import (
 var ProviderSet = wire.NewSet(
 	NewGreeterUsecase,
 	NewBusinessLogic,
-	intent.NewManager,
+
+	// Intent module providers
+	intent.ProviderSet,
+
+	// Other module providers
 	validation.NewValidator,
 	security.NewSigner,
 	processing.NewProcessor,
