@@ -90,6 +90,128 @@ func (IntentStatus) EnumDescriptor() ([]byte, []int) {
 	return file_pinai_intent_v1_intent_proto_rawDescGZIP(), []int{0}
 }
 
+// Tag represents a data access requirement with fee and tradability information
+type Tag struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	TagName       string                 `protobuf:"bytes,1,opt,name=tag_name,json=tagName,proto3" json:"tag_name,omitempty"`           // Name of the data tag (e.g., "shopping_history")
+	TagFee        string                 `protobuf:"bytes,2,opt,name=tag_fee,json=tagFee,proto3" json:"tag_fee,omitempty"`              // Access fee in Octa (Aptos native token smallest unit)
+	IsTradable    bool                   `protobuf:"varint,3,opt,name=is_tradable,json=isTradable,proto3" json:"is_tradable,omitempty"` // Whether this tag can be requested by agents
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *Tag) Reset() {
+	*x = Tag{}
+	mi := &file_pinai_intent_v1_intent_proto_msgTypes[0]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *Tag) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*Tag) ProtoMessage() {}
+
+func (x *Tag) ProtoReflect() protoreflect.Message {
+	mi := &file_pinai_intent_v1_intent_proto_msgTypes[0]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use Tag.ProtoReflect.Descriptor instead.
+func (*Tag) Descriptor() ([]byte, []int) {
+	return file_pinai_intent_v1_intent_proto_rawDescGZIP(), []int{0}
+}
+
+func (x *Tag) GetTagName() string {
+	if x != nil {
+		return x.TagName
+	}
+	return ""
+}
+
+func (x *Tag) GetTagFee() string {
+	if x != nil {
+		return x.TagFee
+	}
+	return ""
+}
+
+func (x *Tag) GetIsTradable() bool {
+	if x != nil {
+		return x.IsTradable
+	}
+	return false
+}
+
+// IntentManifest describes the intent task and requirements
+type IntentManifest struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Task          string                 `protobuf:"bytes,1,opt,name=task,proto3" json:"task,omitempty"`                                                                                           // Human readable task description
+	Requirements  map[string]string      `protobuf:"bytes,2,rep,name=requirements,proto3" json:"requirements,omitempty" protobuf_key:"bytes,1,opt,name=key" protobuf_val:"bytes,2,opt,name=value"` // Additional task requirements
+	Context       string                 `protobuf:"bytes,3,opt,name=context,proto3" json:"context,omitempty"`                                                                                     // Optional context information
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *IntentManifest) Reset() {
+	*x = IntentManifest{}
+	mi := &file_pinai_intent_v1_intent_proto_msgTypes[1]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *IntentManifest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*IntentManifest) ProtoMessage() {}
+
+func (x *IntentManifest) ProtoReflect() protoreflect.Message {
+	mi := &file_pinai_intent_v1_intent_proto_msgTypes[1]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use IntentManifest.ProtoReflect.Descriptor instead.
+func (*IntentManifest) Descriptor() ([]byte, []int) {
+	return file_pinai_intent_v1_intent_proto_rawDescGZIP(), []int{1}
+}
+
+func (x *IntentManifest) GetTask() string {
+	if x != nil {
+		return x.Task
+	}
+	return ""
+}
+
+func (x *IntentManifest) GetRequirements() map[string]string {
+	if x != nil {
+		return x.Requirements
+	}
+	return nil
+}
+
+func (x *IntentManifest) GetContext() string {
+	if x != nil {
+		return x.Context
+	}
+	return ""
+}
+
 // Intent message structure
 type Intent struct {
 	state              protoimpl.MessageState `protogen:"open.v1"`
@@ -106,13 +228,17 @@ type Intent struct {
 	Ttl                int64                  `protobuf:"varint,11,opt,name=ttl,proto3" json:"ttl,omitempty"`
 	ProcessedAt        int64                  `protobuf:"varint,12,opt,name=processed_at,json=processedAt,proto3" json:"processed_at,omitempty"`
 	Error              string                 `protobuf:"bytes,13,opt,name=error,proto3" json:"error,omitempty"`
+	UserAddress        string                 `protobuf:"bytes,14,opt,name=user_address,json=userAddress,proto3" json:"user_address,omitempty"`          // User's Aptos address
+	IntentManifest     *IntentManifest        `protobuf:"bytes,15,opt,name=intent_manifest,json=intentManifest,proto3" json:"intent_manifest,omitempty"` // Intent description and requirements
+	RelevantTags       []*Tag                 `protobuf:"bytes,16,rep,name=relevant_tags,json=relevantTags,proto3" json:"relevant_tags,omitempty"`       // List of required data tags
+	MaxDuration        int64                  `protobuf:"varint,17,opt,name=max_duration,json=maxDuration,proto3" json:"max_duration,omitempty"`         // Intent validity duration in seconds
 	unknownFields      protoimpl.UnknownFields
 	sizeCache          protoimpl.SizeCache
 }
 
 func (x *Intent) Reset() {
 	*x = Intent{}
-	mi := &file_pinai_intent_v1_intent_proto_msgTypes[0]
+	mi := &file_pinai_intent_v1_intent_proto_msgTypes[2]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -124,7 +250,7 @@ func (x *Intent) String() string {
 func (*Intent) ProtoMessage() {}
 
 func (x *Intent) ProtoReflect() protoreflect.Message {
-	mi := &file_pinai_intent_v1_intent_proto_msgTypes[0]
+	mi := &file_pinai_intent_v1_intent_proto_msgTypes[2]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -137,7 +263,7 @@ func (x *Intent) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use Intent.ProtoReflect.Descriptor instead.
 func (*Intent) Descriptor() ([]byte, []int) {
-	return file_pinai_intent_v1_intent_proto_rawDescGZIP(), []int{0}
+	return file_pinai_intent_v1_intent_proto_rawDescGZIP(), []int{2}
 }
 
 func (x *Intent) GetId() string {
@@ -231,22 +357,54 @@ func (x *Intent) GetError() string {
 	return ""
 }
 
+func (x *Intent) GetUserAddress() string {
+	if x != nil {
+		return x.UserAddress
+	}
+	return ""
+}
+
+func (x *Intent) GetIntentManifest() *IntentManifest {
+	if x != nil {
+		return x.IntentManifest
+	}
+	return nil
+}
+
+func (x *Intent) GetRelevantTags() []*Tag {
+	if x != nil {
+		return x.RelevantTags
+	}
+	return nil
+}
+
+func (x *Intent) GetMaxDuration() int64 {
+	if x != nil {
+		return x.MaxDuration
+	}
+	return 0
+}
+
 // CreateIntent request message
 type CreateIntentRequest struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	Type          string                 `protobuf:"bytes,1,opt,name=type,proto3" json:"type,omitempty"`
-	Payload       []byte                 `protobuf:"bytes,2,opt,name=payload,proto3" json:"payload,omitempty"`
-	SenderId      string                 `protobuf:"bytes,3,opt,name=sender_id,json=senderId,proto3" json:"sender_id,omitempty"`
-	Metadata      map[string]string      `protobuf:"bytes,4,rep,name=metadata,proto3" json:"metadata,omitempty" protobuf_key:"bytes,1,opt,name=key" protobuf_val:"bytes,2,opt,name=value"`
-	Priority      int32                  `protobuf:"varint,5,opt,name=priority,proto3" json:"priority,omitempty"`
-	Ttl           int64                  `protobuf:"varint,6,opt,name=ttl,proto3" json:"ttl,omitempty"`
-	unknownFields protoimpl.UnknownFields
-	sizeCache     protoimpl.SizeCache
+	state          protoimpl.MessageState `protogen:"open.v1"`
+	Type           string                 `protobuf:"bytes,1,opt,name=type,proto3" json:"type,omitempty"`
+	Payload        []byte                 `protobuf:"bytes,2,opt,name=payload,proto3" json:"payload,omitempty"`
+	SenderId       string                 `protobuf:"bytes,3,opt,name=sender_id,json=senderId,proto3" json:"sender_id,omitempty"`
+	Metadata       map[string]string      `protobuf:"bytes,4,rep,name=metadata,proto3" json:"metadata,omitempty" protobuf_key:"bytes,1,opt,name=key" protobuf_val:"bytes,2,opt,name=value"`
+	Priority       int32                  `protobuf:"varint,5,opt,name=priority,proto3" json:"priority,omitempty"`
+	Ttl            int64                  `protobuf:"varint,6,opt,name=ttl,proto3" json:"ttl,omitempty"`
+	UserAddress    string                 `protobuf:"bytes,7,opt,name=user_address,json=userAddress,proto3" json:"user_address,omitempty"`          // User's Aptos address
+	IntentManifest *IntentManifest        `protobuf:"bytes,8,opt,name=intent_manifest,json=intentManifest,proto3" json:"intent_manifest,omitempty"` // Intent description and requirements
+	RelevantTags   []*Tag                 `protobuf:"bytes,9,rep,name=relevant_tags,json=relevantTags,proto3" json:"relevant_tags,omitempty"`       // List of required data tags
+	MaxDuration    int64                  `protobuf:"varint,10,opt,name=max_duration,json=maxDuration,proto3" json:"max_duration,omitempty"`        // Intent validity duration in seconds
+	unknownFields  protoimpl.UnknownFields
+	sizeCache      protoimpl.SizeCache
 }
 
 func (x *CreateIntentRequest) Reset() {
 	*x = CreateIntentRequest{}
-	mi := &file_pinai_intent_v1_intent_proto_msgTypes[1]
+	mi := &file_pinai_intent_v1_intent_proto_msgTypes[3]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -258,7 +416,7 @@ func (x *CreateIntentRequest) String() string {
 func (*CreateIntentRequest) ProtoMessage() {}
 
 func (x *CreateIntentRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_pinai_intent_v1_intent_proto_msgTypes[1]
+	mi := &file_pinai_intent_v1_intent_proto_msgTypes[3]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -271,7 +429,7 @@ func (x *CreateIntentRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use CreateIntentRequest.ProtoReflect.Descriptor instead.
 func (*CreateIntentRequest) Descriptor() ([]byte, []int) {
-	return file_pinai_intent_v1_intent_proto_rawDescGZIP(), []int{1}
+	return file_pinai_intent_v1_intent_proto_rawDescGZIP(), []int{3}
 }
 
 func (x *CreateIntentRequest) GetType() string {
@@ -316,6 +474,34 @@ func (x *CreateIntentRequest) GetTtl() int64 {
 	return 0
 }
 
+func (x *CreateIntentRequest) GetUserAddress() string {
+	if x != nil {
+		return x.UserAddress
+	}
+	return ""
+}
+
+func (x *CreateIntentRequest) GetIntentManifest() *IntentManifest {
+	if x != nil {
+		return x.IntentManifest
+	}
+	return nil
+}
+
+func (x *CreateIntentRequest) GetRelevantTags() []*Tag {
+	if x != nil {
+		return x.RelevantTags
+	}
+	return nil
+}
+
+func (x *CreateIntentRequest) GetMaxDuration() int64 {
+	if x != nil {
+		return x.MaxDuration
+	}
+	return 0
+}
+
 // CreateIntent response message
 type CreateIntentResponse struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
@@ -328,7 +514,7 @@ type CreateIntentResponse struct {
 
 func (x *CreateIntentResponse) Reset() {
 	*x = CreateIntentResponse{}
-	mi := &file_pinai_intent_v1_intent_proto_msgTypes[2]
+	mi := &file_pinai_intent_v1_intent_proto_msgTypes[4]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -340,7 +526,7 @@ func (x *CreateIntentResponse) String() string {
 func (*CreateIntentResponse) ProtoMessage() {}
 
 func (x *CreateIntentResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_pinai_intent_v1_intent_proto_msgTypes[2]
+	mi := &file_pinai_intent_v1_intent_proto_msgTypes[4]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -353,7 +539,7 @@ func (x *CreateIntentResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use CreateIntentResponse.ProtoReflect.Descriptor instead.
 func (*CreateIntentResponse) Descriptor() ([]byte, []int) {
-	return file_pinai_intent_v1_intent_proto_rawDescGZIP(), []int{2}
+	return file_pinai_intent_v1_intent_proto_rawDescGZIP(), []int{4}
 }
 
 func (x *CreateIntentResponse) GetIntent() *Intent {
@@ -388,7 +574,7 @@ type BroadcastIntentRequest struct {
 
 func (x *BroadcastIntentRequest) Reset() {
 	*x = BroadcastIntentRequest{}
-	mi := &file_pinai_intent_v1_intent_proto_msgTypes[3]
+	mi := &file_pinai_intent_v1_intent_proto_msgTypes[5]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -400,7 +586,7 @@ func (x *BroadcastIntentRequest) String() string {
 func (*BroadcastIntentRequest) ProtoMessage() {}
 
 func (x *BroadcastIntentRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_pinai_intent_v1_intent_proto_msgTypes[3]
+	mi := &file_pinai_intent_v1_intent_proto_msgTypes[5]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -413,7 +599,7 @@ func (x *BroadcastIntentRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use BroadcastIntentRequest.ProtoReflect.Descriptor instead.
 func (*BroadcastIntentRequest) Descriptor() ([]byte, []int) {
-	return file_pinai_intent_v1_intent_proto_rawDescGZIP(), []int{3}
+	return file_pinai_intent_v1_intent_proto_rawDescGZIP(), []int{5}
 }
 
 func (x *BroadcastIntentRequest) GetIntentId() string {
@@ -443,7 +629,7 @@ type BroadcastIntentResponse struct {
 
 func (x *BroadcastIntentResponse) Reset() {
 	*x = BroadcastIntentResponse{}
-	mi := &file_pinai_intent_v1_intent_proto_msgTypes[4]
+	mi := &file_pinai_intent_v1_intent_proto_msgTypes[6]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -455,7 +641,7 @@ func (x *BroadcastIntentResponse) String() string {
 func (*BroadcastIntentResponse) ProtoMessage() {}
 
 func (x *BroadcastIntentResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_pinai_intent_v1_intent_proto_msgTypes[4]
+	mi := &file_pinai_intent_v1_intent_proto_msgTypes[6]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -468,7 +654,7 @@ func (x *BroadcastIntentResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use BroadcastIntentResponse.ProtoReflect.Descriptor instead.
 func (*BroadcastIntentResponse) Descriptor() ([]byte, []int) {
-	return file_pinai_intent_v1_intent_proto_rawDescGZIP(), []int{4}
+	return file_pinai_intent_v1_intent_proto_rawDescGZIP(), []int{6}
 }
 
 func (x *BroadcastIntentResponse) GetSuccess() bool {
@@ -514,7 +700,7 @@ type QueryIntentsRequest struct {
 
 func (x *QueryIntentsRequest) Reset() {
 	*x = QueryIntentsRequest{}
-	mi := &file_pinai_intent_v1_intent_proto_msgTypes[5]
+	mi := &file_pinai_intent_v1_intent_proto_msgTypes[7]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -526,7 +712,7 @@ func (x *QueryIntentsRequest) String() string {
 func (*QueryIntentsRequest) ProtoMessage() {}
 
 func (x *QueryIntentsRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_pinai_intent_v1_intent_proto_msgTypes[5]
+	mi := &file_pinai_intent_v1_intent_proto_msgTypes[7]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -539,7 +725,7 @@ func (x *QueryIntentsRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use QueryIntentsRequest.ProtoReflect.Descriptor instead.
 func (*QueryIntentsRequest) Descriptor() ([]byte, []int) {
-	return file_pinai_intent_v1_intent_proto_rawDescGZIP(), []int{5}
+	return file_pinai_intent_v1_intent_proto_rawDescGZIP(), []int{7}
 }
 
 func (x *QueryIntentsRequest) GetType() string {
@@ -595,7 +781,7 @@ type QueryIntentsResponse struct {
 
 func (x *QueryIntentsResponse) Reset() {
 	*x = QueryIntentsResponse{}
-	mi := &file_pinai_intent_v1_intent_proto_msgTypes[6]
+	mi := &file_pinai_intent_v1_intent_proto_msgTypes[8]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -607,7 +793,7 @@ func (x *QueryIntentsResponse) String() string {
 func (*QueryIntentsResponse) ProtoMessage() {}
 
 func (x *QueryIntentsResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_pinai_intent_v1_intent_proto_msgTypes[6]
+	mi := &file_pinai_intent_v1_intent_proto_msgTypes[8]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -620,7 +806,7 @@ func (x *QueryIntentsResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use QueryIntentsResponse.ProtoReflect.Descriptor instead.
 func (*QueryIntentsResponse) Descriptor() ([]byte, []int) {
-	return file_pinai_intent_v1_intent_proto_rawDescGZIP(), []int{6}
+	return file_pinai_intent_v1_intent_proto_rawDescGZIP(), []int{8}
 }
 
 func (x *QueryIntentsResponse) GetIntents() []*Intent {
@@ -647,7 +833,7 @@ type GetIntentStatusRequest struct {
 
 func (x *GetIntentStatusRequest) Reset() {
 	*x = GetIntentStatusRequest{}
-	mi := &file_pinai_intent_v1_intent_proto_msgTypes[7]
+	mi := &file_pinai_intent_v1_intent_proto_msgTypes[9]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -659,7 +845,7 @@ func (x *GetIntentStatusRequest) String() string {
 func (*GetIntentStatusRequest) ProtoMessage() {}
 
 func (x *GetIntentStatusRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_pinai_intent_v1_intent_proto_msgTypes[7]
+	mi := &file_pinai_intent_v1_intent_proto_msgTypes[9]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -672,7 +858,7 @@ func (x *GetIntentStatusRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GetIntentStatusRequest.ProtoReflect.Descriptor instead.
 func (*GetIntentStatusRequest) Descriptor() ([]byte, []int) {
-	return file_pinai_intent_v1_intent_proto_rawDescGZIP(), []int{7}
+	return file_pinai_intent_v1_intent_proto_rawDescGZIP(), []int{9}
 }
 
 func (x *GetIntentStatusRequest) GetIntentId() string {
@@ -692,7 +878,7 @@ type GetIntentStatusResponse struct {
 
 func (x *GetIntentStatusResponse) Reset() {
 	*x = GetIntentStatusResponse{}
-	mi := &file_pinai_intent_v1_intent_proto_msgTypes[8]
+	mi := &file_pinai_intent_v1_intent_proto_msgTypes[10]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -704,7 +890,7 @@ func (x *GetIntentStatusResponse) String() string {
 func (*GetIntentStatusResponse) ProtoMessage() {}
 
 func (x *GetIntentStatusResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_pinai_intent_v1_intent_proto_msgTypes[8]
+	mi := &file_pinai_intent_v1_intent_proto_msgTypes[10]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -717,7 +903,7 @@ func (x *GetIntentStatusResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GetIntentStatusResponse.ProtoReflect.Descriptor instead.
 func (*GetIntentStatusResponse) Descriptor() ([]byte, []int) {
-	return file_pinai_intent_v1_intent_proto_rawDescGZIP(), []int{8}
+	return file_pinai_intent_v1_intent_proto_rawDescGZIP(), []int{10}
 }
 
 func (x *GetIntentStatusResponse) GetIntent() *Intent {
@@ -731,7 +917,19 @@ var File_pinai_intent_v1_intent_proto protoreflect.FileDescriptor
 
 const file_pinai_intent_v1_intent_proto_rawDesc = "" +
 	"\n" +
-	"\x1cpinai_intent/v1/intent.proto\x12\x13api.pinai_intent.v1\x1a\x1cgoogle/api/annotations.proto\"\xf6\x03\n" +
+	"\x1cpinai_intent/v1/intent.proto\x12\x13api.pinai_intent.v1\x1a\x1cgoogle/api/annotations.proto\"Z\n" +
+	"\x03Tag\x12\x19\n" +
+	"\btag_name\x18\x01 \x01(\tR\atagName\x12\x17\n" +
+	"\atag_fee\x18\x02 \x01(\tR\x06tagFee\x12\x1f\n" +
+	"\vis_tradable\x18\x03 \x01(\bR\n" +
+	"isTradable\"\xda\x01\n" +
+	"\x0eIntentManifest\x12\x12\n" +
+	"\x04task\x18\x01 \x01(\tR\x04task\x12Y\n" +
+	"\frequirements\x18\x02 \x03(\v25.api.pinai_intent.v1.IntentManifest.RequirementsEntryR\frequirements\x12\x18\n" +
+	"\acontext\x18\x03 \x01(\tR\acontext\x1a?\n" +
+	"\x11RequirementsEntry\x12\x10\n" +
+	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
+	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01\"\xc9\x05\n" +
 	"\x06Intent\x12\x0e\n" +
 	"\x02id\x18\x01 \x01(\tR\x02id\x12\x12\n" +
 	"\x04type\x18\x02 \x01(\tR\x04type\x12\x18\n" +
@@ -746,17 +944,26 @@ const file_pinai_intent_v1_intent_proto_rawDesc = "" +
 	" \x01(\x05R\bpriority\x12\x10\n" +
 	"\x03ttl\x18\v \x01(\x03R\x03ttl\x12!\n" +
 	"\fprocessed_at\x18\f \x01(\x03R\vprocessedAt\x12\x14\n" +
-	"\x05error\x18\r \x01(\tR\x05error\x1a;\n" +
+	"\x05error\x18\r \x01(\tR\x05error\x12!\n" +
+	"\fuser_address\x18\x0e \x01(\tR\vuserAddress\x12L\n" +
+	"\x0fintent_manifest\x18\x0f \x01(\v2#.api.pinai_intent.v1.IntentManifestR\x0eintentManifest\x12=\n" +
+	"\rrelevant_tags\x18\x10 \x03(\v2\x18.api.pinai_intent.v1.TagR\frelevantTags\x12!\n" +
+	"\fmax_duration\x18\x11 \x01(\x03R\vmaxDuration\x1a;\n" +
 	"\rMetadataEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
-	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01\"\x9f\x02\n" +
+	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01\"\xf2\x03\n" +
 	"\x13CreateIntentRequest\x12\x12\n" +
 	"\x04type\x18\x01 \x01(\tR\x04type\x12\x18\n" +
 	"\apayload\x18\x02 \x01(\fR\apayload\x12\x1b\n" +
 	"\tsender_id\x18\x03 \x01(\tR\bsenderId\x12R\n" +
 	"\bmetadata\x18\x04 \x03(\v26.api.pinai_intent.v1.CreateIntentRequest.MetadataEntryR\bmetadata\x12\x1a\n" +
 	"\bpriority\x18\x05 \x01(\x05R\bpriority\x12\x10\n" +
-	"\x03ttl\x18\x06 \x01(\x03R\x03ttl\x1a;\n" +
+	"\x03ttl\x18\x06 \x01(\x03R\x03ttl\x12!\n" +
+	"\fuser_address\x18\a \x01(\tR\vuserAddress\x12L\n" +
+	"\x0fintent_manifest\x18\b \x01(\v2#.api.pinai_intent.v1.IntentManifestR\x0eintentManifest\x12=\n" +
+	"\rrelevant_tags\x18\t \x03(\v2\x18.api.pinai_intent.v1.TagR\frelevantTags\x12!\n" +
+	"\fmax_duration\x18\n" +
+	" \x01(\x03R\vmaxDuration\x1a;\n" +
 	"\rMetadataEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
 	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01\"\x7f\n" +
@@ -816,42 +1023,50 @@ func file_pinai_intent_v1_intent_proto_rawDescGZIP() []byte {
 }
 
 var file_pinai_intent_v1_intent_proto_enumTypes = make([]protoimpl.EnumInfo, 1)
-var file_pinai_intent_v1_intent_proto_msgTypes = make([]protoimpl.MessageInfo, 11)
+var file_pinai_intent_v1_intent_proto_msgTypes = make([]protoimpl.MessageInfo, 14)
 var file_pinai_intent_v1_intent_proto_goTypes = []any{
 	(IntentStatus)(0),               // 0: api.pinai_intent.v1.IntentStatus
-	(*Intent)(nil),                  // 1: api.pinai_intent.v1.Intent
-	(*CreateIntentRequest)(nil),     // 2: api.pinai_intent.v1.CreateIntentRequest
-	(*CreateIntentResponse)(nil),    // 3: api.pinai_intent.v1.CreateIntentResponse
-	(*BroadcastIntentRequest)(nil),  // 4: api.pinai_intent.v1.BroadcastIntentRequest
-	(*BroadcastIntentResponse)(nil), // 5: api.pinai_intent.v1.BroadcastIntentResponse
-	(*QueryIntentsRequest)(nil),     // 6: api.pinai_intent.v1.QueryIntentsRequest
-	(*QueryIntentsResponse)(nil),    // 7: api.pinai_intent.v1.QueryIntentsResponse
-	(*GetIntentStatusRequest)(nil),  // 8: api.pinai_intent.v1.GetIntentStatusRequest
-	(*GetIntentStatusResponse)(nil), // 9: api.pinai_intent.v1.GetIntentStatusResponse
-	nil,                             // 10: api.pinai_intent.v1.Intent.MetadataEntry
-	nil,                             // 11: api.pinai_intent.v1.CreateIntentRequest.MetadataEntry
+	(*Tag)(nil),                     // 1: api.pinai_intent.v1.Tag
+	(*IntentManifest)(nil),          // 2: api.pinai_intent.v1.IntentManifest
+	(*Intent)(nil),                  // 3: api.pinai_intent.v1.Intent
+	(*CreateIntentRequest)(nil),     // 4: api.pinai_intent.v1.CreateIntentRequest
+	(*CreateIntentResponse)(nil),    // 5: api.pinai_intent.v1.CreateIntentResponse
+	(*BroadcastIntentRequest)(nil),  // 6: api.pinai_intent.v1.BroadcastIntentRequest
+	(*BroadcastIntentResponse)(nil), // 7: api.pinai_intent.v1.BroadcastIntentResponse
+	(*QueryIntentsRequest)(nil),     // 8: api.pinai_intent.v1.QueryIntentsRequest
+	(*QueryIntentsResponse)(nil),    // 9: api.pinai_intent.v1.QueryIntentsResponse
+	(*GetIntentStatusRequest)(nil),  // 10: api.pinai_intent.v1.GetIntentStatusRequest
+	(*GetIntentStatusResponse)(nil), // 11: api.pinai_intent.v1.GetIntentStatusResponse
+	nil,                             // 12: api.pinai_intent.v1.IntentManifest.RequirementsEntry
+	nil,                             // 13: api.pinai_intent.v1.Intent.MetadataEntry
+	nil,                             // 14: api.pinai_intent.v1.CreateIntentRequest.MetadataEntry
 }
 var file_pinai_intent_v1_intent_proto_depIdxs = []int32{
-	10, // 0: api.pinai_intent.v1.Intent.metadata:type_name -> api.pinai_intent.v1.Intent.MetadataEntry
-	0,  // 1: api.pinai_intent.v1.Intent.status:type_name -> api.pinai_intent.v1.IntentStatus
-	11, // 2: api.pinai_intent.v1.CreateIntentRequest.metadata:type_name -> api.pinai_intent.v1.CreateIntentRequest.MetadataEntry
-	1,  // 3: api.pinai_intent.v1.CreateIntentResponse.intent:type_name -> api.pinai_intent.v1.Intent
-	0,  // 4: api.pinai_intent.v1.QueryIntentsRequest.status:type_name -> api.pinai_intent.v1.IntentStatus
-	1,  // 5: api.pinai_intent.v1.QueryIntentsResponse.intents:type_name -> api.pinai_intent.v1.Intent
-	1,  // 6: api.pinai_intent.v1.GetIntentStatusResponse.intent:type_name -> api.pinai_intent.v1.Intent
-	2,  // 7: api.pinai_intent.v1.IntentService.CreateIntent:input_type -> api.pinai_intent.v1.CreateIntentRequest
-	4,  // 8: api.pinai_intent.v1.IntentService.BroadcastIntent:input_type -> api.pinai_intent.v1.BroadcastIntentRequest
-	6,  // 9: api.pinai_intent.v1.IntentService.QueryIntents:input_type -> api.pinai_intent.v1.QueryIntentsRequest
-	8,  // 10: api.pinai_intent.v1.IntentService.GetIntentStatus:input_type -> api.pinai_intent.v1.GetIntentStatusRequest
-	3,  // 11: api.pinai_intent.v1.IntentService.CreateIntent:output_type -> api.pinai_intent.v1.CreateIntentResponse
-	5,  // 12: api.pinai_intent.v1.IntentService.BroadcastIntent:output_type -> api.pinai_intent.v1.BroadcastIntentResponse
-	7,  // 13: api.pinai_intent.v1.IntentService.QueryIntents:output_type -> api.pinai_intent.v1.QueryIntentsResponse
-	9,  // 14: api.pinai_intent.v1.IntentService.GetIntentStatus:output_type -> api.pinai_intent.v1.GetIntentStatusResponse
-	11, // [11:15] is the sub-list for method output_type
-	7,  // [7:11] is the sub-list for method input_type
-	7,  // [7:7] is the sub-list for extension type_name
-	7,  // [7:7] is the sub-list for extension extendee
-	0,  // [0:7] is the sub-list for field type_name
+	12, // 0: api.pinai_intent.v1.IntentManifest.requirements:type_name -> api.pinai_intent.v1.IntentManifest.RequirementsEntry
+	13, // 1: api.pinai_intent.v1.Intent.metadata:type_name -> api.pinai_intent.v1.Intent.MetadataEntry
+	0,  // 2: api.pinai_intent.v1.Intent.status:type_name -> api.pinai_intent.v1.IntentStatus
+	2,  // 3: api.pinai_intent.v1.Intent.intent_manifest:type_name -> api.pinai_intent.v1.IntentManifest
+	1,  // 4: api.pinai_intent.v1.Intent.relevant_tags:type_name -> api.pinai_intent.v1.Tag
+	14, // 5: api.pinai_intent.v1.CreateIntentRequest.metadata:type_name -> api.pinai_intent.v1.CreateIntentRequest.MetadataEntry
+	2,  // 6: api.pinai_intent.v1.CreateIntentRequest.intent_manifest:type_name -> api.pinai_intent.v1.IntentManifest
+	1,  // 7: api.pinai_intent.v1.CreateIntentRequest.relevant_tags:type_name -> api.pinai_intent.v1.Tag
+	3,  // 8: api.pinai_intent.v1.CreateIntentResponse.intent:type_name -> api.pinai_intent.v1.Intent
+	0,  // 9: api.pinai_intent.v1.QueryIntentsRequest.status:type_name -> api.pinai_intent.v1.IntentStatus
+	3,  // 10: api.pinai_intent.v1.QueryIntentsResponse.intents:type_name -> api.pinai_intent.v1.Intent
+	3,  // 11: api.pinai_intent.v1.GetIntentStatusResponse.intent:type_name -> api.pinai_intent.v1.Intent
+	4,  // 12: api.pinai_intent.v1.IntentService.CreateIntent:input_type -> api.pinai_intent.v1.CreateIntentRequest
+	6,  // 13: api.pinai_intent.v1.IntentService.BroadcastIntent:input_type -> api.pinai_intent.v1.BroadcastIntentRequest
+	8,  // 14: api.pinai_intent.v1.IntentService.QueryIntents:input_type -> api.pinai_intent.v1.QueryIntentsRequest
+	10, // 15: api.pinai_intent.v1.IntentService.GetIntentStatus:input_type -> api.pinai_intent.v1.GetIntentStatusRequest
+	5,  // 16: api.pinai_intent.v1.IntentService.CreateIntent:output_type -> api.pinai_intent.v1.CreateIntentResponse
+	7,  // 17: api.pinai_intent.v1.IntentService.BroadcastIntent:output_type -> api.pinai_intent.v1.BroadcastIntentResponse
+	9,  // 18: api.pinai_intent.v1.IntentService.QueryIntents:output_type -> api.pinai_intent.v1.QueryIntentsResponse
+	11, // 19: api.pinai_intent.v1.IntentService.GetIntentStatus:output_type -> api.pinai_intent.v1.GetIntentStatusResponse
+	16, // [16:20] is the sub-list for method output_type
+	12, // [12:16] is the sub-list for method input_type
+	12, // [12:12] is the sub-list for extension type_name
+	12, // [12:12] is the sub-list for extension extendee
+	0,  // [0:12] is the sub-list for field type_name
 }
 
 func init() { file_pinai_intent_v1_intent_proto_init() }
@@ -865,7 +1080,7 @@ func file_pinai_intent_v1_intent_proto_init() {
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_pinai_intent_v1_intent_proto_rawDesc), len(file_pinai_intent_v1_intent_proto_rawDesc)),
 			NumEnums:      1,
-			NumMessages:   11,
+			NumMessages:   14,
 			NumExtensions: 0,
 			NumServices:   1,
 		},

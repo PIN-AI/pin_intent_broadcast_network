@@ -222,12 +222,21 @@ parse_intent_data() {
     local json_data="$1"
     
     # 使用简单的文本处理来解析JSON（避免依赖jq）
-    echo "$json_data" | grep -o '"intents":\[.*\]' | sed 's/"intents":\[//' | sed 's/\]$//' | tr '},{' '\n' | while IFS= read -r intent_line; do
+    # 首先提取intents数组
+    local intents_array=$(echo "$json_data" | grep -o '"intents":\[.*\]' | sed 's/"intents":\[//' | sed 's/\]$//')
+    
+    # 如果没有找到intents数组，尝试其他格式
+    if [ -z "$intents_array" ]; then
+        return
+    fi
+    
+    # 分割每个intent对象（更精确的方法）
+    echo "$intents_array" | sed 's/}, *{/}\n{/g' | while IFS= read -r intent_line; do
         if [ -n "$intent_line" ]; then
             # 清理JSON格式
             intent_line=$(echo "$intent_line" | sed 's/^{//' | sed 's/}$//')
             
-            # 提取字段
+            # 提取字段（注意字段名的正确性）
             local id=$(echo "$intent_line" | grep -o '"id":"[^"]*"' | cut -d'"' -f4)
             local type=$(echo "$intent_line" | grep -o '"type":"[^"]*"' | cut -d'"' -f4)
             local sender_id=$(echo "$intent_line" | grep -o '"senderId":"[^"]*"' | cut -d'"' -f4)
@@ -236,8 +245,11 @@ parse_intent_data() {
             local priority=$(echo "$intent_line" | grep -o '"priority":[0-9]*' | cut -d':' -f2)
             
             # 设置默认值
+            id=${id:-"unknown"}
+            type=${type:-"unknown"}
+            sender_id=${sender_id:-"unknown"}
             timestamp=${timestamp:-0}
-            status=${status:-0}
+            status=${status:-"unknown"}
             priority=${priority:-0}
             
             # 输出解析结果
@@ -250,7 +262,14 @@ parse_intent_data() {
 format_timestamp() {
     local timestamp=$1
     if [ -n "$timestamp" ] && [ "$timestamp" -gt 0 ]; then
-        date -d "@$timestamp" '+%Y-%m-%d %H:%M:%S' 2>/dev/null || echo "Invalid time"
+        # 在macOS上使用不同的date命令格式
+        if [[ "$OSTYPE" == "darwin"* ]]; then
+            # macOS使用 -r 参数
+            date -r "$timestamp" '+%Y-%m-%d %H:%M:%S' 2>/dev/null || echo "Invalid time"
+        else
+            # Linux使用 -d 参数
+            date -d "@$timestamp" '+%Y-%m-%d %H:%M:%S' 2>/dev/null || echo "Invalid time"
+        fi
     else
         echo "Unknown"
     fi
@@ -260,6 +279,15 @@ format_timestamp() {
 format_status() {
     local status=$1
     case $status in
+        "INTENT_STATUS_CREATED") echo "已创建" ;;
+        "INTENT_STATUS_VALIDATED") echo "已验证" ;;
+        "INTENT_STATUS_BROADCASTED") echo "已广播" ;;
+        "INTENT_STATUS_RECEIVED") echo "已接收" ;;
+        "INTENT_STATUS_PROCESSED") echo "已处理" ;;
+        "INTENT_STATUS_MATCHED") echo "已匹配" ;;
+        "INTENT_STATUS_COMPLETED") echo "已完成" ;;
+        "INTENT_STATUS_FAILED") echo "已失败" ;;
+        "INTENT_STATUS_EXPIRED") echo "已过期" ;;
         0) echo "待处理" ;;
         1) echo "处理中" ;;
         2) echo "已完成" ;;

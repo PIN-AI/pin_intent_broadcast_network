@@ -308,7 +308,7 @@ generate_test_report() {
 
 ## 测试概览
 
-- **测试时间**: $(date -d "@$TEST_START_TIME" '+%Y-%m-%d %H:%M:%S') - $(date -d "@$TEST_END_TIME" '+%Y-%m-%d %H:%M:%S')
+- **测试时间**: $(if [[ "$OSTYPE" == "darwin"* ]]; then date -r "$TEST_START_TIME" '+%Y-%m-%d %H:%M:%S'; else date -d "@$TEST_START_TIME" '+%Y-%m-%d %H:%M:%S'; fi) - $(if [[ "$OSTYPE" == "darwin"* ]]; then date -r "$TEST_END_TIME" '+%Y-%m-%d %H:%M:%S'; else date -d "@$TEST_END_TIME" '+%Y-%m-%d %H:%M:%S'; fi)
 - **测试时长**: $((TEST_END_TIME - TEST_START_TIME)) 秒
 - **节点数量**: $NODE_COUNT
 - **报告生成时间**: $(date '+%Y-%m-%d %H:%M:%S')
