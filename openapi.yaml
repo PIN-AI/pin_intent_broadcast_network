@@ -163,6 +163,16 @@ components:
                     format: int32
                 ttl:
                     type: string
+                userAddress:
+                    type: string
+                intentManifest:
+                    $ref: '#/components/schemas/api.pinai_intent.v1.IntentManifest'
+                relevantTags:
+                    type: array
+                    items:
+                        $ref: '#/components/schemas/api.pinai_intent.v1.Tag'
+                maxDuration:
+                    type: string
             description: CreateIntent request message
         api.pinai_intent.v1.CreateIntentResponse:
             type: object
@@ -215,7 +225,29 @@ components:
                     type: string
                 error:
                     type: string
+                userAddress:
+                    type: string
+                intentManifest:
+                    $ref: '#/components/schemas/api.pinai_intent.v1.IntentManifest'
+                relevantTags:
+                    type: array
+                    items:
+                        $ref: '#/components/schemas/api.pinai_intent.v1.Tag'
+                maxDuration:
+                    type: string
             description: Intent message structure
+        api.pinai_intent.v1.IntentManifest:
+            type: object
+            properties:
+                task:
+                    type: string
+                requirements:
+                    type: object
+                    additionalProperties:
+                        type: string
+                context:
+                    type: string
+            description: IntentManifest describes the intent task and requirements
         api.pinai_intent.v1.QueryIntentsResponse:
             type: object
             properties:
@@ -227,6 +259,16 @@ components:
                     type: integer
                     format: int32
             description: QueryIntents response message
+        api.pinai_intent.v1.Tag:
+            type: object
+            properties:
+                tagName:
+                    type: string
+                tagFee:
+                    type: string
+                isTradable:
+                    type: boolean
+            description: Tag represents a data access requirement with fee and tradability information
         helloworld.v1.HelloReply:
             type: object
             properties:

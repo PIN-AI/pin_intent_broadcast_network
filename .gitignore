@@ -25,6 +25,7 @@ go.work
 # Debug
 README.dev.md
 pin_intent_broadcast_network
+*_test.go
 
 # OS General
 Thumbs.db
