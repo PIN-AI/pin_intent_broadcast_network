@@ -14,12 +14,14 @@ import (
 // Validator implements the IntentValidator interface
 // It coordinates all validation operations including format, business rules, and permissions
 type Validator struct {
-	formatRules   []common.FormatRule
-	businessRules []common.BusinessRule
-	permissionMgr PermissionManager
-	config        *Config
-	logger        *log.Helper
-	mu            sync.RWMutex
+	formatRules       []common.FormatRule
+	businessRules     []common.BusinessRule
+	permissionMgr     PermissionManager
+	tagValidator      common.TagValidator
+	manifestValidator common.ManifestValidator
+	config            *Config
+	logger            *log.Helper
+	mu                sync.RWMutex
 }
 
 // Config holds configuration for the validator
@@ -33,11 +35,17 @@ type Config struct {
 
 // NewValidator creates a new validator instance
 func NewValidator(config *Config, logger log.Logger) *Validator {
+	policyProvider := common.NewMVPDataVaultPolicyProvider()
+	tagValidator := common.NewDefaultTagValidator(policyProvider)
+	manifestValidator := common.NewDefaultManifestValidator()
+
 	return &Validator{
-		formatRules:   make([]common.FormatRule, 0),
-		businessRules: make([]common.BusinessRule, 0),
-		config:        config,
-		logger:        log.NewHelper(logger),
+		formatRules:       make([]common.FormatRule, 0),
+		businessRules:     make([]common.BusinessRule, 0),
+		tagValidator:      tagValidator,
+		manifestValidator: manifestValidator,
+		config:            config,
+		logger:            log.NewHelper(logger),
 	}
 }
 
@@ -61,7 +69,25 @@ func (v *Validator) ValidateIntent(ctx context.Context, intent *common.Intent) e
 		return common.WrapError(err, common.ErrorCodeValidationFailed, "Business rules validation failed")
 	}
 
-	// 3. Permission validation (if sender ID is available)
+	// 3. Tag validation
+	if err := v.ValidateTags(ctx, intent.RelevantTags); err != nil {
+		v.logger.Errorf("Tag validation failed for intent %s: %v", intent.ID, err)
+		return common.WrapError(err, common.ErrorCodeValidationFailed, "Tag validation failed")
+	}
+
+	// 4. Manifest validation
+	if err := v.ValidateManifest(ctx, intent.IntentManifest); err != nil {
+		v.logger.Errorf("Manifest validation failed for intent %s: %v", intent.ID, err)
+		return common.WrapError(err, common.ErrorCodeValidationFailed, "Manifest validation failed")
+	}
+
+	// 5. User address validation
+	if err := v.ValidateUserAddress(intent.UserAddress); err != nil {
+		v.logger.Errorf("User address validation failed for intent %s: %v", intent.ID, err)
+		return common.WrapError(err, common.ErrorCodeValidationFailed, "User address validation failed")
+	}
+
+	// 6. Permission validation (if sender ID is available)
 	if intent.SenderID != "" {
 		if err := v.ValidatePermissions(intent, peer.ID(intent.SenderID)); err != nil {
 			v.logger.Errorf("Permission validation failed for intent %s: %v", intent.ID, err)
@@ -253,6 +279,50 @@ func (v *Validator) sortBusinessRulesByPriority() {
 	}
 }
 
+// ValidateTags validates a list of tags
+func (v *Validator) ValidateTags(ctx context.Context, tags []common.Tag) error {
+	if v.tagValidator == nil {
+		return nil // No tag validator configured
+	}
+	return v.tagValidator.ValidateTags(ctx, tags)
+}
+
+// ValidateManifest validates an intent manifest
+func (v *Validator) ValidateManifest(ctx context.Context, manifest *common.IntentManifest) error {
+	if v.manifestValidator == nil {
+		return nil // No manifest validator configured
+	}
+	return v.manifestValidator.ValidateManifest(ctx, manifest)
+}
+
+// ValidateUserAddress validates a user address format
+func (v *Validator) ValidateUserAddress(userAddress string) error {
+	if userAddress == "" {
+		return nil // User address is optional
+	}
+
+	// Basic Aptos address format validation
+	if len(userAddress) < 3 || !common.Strings.HasPrefix(userAddress, "0x") {
+		return common.NewValidationError("user_address", userAddress, "Invalid Aptos address format")
+	}
+
+	// Check hex characters after 0x prefix
+	hexPart := userAddress[2:]
+	if len(hexPart) == 0 || len(hexPart) > 64 {
+		return common.NewValidationError("user_address", userAddress, "Invalid Aptos address length")
+	}
+
+	for _, char := range hexPart {
+		if !((char >= '0' && char <= '9') ||
+			(char >= 'a' && char <= 'f') ||
+			(char >= 'A' && char <= 'F')) {
+			return common.NewValidationError("user_address", userAddress, "Invalid hex characters in address")
+		}
+	}
+
+	return nil
+}
+
 // GetValidationStats returns validation statistics
 func (v *Validator) GetValidationStats() map[string]interface{} {
 	v.mu.RLock()
@@ -265,5 +335,7 @@ func (v *Validator) GetValidationStats() map[string]interface{} {
 		"max_payload_size":     v.config.MaxPayloadSize,
 		"max_ttl":              v.config.MaxTTL,
 		"allowed_types":        v.config.AllowedTypes,
+		"tag_validator_enabled": v.tagValidator != nil,
+		"manifest_validator_enabled": v.manifestValidator != nil,
 	}
 }

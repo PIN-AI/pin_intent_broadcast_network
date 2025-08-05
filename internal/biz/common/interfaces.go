@@ -41,6 +41,9 @@ type IntentValidator interface {
 	ValidateBusinessRules(ctx context.Context, intent *Intent) error
 	ValidatePermissions(intent *Intent, sender peer.ID) error
 	RegisterRule(rule ValidationRule) error
+	ValidateTags(ctx context.Context, tags []Tag) error
+	ValidateManifest(ctx context.Context, manifest *IntentManifest) error
+	ValidateUserAddress(userAddress string) error
 }
 
 // ValidationRule 验证规则接口

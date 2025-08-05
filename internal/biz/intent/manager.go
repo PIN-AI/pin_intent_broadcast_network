@@ -326,15 +326,19 @@ func (m *Manager) CreateIntent(ctx context.Context, req *common.CreateIntentRequ
 
 	// Create intent instance
 	intent := &common.Intent{
-		ID:        common.GenerateIntentID(),
-		Type:      req.Type,
-		Payload:   req.Payload,
-		Timestamp: time.Now().Unix(),
-		SenderID:  req.SenderID,
-		Metadata:  req.Metadata,
-		Status:    common.IntentStatusCreated,
-		Priority:  req.Priority,
-		TTL:       req.TTL,
+		ID:             common.GenerateIntentID(),
+		Type:           req.Type,
+		Payload:        req.Payload,
+		Timestamp:      time.Now().Unix(),
+		SenderID:       req.SenderID,
+		Metadata:       req.Metadata,
+		Status:         common.IntentStatusCreated,
+		Priority:       req.Priority,
+		TTL:            req.TTL,
+		UserAddress:    req.UserAddress,
+		IntentManifest: req.IntentManifest,
+		RelevantTags:   req.RelevantTags,
+		MaxDuration:    req.MaxDuration,
 	}
 
 	// Set default values
@@ -343,6 +347,10 @@ func (m *Manager) CreateIntent(ctx context.Context, req *common.CreateIntentRequ
 	}
 	if intent.TTL == 0 {
 		intent.TTL = int64(common.DefaultTTL.Seconds())
+	}
+	if intent.MaxDuration == 0 && len(intent.RelevantTags) > 0 {
+		// Set default max duration for intents with tags
+		intent.MaxDuration = 3600 // 1 hour default
 	}
 
 	// Validate intent through validator
@@ -421,6 +429,37 @@ func (m *Manager) validateCreateRequest(req *common.CreateIntentRequest) error {
 
 	if req.TTL != 0 && !common.Validation.IsValidTTL(req.TTL) {
 		return common.NewValidationError("ttl", fmt.Sprintf("%d", req.TTL), "Invalid TTL value")
+	}
+
+	// Validate user address if provided
+	if req.UserAddress != "" {
+		if len(req.UserAddress) < 3 || !common.Strings.HasPrefix(req.UserAddress, "0x") {
+			return common.NewValidationError("user_address", req.UserAddress, "Invalid user address format")
+		}
+	}
+
+	// Validate max duration if provided
+	if req.MaxDuration != 0 && req.MaxDuration < 0 {
+		return common.NewValidationError("max_duration", fmt.Sprintf("%d", req.MaxDuration), "Max duration cannot be negative")
+	}
+
+	// Validate intent manifest if provided
+	if req.IntentManifest != nil {
+		if common.Strings.IsEmpty(req.IntentManifest.Task) {
+			return common.NewValidationError("intent_manifest.task", req.IntentManifest.Task, "Task description cannot be empty when manifest is provided")
+		}
+	}
+
+	// Validate relevant tags if provided
+	if len(req.RelevantTags) > 0 {
+		for i, tag := range req.RelevantTags {
+			if common.Strings.IsEmpty(tag.TagName) {
+				return common.NewValidationError("relevant_tags", fmt.Sprintf("tag[%d].tag_name", i), "Tag name cannot be empty")
+			}
+			if common.Strings.IsEmpty(tag.TagFee) {
+				return common.NewValidationError("relevant_tags", fmt.Sprintf("tag[%d].tag_fee", i), "Tag fee cannot be empty")
+			}
+		}
 	}
 
 	return nil

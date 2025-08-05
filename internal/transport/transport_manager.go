@@ -6,6 +6,7 @@ import (
 	"time"
 
 	"pin_intent_broadcast_network/internal/conf"
+	"pin_intent_broadcast_network/internal/biz/common"
 
 	"github.com/libp2p/go-libp2p/core/host"
 	"go.uber.org/zap"
@@ -280,4 +281,146 @@ func NewTransportConfigFromBootstrap(bc *conf.Bootstrap) *TransportConfig {
 	}
 	
 	return config
+}
+
+// PublishBidMessage publishes a bid message
+func (tm *transportManager) PublishBidMessage(ctx context.Context, bid *BidMessage) error {
+	if !tm.isRunning {
+		return ErrTransportNotRunning
+	}
+	
+	// Serialize bid message
+	bidData, err := common.JSON.Marshal(bid)
+	if err != nil {
+		return fmt.Errorf("failed to serialize bid message: %w", err)
+	}
+	
+	// Create transport message
+	transportMsg := &TransportMessage{
+		Type:      MessageTypeBidSubmission,
+		Payload:   bidData,
+		Timestamp: time.Now().UnixMilli(),
+		Sender:    bid.AgentID,
+		Priority:  PriorityHigh,
+		Metadata:  make(map[string]string),
+	}
+	
+	// Generate message ID
+	transportMsg.ID = GenerateMessageID(transportMsg)
+	
+	// Add bid metadata
+	transportMsg.Metadata["intent_id"] = bid.IntentID
+	transportMsg.Metadata["agent_id"] = bid.AgentID
+	transportMsg.Metadata["bid_amount"] = bid.BidAmount
+	transportMsg.Metadata["agent_type"] = bid.AgentType
+	
+	// Publish to bid submission topic
+	return tm.PublishMessage(ctx, TopicBidSubmission, transportMsg)
+}
+
+// PublishMatchResult publishes a match result
+func (tm *transportManager) PublishMatchResult(ctx context.Context, result *MatchResult) error {
+	if !tm.isRunning {
+		return ErrTransportNotRunning
+	}
+	
+	// Serialize match result
+	resultData, err := common.JSON.Marshal(result)
+	if err != nil {
+		return fmt.Errorf("failed to serialize match result: %w", err)
+	}
+	
+	// Create transport message
+	transportMsg := &TransportMessage{
+		Type:      MessageTypeMatchResult,
+		Payload:   resultData,
+		Timestamp: time.Now().UnixMilli(),
+		Sender:    result.BlockBuilderID,
+		Priority:  PriorityCritical,
+		Metadata:  make(map[string]string),
+	}
+	
+	// Generate message ID
+	transportMsg.ID = GenerateMessageID(transportMsg)
+	
+	// Add match metadata
+	transportMsg.Metadata["intent_id"] = result.IntentID
+	transportMsg.Metadata["winning_agent"] = result.WinningAgent
+	transportMsg.Metadata["winning_bid"] = result.WinningBid
+	transportMsg.Metadata["match_status"] = result.Status
+	
+	// Publish to match results topic
+	return tm.PublishMessage(ctx, TopicMatchResults, transportMsg)
+}
+
+// SubscribeToBids subscribes to bid submissions
+func (tm *transportManager) SubscribeToBids(handler func(*BidMessage) error) (Subscription, error) {
+	if !tm.isRunning {
+		return nil, ErrTransportNotRunning
+	}
+	
+	// Create bid message handler wrapper
+	bidHandler := func(msg *TransportMessage) error {
+		if msg.Type != MessageTypeBidSubmission {
+			return nil // Not a bid message
+		}
+		
+		// Deserialize bid message
+		var bid BidMessage
+		if err := common.JSON.Unmarshal(msg.Payload, &bid); err != nil {
+			tm.logger.Error("Failed to deserialize bid message",
+				zap.String("message_id", msg.ID),
+				zap.Error(err),
+			)
+			return err
+		}
+		
+		// Call the bid handler
+		return handler(&bid)
+	}
+	
+	// Subscribe to bid submission topic
+	subscription, err := tm.SubscribeToTopic(TopicBidSubmission, bidHandler)
+	if err != nil {
+		return nil, fmt.Errorf("failed to subscribe to bids: %w", err)
+	}
+	
+	tm.logger.Info("Successfully subscribed to bid submissions")
+	return subscription, nil
+}
+
+// SubscribeToMatches subscribes to match results
+func (tm *transportManager) SubscribeToMatches(handler func(*MatchResult) error) (Subscription, error) {
+	if !tm.isRunning {
+		return nil, ErrTransportNotRunning
+	}
+	
+	// Create match result handler wrapper
+	matchHandler := func(msg *TransportMessage) error {
+		if msg.Type != MessageTypeMatchResult {
+			return nil // Not a match result message
+		}
+		
+		// Deserialize match result
+		var result MatchResult
+		if err := common.JSON.Unmarshal(msg.Payload, &result); err != nil {
+			tm.logger.Error("Failed to deserialize match result",
+				zap.String("message_id", msg.ID),
+				zap.Error(err),
+			)
+			return err
+		}
+		
+		// Call the match handler
+		return handler(&result)
+	}
+	
+	// Subscribe to match results topic
+	subscription, err := tm.SubscribeToTopic(TopicMatchResults, matchHandler)
+	if err != nil {
+		return nil, fmt.Errorf("failed to subscribe to matches: %w", err)
+	}
+	
+	tm.logger.Info("Successfully subscribed to match results")
+	return subscription, nil
 }

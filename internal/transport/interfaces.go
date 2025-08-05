@@ -28,6 +28,19 @@ type TransportManager interface {
 	PublishMessage(ctx context.Context, topic string, msg *TransportMessage) error
 	// SubscribeToTopic subscribes to a topic with automatic message deserialization
 	SubscribeToTopic(topic string, handler func(*TransportMessage) error) (Subscription, error)
+	
+	// Bidding and matching specific methods
+	// PublishBidMessage publishes a bid message
+	PublishBidMessage(ctx context.Context, bid *BidMessage) error
+	// PublishMatchResult publishes a match result
+	PublishMatchResult(ctx context.Context, result *MatchResult) error
+	// SubscribeToBids subscribes to bid submissions
+	SubscribeToBids(handler func(*BidMessage) error) (Subscription, error)
+	// SubscribeToMatches subscribes to match results
+	SubscribeToMatches(handler func(*MatchResult) error) (Subscription, error)
+	
+	// GetTransportMetrics returns transport metrics
+	GetTransportMetrics() *TransportMetrics
 }
 
 // PubSubManager manages GossipSub publish/subscribe operations
