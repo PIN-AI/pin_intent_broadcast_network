@@ -1,6 +1,8 @@
 package transport
 
 import (
+	"crypto/sha256"
+	"fmt"
 	"time"
 
 	"github.com/libp2p/go-libp2p/core/peer"
@@ -118,6 +120,110 @@ const (
 	PriorityHigh   int32 = 100
 	PriorityCritical int32 = 255
 )
+
+// MessageType constants for different message types
+const (
+	MessageTypeIntentBroadcast = "intent_broadcast"
+	MessageTypeBidSubmission   = "bid_submission"
+	MessageTypeMatchResult     = "match_result"
+	MessageTypeBidCommitment   = "bid_commitment"
+	MessageTypeBidReveal       = "bid_reveal"
+)
+
+// Topic constants for bidding and matching
+const (
+	TopicIntentBroadcast = "/intent-network/intents/1.0.0"
+	TopicBidSubmission   = "/intent-network/bids/1.0.0"
+	TopicMatchResults    = "/intent-network/matches/1.0.0"
+	TopicBidCommitments  = "/intent-network/commitments/1.0.0"
+	TopicBidReveals      = "/intent-network/reveals/1.0.0"
+)
+
+// BidMessage represents a bid submission for an intent
+type BidMessage struct {
+	IntentID     string            `json:"intent_id"`
+	AgentID      string            `json:"agent_id"`
+	BidAmount    string            `json:"bid_amount"`
+	Capabilities []string          `json:"capabilities"`
+	Timestamp    int64             `json:"timestamp"`
+	AgentType    string            `json:"agent_type"`
+	Metadata     map[string]string `json:"metadata"`
+	Signature    []byte            `json:"signature,omitempty"`
+}
+
+// BidCommitment represents a commitment hash for a bid
+type BidCommitment struct {
+	IntentID      string `json:"intent_id"`
+	AgentID       string `json:"agent_id"`
+	CommitmentHash string `json:"commitment_hash"`
+	Timestamp     int64  `json:"timestamp"`
+	Signature     []byte `json:"signature,omitempty"`
+}
+
+// BidReveal represents the reveal of a committed bid
+type BidReveal struct {
+	IntentID  string     `json:"intent_id"`
+	AgentID   string     `json:"agent_id"`
+	BidData   *BidMessage `json:"bid_data"`
+	Nonce     string     `json:"nonce"`
+	Timestamp int64      `json:"timestamp"`
+	Signature []byte     `json:"signature,omitempty"`
+}
+
+// MatchResult represents the result of intent matching
+type MatchResult struct {
+	IntentID      string            `json:"intent_id"`
+	WinningAgent  string            `json:"winning_agent"`
+	WinningBid    string            `json:"winning_bid"`
+	TotalBids     int               `json:"total_bids"`
+	MatchedAt     int64             `json:"matched_at"`
+	Status        string            `json:"status"`
+	Metadata      map[string]string `json:"metadata"`
+	BlockBuilderID string           `json:"block_builder_id"`
+}
+
+// IntentSession represents an active intent bidding session
+type IntentSession struct {
+	IntentID        string          `json:"intent_id"`
+	StartTime       int64           `json:"start_time"`
+	EndTime         int64           `json:"end_time"`
+	Status          string          `json:"status"` // "collecting", "matching", "completed", "expired"
+	BidCount        int             `json:"bid_count"`
+	CommitmentCount int             `json:"commitment_count"`
+	MatchResult     *MatchResult    `json:"match_result,omitempty"`
+}
+
+// BidStatus represents the status of a bid
+type BidStatus struct {
+	IntentID  string `json:"intent_id"`
+	AgentID   string `json:"agent_id"`
+	Status    string `json:"status"` // "submitted", "committed", "revealed", "matched", "rejected"
+	Timestamp int64  `json:"timestamp"`
+	Reason    string `json:"reason,omitempty"`
+}
+
+// CalculateBidCommitment calculates SHA2-256 commitment hash for a bid
+func CalculateBidCommitment(bid *BidMessage, nonce string) string {
+	// Create commitment payload
+	commitmentData := fmt.Sprintf("%s:%s:%s:%s:%d:%s", 
+		bid.IntentID, 
+		bid.AgentID, 
+		bid.BidAmount, 
+		bid.AgentType,
+		bid.Timestamp,
+		nonce,
+	)
+	
+	// Calculate SHA2-256 hash
+	hash := sha256.Sum256([]byte(commitmentData))
+	return fmt.Sprintf("%x", hash)
+}
+
+// ValidateBidReveal validates that a bid reveal matches its commitment
+func ValidateBidReveal(reveal *BidReveal, commitment *BidCommitment) bool {
+	calculatedHash := CalculateBidCommitment(reveal.BidData, reveal.Nonce)
+	return calculatedHash == commitment.CommitmentHash
+}
 
 // DefaultTransportConfig returns default transport configuration
 func DefaultTransportConfig() *TransportConfig {

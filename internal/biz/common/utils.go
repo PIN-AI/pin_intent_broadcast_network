@@ -50,6 +50,11 @@ func (StringUtils) TruncateString(s string, maxLen int) string {
 	return s[:maxLen] + "..."
 }
 
+// HasPrefix checks if a string has the specified prefix
+func (StringUtils) HasPrefix(s, prefix string) bool {
+	return strings.HasPrefix(s, prefix)
+}
+
 // TimeUtils provides time utility functions
 type TimeUtils struct{}
 

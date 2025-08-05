@@ -4,6 +4,20 @@ import (
 	"time"
 )
 
+// Tag represents a data access requirement with fee and tradability information
+type Tag struct {
+	TagName    string `json:"tag_name"`
+	TagFee     string `json:"tag_fee"`
+	IsTradable bool   `json:"is_tradable"`
+}
+
+// IntentManifest describes the intent task and requirements
+type IntentManifest struct {
+	Task         string            `json:"task"`
+	Requirements map[string]string `json:"requirements,omitempty"`
+	Context      string            `json:"context,omitempty"`
+}
+
 // Intent 数据结构定义
 type Intent struct {
 	ID                 string            `json:"id"`
@@ -20,6 +34,10 @@ type Intent struct {
 	ProcessedAt        int64             `json:"processed_at,omitempty"`
 	Error              string            `json:"error,omitempty"`
 	MatchedIntents     []string          `json:"matched_intents,omitempty"`
+	UserAddress        string            `json:"user_address,omitempty"`
+	IntentManifest     *IntentManifest   `json:"intent_manifest,omitempty"`
+	RelevantTags       []Tag             `json:"relevant_tags,omitempty"`
+	MaxDuration        int64             `json:"max_duration,omitempty"`
 }
 
 // IntentStatus Intent 状态枚举
@@ -63,13 +81,17 @@ func (s IntentStatus) String() string {
 
 // CreateIntentRequest Intent 创建请求
 type CreateIntentRequest struct {
-	Type       string            `json:"type"`
-	Payload    []byte            `json:"payload"`
-	SenderID   string            `json:"sender_id"`
-	Metadata   map[string]string `json:"metadata,omitempty"`
-	Priority   int32             `json:"priority"`
-	TTL        int64             `json:"ttl"`
-	PrivateKey interface{}       `json:"-"` // 不序列化私钥
+	Type           string            `json:"type"`
+	Payload        []byte            `json:"payload"`
+	SenderID       string            `json:"sender_id"`
+	Metadata       map[string]string `json:"metadata,omitempty"`
+	Priority       int32             `json:"priority"`
+	TTL            int64             `json:"ttl"`
+	PrivateKey     interface{}       `json:"-"` // 不序列化私钥
+	UserAddress    string            `json:"user_address,omitempty"`
+	IntentManifest *IntentManifest   `json:"intent_manifest,omitempty"`
+	RelevantTags   []Tag             `json:"relevant_tags,omitempty"`
+	MaxDuration    int64             `json:"max_duration,omitempty"`
 }
 
 // CreateIntentResponse Intent 创建响应
