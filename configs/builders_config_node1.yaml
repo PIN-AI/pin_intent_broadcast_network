@@ -1,0 +1,41 @@
+# Block Builders Configuration for Node1
+# Node1专用区块构建器配置文件 - 禁用Block Builder启动
+
+automation:
+  enabled: false  # Node1不启动Block Builder，只运行Service Agent
+  auto_start: false
+  log_level: "info"
+
+builders: []  # 空的builders列表
+
+# 全局配置
+global_settings:
+  # P2P网络配置
+  p2p_network:
+    enabled: false  # Node1不需要Block Builder的P2P功能
+    bootstrap_peers: []
+    connection_timeout: "30s"
+    heartbeat_interval: "10s"
+    
+  # 监控配置
+  monitoring:
+    metrics_enabled: false
+    metrics_interval: 30      # 秒
+    status_check_interval: 10 # 秒
+    session_monitoring: false
+    performance_tracking: false
+    
+  # 日志配置
+  logging:
+    level: "info"
+    file_path: "logs/builders_node1.log"
+    max_file_size_mb: 10
+    max_backups: 2
+    structured_logging: true
+    
+  # 存储配置
+  storage:
+    session_persistence: false
+    match_history_retention: "1h"
+    metrics_retention: "1h"
+    cleanup_enabled: false

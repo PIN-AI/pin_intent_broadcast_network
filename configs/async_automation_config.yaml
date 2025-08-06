@@ -1,0 +1,93 @@
+# Async Automation System Configuration
+# PIN异步自动化系统配置
+
+automation:
+  enabled: true
+  auto_start: true
+  log_level: "info"
+  
+  # 异步初始化配置
+  async_init:
+    enabled: true
+    transport_readiness_timeout: "60s"
+    component_start_timeout: "30s" 
+    max_init_retries: 5
+    retry_backoff_interval: "2s"
+    
+    # 组件生命周期管理配置
+    component_lifecycle:
+      # Service Agents配置
+      service_agents:
+        start_priority: 1
+        health_check_interval: "10s"
+        restart_on_failure: true
+        
+      # Block Builders配置  
+      block_builders:
+        start_priority: 2
+        health_check_interval: "15s"
+        restart_on_failure: true
+        dependencies: ["service_agents"]
+      
+      # 生命周期全局设置
+      start_timeout: "30s"
+      stop_timeout: "15s"
+      max_retries: 3
+      retry_interval: "2s"
+      dependency_wait: "60s"
+      parallel_start: true
+
+# Transport就绪性检查配置 
+transport_readiness:
+  max_retries: 5
+  retry_interval: "2s"
+  health_timeout: "5s"
+  max_wait_time: "60s"
+
+# 错误处理和重试配置
+error_handling:
+  retry_strategies:
+    TRANSPORT_NOT_RUNNING:
+      max_retries: 5
+      initial_interval: "2s" 
+      max_interval: "30s"
+      backoff_multiplier: 2.0
+      
+    SUBSCRIPTION_FAILED:
+      max_retries: 3
+      initial_interval: "1s"
+      max_interval: "10s"
+      backoff_multiplier: 2.0
+      
+    COMPONENT_INIT_FAILED:
+      max_retries: 3
+      initial_interval: "3s"
+      max_interval: "15s"
+      backoff_multiplier: 1.5
+      
+    NETWORK_DISCONNECTED:
+      max_retries: 10
+      initial_interval: "5s"
+      max_interval: "60s"
+      backoff_multiplier: 1.5
+
+# 监控和健康检查配置
+monitoring:
+  initialization_tracking: true
+  component_health_checks: true
+  metrics_collection: true
+  failure_recovery_logging: true
+  
+  health_check_intervals:
+    transport_manager: "5s"
+    service_agents: "10s"  
+    block_builders: "15s"
+    lifecycle_manager: "30s"
+
+# 调试和开发配置
+debug:
+  verbose_logging: false
+  initialization_tracing: true
+  component_state_logging: true
+  transport_health_logging: true
+  dependency_resolution_logging: false

@@ -48,7 +48,8 @@ func wireApp(bootstrap *conf.Bootstrap, logger log.Logger) (*kratos.App, func(),
 	httpServer := server.NewHTTPServer(confServer, greeterService, intentService, executionService, logger)
 	config := intent.NewConfig()
 	manager := intent.NewManagerWithDefaults(transportManager, config, logger)
-	app := newApp(logger, grpcServer, httpServer, networkManager, transportManager, manager, automationManager, bootstrap)
+	asyncAutomationManager := execution.NewAsyncAutomationManagerForWire(automationManager, networkManager, transportManager, zapLogger)
+	app := newApp(logger, grpcServer, httpServer, networkManager, transportManager, manager, asyncAutomationManager, bootstrap)
 	return app, func() {
 		cleanup()
 	}, nil

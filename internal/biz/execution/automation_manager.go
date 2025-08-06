@@ -3,15 +3,15 @@ package execution
 import (
 	"context"
 	"fmt"
+	"os"
 	"sync"
 	"time"
 
+	"go.uber.org/zap"
+	"gopkg.in/yaml.v3"
 	"pin_intent_broadcast_network/internal/biz/block_builder"
 	"pin_intent_broadcast_network/internal/biz/service_agent"
 	"pin_intent_broadcast_network/internal/transport"
-	"go.uber.org/zap"
-	"gopkg.in/yaml.v3"
-	"os"
 )
 
 // AutomationManager manages the lifecycle of service agents and block builders
@@ -20,17 +20,16 @@ type AutomationManager struct {
 	transportMgr transport.TransportManager
 	logger       *zap.Logger
 
-	// Configuration
-	agentsConfig   *AgentsConfig
-	buildersConfig *BuildersConfig
+	// Configuration (unified)
+	config *AgentsConfig
 
 	// Runtime state
-	mu           sync.RWMutex
-	isRunning    bool
-	agents       map[string]*service_agent.Agent
-	builders     map[string]*block_builder.BlockBuilder
-	metrics      *AutomationMetrics
-	status       *AutomationStatus
+	mu        sync.RWMutex
+	isRunning bool
+	agents    map[string]*service_agent.Agent
+	builders  map[string]*block_builder.BlockBuilder
+	metrics   *AutomationMetrics
+	status    *AutomationStatus
 
 	// Background tasks
 	metricsUpdateTicker *time.Ticker
@@ -49,12 +48,12 @@ type AutomationMetrics struct {
 	AgentSuccessRate     float64 `json:"agent_success_rate"`
 
 	// Builder metrics
-	TotalBuilders        int32   `json:"total_builders"`
-	ActiveBuilders       int32   `json:"active_builders"`
-	TotalSessionsCreated int64   `json:"total_sessions_created"`
-	TotalMatchesCompleted int64  `json:"total_matches_completed"`
-	TotalSessionsExpired int64   `json:"total_sessions_expired"`
-	BuilderSuccessRate   float64 `json:"builder_success_rate"`
+	TotalBuilders         int32   `json:"total_builders"`
+	ActiveBuilders        int32   `json:"active_builders"`
+	TotalSessionsCreated  int64   `json:"total_sessions_created"`
+	TotalMatchesCompleted int64   `json:"total_matches_completed"`
+	TotalSessionsExpired  int64   `json:"total_sessions_expired"`
+	BuilderSuccessRate    float64 `json:"builder_success_rate"`
 
 	// Overall metrics
 	AverageResponseTime int64     `json:"average_response_time_ms"`
@@ -64,15 +63,15 @@ type AutomationMetrics struct {
 
 // AutomationStatus tracks current system status
 type AutomationStatus struct {
-	Status              string            `json:"status"` // "starting", "running", "stopping", "stopped", "error"
-	StartTime           time.Time         `json:"start_time"`
-	LastActivity        time.Time         `json:"last_activity"`
-	ConnectedPeers      int32             `json:"connected_peers"`
-	P2PStatus           string            `json:"p2p_status"`
-	ComponentStatus     map[string]string `json:"component_status"`
-	ErrorCount          int32             `json:"error_count"`
-	LastError           string            `json:"last_error"`
-	HealthCheckPassing  bool              `json:"health_check_passing"`
+	Status             string            `json:"status"` // "starting", "running", "stopping", "stopped", "error"
+	StartTime          time.Time         `json:"start_time"`
+	LastActivity       time.Time         `json:"last_activity"`
+	ConnectedPeers     int32             `json:"connected_peers"`
+	P2PStatus          string            `json:"p2p_status"`
+	ComponentStatus    map[string]string `json:"component_status"`
+	ErrorCount         int32             `json:"error_count"`
+	LastError          string            `json:"last_error"`
+	HealthCheckPassing bool              `json:"health_check_passing"`
 }
 
 // NewAutomationManager creates a new automation manager
@@ -232,7 +231,7 @@ func (am *AutomationManager) GetStatus() *AutomationStatus {
 	if am.transportMgr != nil {
 		transportMetrics := am.transportMgr.GetTransportMetrics()
 		am.status.ConnectedPeers = int32(transportMetrics.ConnectedPeerCount)
-		
+
 		if transportMetrics.ConnectedPeerCount > 0 {
 			am.status.P2PStatus = "connected"
 		} else {
@@ -387,33 +386,23 @@ func (am *AutomationManager) StopBuilder(builderID string) error {
 	return nil
 }
 
-// loadConfigurations loads agent and builder configurations from YAML files
+// loadConfigurations loads unified agent and builder configuration from YAML file
 func (am *AutomationManager) loadConfigurations() error {
-	// Load agents configuration
-	agentsConfigData, err := os.ReadFile("configs/agents_config.yaml")
+	// Load unified configuration (agents + builders)
+	configData, err := os.ReadFile("configs/agents_config.yaml")
 	if err != nil {
 		return fmt.Errorf("failed to read agents config file: %w", err)
 	}
 
-	am.agentsConfig = &AgentsConfig{}
-	if err := yaml.Unmarshal(agentsConfigData, am.agentsConfig); err != nil {
+	am.config = &AgentsConfig{}
+	if err := yaml.Unmarshal(configData, am.config); err != nil {
 		return fmt.Errorf("failed to parse agents config: %w", err)
 	}
 
-	// Load builders configuration
-	buildersConfigData, err := os.ReadFile("configs/builders_config.yaml")
-	if err != nil {
-		return fmt.Errorf("failed to read builders config file: %w", err)
-	}
-
-	am.buildersConfig = &BuildersConfig{}
-	if err := yaml.Unmarshal(buildersConfigData, am.buildersConfig); err != nil {
-		return fmt.Errorf("failed to parse builders config: %w", err)
-	}
-
 	am.logger.Info("Configurations loaded successfully",
-		zap.Int("agents_count", len(am.agentsConfig.Agents)),
-		zap.Int("builders_count", len(am.buildersConfig.Builders)),
+		zap.Int("agents_count", len(am.config.Agents)),
+		zap.Int("builders_count", len(am.config.Builders.Configs)),
+		zap.Bool("builders_enabled", am.config.Builders.Enabled),
 	)
 
 	return nil
@@ -421,12 +410,12 @@ func (am *AutomationManager) loadConfigurations() error {
 
 // startAgents initializes and starts all configured agents
 func (am *AutomationManager) startAgents(ctx context.Context) error {
-	if !am.agentsConfig.Automation.Enabled {
+	if !am.config.Automation.Enabled {
 		am.logger.Info("Agent automation disabled in configuration")
 		return nil
 	}
 
-	for _, agentConfig := range am.agentsConfig.Agents {
+	for _, agentConfig := range am.config.Agents {
 		// Convert YAML config to service_agent.AgentConfig
 		saConfig := am.convertToServiceAgentConfig(agentConfig)
 
@@ -461,14 +450,14 @@ func (am *AutomationManager) startAgents(ctx context.Context) error {
 	return nil
 }
 
-// startBuilders initializes and starts all configured builders
+// startBuilders initializes and starts all configured builders  
 func (am *AutomationManager) startBuilders(ctx context.Context) error {
-	if !am.buildersConfig.Automation.Enabled {
+	if !am.config.Builders.Enabled {
 		am.logger.Info("Builder automation disabled in configuration")
 		return nil
 	}
 
-	for _, builderConfig := range am.buildersConfig.Builders {
+	for _, builderConfig := range am.config.Builders.Configs {
 		// Convert YAML config to block_builder.BuilderConfig
 		bbConfig := am.convertToBlockBuilderConfig(builderConfig)
 
@@ -560,7 +549,7 @@ func (am *AutomationManager) updateMetricsFromComponents() {
 		if agent.IsRunning() {
 			am.metrics.ActiveAgents++
 		}
-		
+
 		agentMetrics := agent.GetMetrics()
 		if agentMetrics != nil {
 			am.metrics.TotalIntentsReceived += agentMetrics.IntentsReceived
@@ -574,7 +563,7 @@ func (am *AutomationManager) updateMetricsFromComponents() {
 		if builder.IsRunning() {
 			am.metrics.ActiveBuilders++
 		}
-		
+
 		builderMetrics := builder.GetMetrics()
 		if builderMetrics != nil {
 			am.metrics.TotalSessionsCreated += builderMetrics.SessionsCreated
@@ -627,7 +616,7 @@ func (am *AutomationManager) updateStatus() {
 	// Update health check
 	healthyComponents := 0
 	totalComponents := len(am.agents) + len(am.builders)
-	
+
 	for _, status := range am.status.ComponentStatus {
 		if status == "running" {
 			healthyComponents++

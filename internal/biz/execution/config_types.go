@@ -10,11 +10,19 @@ import (
 // YAML Configuration Structures
 // These structures match the YAML configuration files
 
-// AgentsConfig represents the entire agents configuration file
+// AgentsConfig represents the entire agents configuration file (now includes builders)
 type AgentsConfig struct {
 	Automation     AutomationConfig    `yaml:"automation"`
 	Agents         []YAMLAgentConfig   `yaml:"agents"`
+	Builders       YAMLBuildersSection `yaml:"builders"`
 	GlobalSettings GlobalSettings      `yaml:"global_settings"`
+}
+
+// YAMLBuildersSection represents the builders section in unified config
+type YAMLBuildersSection struct {
+	Enabled   bool                  `yaml:"enabled"`
+	AutoStart bool                  `yaml:"auto_start"`
+	Configs   []YAMLBuilderConfig   `yaml:"configs"`
 }
 
 // BuildersConfig represents the entire builders configuration file
@@ -29,6 +37,41 @@ type AutomationConfig struct {
 	Enabled   bool   `yaml:"enabled"`
 	AutoStart bool   `yaml:"auto_start"`
 	LogLevel  string `yaml:"log_level"`
+	
+	// Async initialization configuration
+	AsyncInit *AsyncInitConfig `yaml:"async_init,omitempty"`
+}
+
+// AsyncInitConfig contains async initialization settings
+type AsyncInitConfig struct {
+	Enabled                    bool   `yaml:"enabled"`
+	TransportReadinessTimeout  string `yaml:"transport_readiness_timeout"`
+	ComponentStartTimeout      string `yaml:"component_start_timeout"`
+	MaxInitRetries             int    `yaml:"max_init_retries"`
+	RetryBackoffInterval       string `yaml:"retry_backoff_interval"`
+	
+	// Component lifecycle settings
+	ComponentLifecycle *YAMLComponentLifecycleConfig `yaml:"component_lifecycle,omitempty"`
+}
+
+// YAMLComponentLifecycleConfig contains component lifecycle settings
+type YAMLComponentLifecycleConfig struct {
+	ServiceAgents  *ComponentPhaseConfig `yaml:"service_agents,omitempty"`
+	BlockBuilders  *ComponentPhaseConfig `yaml:"block_builders,omitempty"`
+	StartTimeout   string                `yaml:"start_timeout"`
+	StopTimeout    string                `yaml:"stop_timeout"`
+	MaxRetries     int                   `yaml:"max_retries"`
+	RetryInterval  string                `yaml:"retry_interval"`
+	DependencyWait string                `yaml:"dependency_wait"`
+	ParallelStart  bool                  `yaml:"parallel_start"`
+}
+
+// ComponentPhaseConfig contains phase-specific component settings
+type ComponentPhaseConfig struct {
+	StartPriority         int    `yaml:"start_priority"`
+	HealthCheckInterval   string `yaml:"health_check_interval"`
+	RestartOnFailure      bool   `yaml:"restart_on_failure"`
+	Dependencies          []string `yaml:"dependencies,omitempty"`
 }
 
 // YAMLAgentConfig represents an agent configuration in YAML
