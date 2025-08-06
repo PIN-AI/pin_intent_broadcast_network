@@ -1,0 +1,43 @@
+# Intent Publisher Configuration for Node1
+# Node1专用配置 - 只做Intent发布者，不启动任何Service Agent或Block Builder
+
+automation:
+  enabled: false  # Node1不启动任何automation
+  auto_start: false
+  log_level: "info"
+
+agents: []  # Node1不运行任何Service Agent
+
+# Block Builders Configuration  
+# Node1不启动Block Builder
+builders:
+  enabled: false  # Node1不启动Block Builder
+  auto_start: false
+  configs: []     # 空配置
+
+# 全局配置
+global_settings:
+  # P2P网络配置
+  p2p_network:
+    enabled: true
+    bootstrap_peers: []
+    
+  # 监控配置
+  monitoring:
+    metrics_enabled: true
+    metrics_interval: 30      # 秒
+    status_check_interval: 10 # 秒
+    
+  # 日志配置
+  logging:
+    level: "info"
+    file_path: "logs/node1_publisher.log"
+    max_file_size_mb: 100
+    max_backups: 5
+    
+  # 出价配置 (Node1不需要，但保持结构完整)
+  bidding:
+    timeout_seconds: 30
+    retry_attempts: 3
+    commitment_enabled: true
+    commitment_algorithm: "sha256"

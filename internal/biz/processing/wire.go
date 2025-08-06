@@ -9,7 +9,7 @@ import (
 	"github.com/go-kratos/kratos/v2/log"
 	"github.com/google/wire"
 
-	"github.com/your-org/pin-intent-broadcast-network/internal/biz/common"
+	"pin_intent_broadcast_network/internal/biz/common"
 )
 
 // ProviderSet is processing providers.

@@ -44,17 +44,6 @@ func NewTransportManagerWithP2P(networkManager p2p.NetworkManager, logger *zap.L
 		return nil
 	}
 
-	hostManager := networkManager.GetHostManager()
-	if hostManager == nil {
-		logger.Error("Host manager is nil, cannot create transport manager")
-		return nil
-	}
-
-	host := hostManager.GetHost()
-	if host == nil {
-		logger.Error("Libp2p host is nil, cannot create transport manager")
-		return nil
-	}
-
-	return NewTransportManager(host, logger)
+	// Create a lazy transport manager that will initialize when the network is ready
+	return NewLazyTransportManager(networkManager, logger)
 }

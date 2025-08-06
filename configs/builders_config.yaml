@@ -1,0 +1,178 @@
+# Block Builders Configuration
+# 区块构建器配置文件
+
+automation:
+  enabled: true
+  auto_start: true
+  log_level: "info"
+
+builders:
+  - builder_id: "primary-builder-001"
+    name: "主要区块构建器"
+    description: "处理大部分意图匹配和区块构建任务"
+    auto_start: true
+    
+    # 匹配算法配置
+    matching_algorithm: "highest_bid"     # 最高出价获胜
+    settlement_mode: "simulated"          # 模拟结算模式
+    
+    # 时间配置
+    bid_collection_window: "15s"          # 出价收集窗口 15秒
+    matching_interval: "10s"              # 匹配处理间隔 10秒
+    cleanup_interval: "1m"                # 清理间隔 1分钟
+    
+    # 容量配置
+    max_concurrent_intents: 50            # 最大并发意图数
+    min_bids_required: 1                  # 最少需要的出价数
+    max_session_lifetime: "5m"            # 最大会话生存时间
+    
+    # P2P订阅配置
+    subscriptions:
+      intent_topics:
+        - "/intent-network/intents/1.0.0"
+        - "intent-broadcast.trade"
+        - "intent-broadcast.swap"
+        - "intent-broadcast.exchange"
+        - "intent-broadcast.general"
+      bid_topics:
+        - "/intent-network/bids/1.0.0"
+      match_result_topics:
+        - "/intent-network/matches/1.0.0"
+
+  - builder_id: "secondary-builder-001"
+    name: "辅助区块构建器"
+    description: "处理次要意图匹配任务，提供冗余支持"
+    auto_start: true
+    
+    # 匹配算法配置
+    matching_algorithm: "reputation_weighted"  # 声誉加权算法
+    settlement_mode: "simulated"
+    
+    # 时间配置
+    bid_collection_window: "20s"          # 更长的收集窗口
+    matching_interval: "15s"
+    cleanup_interval: "2m"
+    
+    # 容量配置
+    max_concurrent_intents: 30
+    min_bids_required: 2                  # 需要更多出价
+    max_session_lifetime: "10m"
+    
+    # P2P订阅配置
+    subscriptions:
+      intent_topics:
+        - "/intent-network/intents/1.0.0"
+        - "intent-broadcast.computation"
+        - "intent-broadcast.data_access"
+        - "intent-broadcast.analytics"
+      bid_topics:
+        - "/intent-network/bids/1.0.0"
+      match_result_topics:
+        - "/intent-network/matches/1.0.0"
+
+  - builder_id: "specialized-builder-001"
+    name: "专业化区块构建器"
+    description: "处理高价值和复杂意图的匹配"
+    auto_start: false                     # 手动启动
+    
+    # 匹配算法配置
+    matching_algorithm: "random"          # 随机选择算法，公平分配
+    settlement_mode: "blockchain"         # 区块链结算模式（未来实现）
+    
+    # 时间配置
+    bid_collection_window: "30s"          # 更长收集时间
+    matching_interval: "20s"
+    cleanup_interval: "5m"
+    
+    # 容量配置
+    max_concurrent_intents: 20            # 处理数量少但价值高
+    min_bids_required: 3                  # 需要更多竞争
+    max_session_lifetime: "15m"
+    
+    # 特殊过滤规则
+    intent_filter:
+      min_priority: 7                     # 只处理高优先级
+      min_bid_amount: "10000"            # 最低出价要求
+      required_tags:
+        - "high_value"
+        - "complex_task"
+    
+    # P2P订阅配置
+    subscriptions:
+      intent_topics:
+        - "/intent-network/intents/1.0.0"
+        - "intent-broadcast.trade"        # 专注交易类
+        - "intent-broadcast.computation"  # 和计算类
+      bid_topics:
+        - "/intent-network/bids/1.0.0"
+      match_result_topics:
+        - "/intent-network/matches/1.0.0"
+
+# 全局配置
+global_settings:
+  # P2P网络配置
+  p2p_network:
+    enabled: true
+    bootstrap_peers: []
+    connection_timeout: "30s"
+    heartbeat_interval: "10s"
+    
+  # 匹配配置
+  matching:
+    # 匹配算法权重配置
+    algorithm_weights:
+      highest_bid: 1.0
+      reputation_weighted:
+        bid_weight: 0.7
+        reputation_weight: 0.3
+      random:
+        seed_rotation_interval: "1h"
+    
+    # 声誉系统配置（简化版）
+    reputation_system:
+      enabled: true
+      base_score: 1.0
+      max_score: 2.0
+      min_score: 0.1
+      success_bonus: 0.1
+      failure_penalty: -0.05
+    
+  # 监控配置
+  monitoring:
+    metrics_enabled: true
+    metrics_interval: 30      # 秒
+    status_check_interval: 10 # 秒
+    session_monitoring: true
+    performance_tracking: true
+    
+  # 日志配置
+  logging:
+    level: "info"
+    file_path: "logs/builders.log"
+    max_file_size_mb: 100
+    max_backups: 5
+    structured_logging: true
+    
+  # 性能优化配置
+  performance:
+    worker_pool_size: 10
+    message_buffer_size: 1000
+    batch_processing: true
+    batch_size: 50
+    processing_timeout: "60s"
+    
+  # 安全配置
+  security:
+    signature_verification: true
+    message_validation: true
+    rate_limiting:
+      enabled: true
+      max_requests_per_second: 100
+      burst_capacity: 200
+    
+  # 存储配置
+  storage:
+    session_persistence: false    # 暂不持久化
+    match_history_retention: "24h"
+    metrics_retention: "7d"
+    cleanup_enabled: true

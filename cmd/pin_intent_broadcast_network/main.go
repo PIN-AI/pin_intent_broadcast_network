@@ -7,6 +7,7 @@ import (
 	"time"
 
 	"pin_intent_broadcast_network/internal/biz/common"
+	"pin_intent_broadcast_network/internal/biz/execution"
 	"pin_intent_broadcast_network/internal/biz/intent"
 	"pin_intent_broadcast_network/internal/conf"
 	"pin_intent_broadcast_network/internal/p2p"
@@ -39,7 +40,7 @@ func init() {
 	flag.StringVar(&flagconf, "conf", "../../configs", "config path, eg: -conf config.yaml")
 }
 
-func newApp(logger log.Logger, gs *grpc.Server, hs *http.Server, networkManager p2p.NetworkManager, transportManager transport.TransportManager, intentManager common.IntentManager, bootstrap *conf.Bootstrap) *kratos.App {
+func newApp(logger log.Logger, gs *grpc.Server, hs *http.Server, networkManager p2p.NetworkManager, transportManager transport.TransportManager, intentManager common.IntentManager, asyncAutomationMgr *execution.AsyncAutomationManager, bootstrap *conf.Bootstrap) *kratos.App {
 	return kratos.New(
 		kratos.ID(id),
 		kratos.Name(Name),
@@ -101,8 +102,11 @@ func newApp(logger log.Logger, gs *grpc.Server, hs *http.Server, networkManager 
 					}
 					logger.Log(log.LevelInfo, "msg", "Transport manager started successfully")
 
-					// Replace the nil transport manager with the actual one
-					transportManager = actualTransportManager
+					// Update the lazy transport manager with the actual one FIRST
+					if lazyTransportManager, ok := transportManager.(*transport.LazyTransportManager); ok {
+						lazyTransportManager.SetActualTransportManager(actualTransportManager)
+						logger.Log(log.LevelInfo, "msg", "Lazy transport manager updated with actual transport manager")
+					}
 
 					// Update the intent manager with the actual transport manager
 					if intentManager != nil {
@@ -118,12 +122,33 @@ func newApp(logger log.Logger, gs *grpc.Server, hs *http.Server, networkManager 
 							}
 						}
 					}
+
+					// Start async automation manager in background after transport is ready
+					if asyncAutomationMgr != nil {
+						// Start async initialization in background
+						go func() {
+							if err := asyncAutomationMgr.StartAsync(ctx); err != nil {
+								logger.Log(log.LevelError, "msg", "Async automation start failed", "error", err)
+							} else {
+								logger.Log(log.LevelInfo, "msg", "Async automation initialization started")
+							}
+						}()
+					}
 				}
 			}
 
 			return nil
 		}),
 		kratos.AfterStop(func(ctx context.Context) error {
+			// Stop async automation manager
+			if asyncAutomationMgr != nil {
+				if err := asyncAutomationMgr.Stop(); err != nil {
+					logger.Log(log.LevelError, "msg", "Failed to stop async automation manager", "error", err)
+				} else {
+					logger.Log(log.LevelInfo, "msg", "Async automation manager stopped")
+				}
+			}
+
 			// Stop transport manager
 			if transportManager != nil {
 				if err := transportManager.Stop(); err != nil {

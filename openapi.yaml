@@ -25,6 +25,196 @@ paths:
                         application/json:
                             schema:
                                 $ref: '#/components/schemas/helloworld.v1.HelloReply'
+    /pinai_intent/execution/agents/status:
+        get:
+            tags:
+                - IntentExecutionService
+            description: Get all service agents status
+            operationId: IntentExecutionService_GetAgentsStatus
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/api.pinai_intent.v1.GetAgentsStatusResponse'
+    /pinai_intent/execution/agents/{agentId}/start:
+        post:
+            tags:
+                - IntentExecutionService
+            description: Start a specific agent
+            operationId: IntentExecutionService_StartAgent
+            parameters:
+                - name: agentId
+                  in: path
+                  required: true
+                  schema:
+                    type: string
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/api.pinai_intent.v1.StartAgentRequest'
+                required: true
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/api.pinai_intent.v1.StartAgentResponse'
+    /pinai_intent/execution/agents/{agentId}/stop:
+        post:
+            tags:
+                - IntentExecutionService
+            description: Stop a specific agent
+            operationId: IntentExecutionService_StopAgent
+            parameters:
+                - name: agentId
+                  in: path
+                  required: true
+                  schema:
+                    type: string
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/api.pinai_intent.v1.StopAgentRequest'
+                required: true
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/api.pinai_intent.v1.StopAgentResponse'
+    /pinai_intent/execution/builders/status:
+        get:
+            tags:
+                - IntentExecutionService
+            description: Get all block builders status
+            operationId: IntentExecutionService_GetBuildersStatus
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/api.pinai_intent.v1.GetBuildersStatusResponse'
+    /pinai_intent/execution/builders/{builderId}/start:
+        post:
+            tags:
+                - IntentExecutionService
+            description: Start a specific builder
+            operationId: IntentExecutionService_StartBuilder
+            parameters:
+                - name: builderId
+                  in: path
+                  required: true
+                  schema:
+                    type: string
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/api.pinai_intent.v1.StartBuilderRequest'
+                required: true
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/api.pinai_intent.v1.StartBuilderResponse'
+    /pinai_intent/execution/builders/{builderId}/stop:
+        post:
+            tags:
+                - IntentExecutionService
+            description: Stop a specific builder
+            operationId: IntentExecutionService_StopBuilder
+            parameters:
+                - name: builderId
+                  in: path
+                  required: true
+                  schema:
+                    type: string
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/api.pinai_intent.v1.StopBuilderRequest'
+                required: true
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/api.pinai_intent.v1.StopBuilderResponse'
+    /pinai_intent/execution/intents/{intentId}/bids:
+        get:
+            tags:
+                - IntentExecutionService
+            description: Get active bids for an intent
+            operationId: IntentExecutionService_GetActiveBids
+            parameters:
+                - name: intentId
+                  in: path
+                  required: true
+                  schema:
+                    type: string
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/api.pinai_intent.v1.GetActiveBidsResponse'
+    /pinai_intent/execution/matches/history:
+        get:
+            tags:
+                - IntentExecutionService
+            description: Get match history
+            operationId: IntentExecutionService_GetMatchHistory
+            parameters:
+                - name: startTime
+                  in: query
+                  schema:
+                    type: string
+                - name: endTime
+                  in: query
+                  schema:
+                    type: string
+                - name: limit
+                  in: query
+                  schema:
+                    type: integer
+                    format: int32
+                - name: offset
+                  in: query
+                  schema:
+                    type: integer
+                    format: int32
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/api.pinai_intent.v1.GetMatchHistoryResponse'
+    /pinai_intent/execution/metrics:
+        get:
+            tags:
+                - IntentExecutionService
+            description: Get overall execution metrics
+            operationId: IntentExecutionService_GetExecutionMetrics
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/api.pinai_intent.v1.GetExecutionMetricsResponse'
     /pinai_intent/intent/broadcast:
         post:
             tags:
@@ -124,6 +314,71 @@ paths:
                                 $ref: '#/components/schemas/api.pinai_intent.v1.GetIntentStatusResponse'
 components:
     schemas:
+        api.pinai_intent.v1.AgentStatus:
+            type: object
+            properties:
+                agentId:
+                    type: string
+                agentType:
+                    type: string
+                status:
+                    type: string
+                activeIntents:
+                    type: integer
+                    format: int32
+                processedIntents:
+                    type: string
+                successfulBids:
+                    type: string
+                totalEarnings:
+                    type: string
+                lastActivity:
+                    type: string
+                connectedPeers:
+                    type: integer
+                    format: int32
+            description: Service Agent status and metrics
+        api.pinai_intent.v1.BidMessage:
+            type: object
+            properties:
+                intentId:
+                    type: string
+                agentId:
+                    type: string
+                bidAmount:
+                    type: string
+                capabilities:
+                    type: array
+                    items:
+                        type: string
+                timestamp:
+                    type: string
+                agentType:
+                    type: string
+                metadata:
+                    type: object
+                    additionalProperties:
+                        type: string
+        api.pinai_intent.v1.BlockBuilderStatus:
+            type: object
+            properties:
+                builderId:
+                    type: string
+                status:
+                    type: string
+                activeSessions:
+                    type: integer
+                    format: int32
+                completedMatches:
+                    type: string
+                totalBidsReceived:
+                    type: string
+                lastActivity:
+                    type: string
+                connectedPeers:
+                    type: integer
+                    format: int32
+            description: Block Builder status and metrics
         api.pinai_intent.v1.BroadcastIntentRequest:
             type: object
             properties:
@@ -184,12 +439,96 @@ components:
                 message:
                     type: string
             description: CreateIntent response message
+        api.pinai_intent.v1.ExecutionMetrics:
+            type: object
+            properties:
+                totalIntentsProcessed:
+                    type: string
+                totalBidsSubmitted:
+                    type: string
+                totalMatchesCompleted:
+                    type: string
+                successRate:
+                    type: number
+                    format: double
+                averageResponseTimeMs:
+                    type: string
+                activeAgents:
+                    type: integer
+                    format: int32
+                activeBuilders:
+                    type: integer
+                    format: int32
+                lastUpdated:
+                    type: string
+        api.pinai_intent.v1.GetActiveBidsResponse:
+            type: object
+            properties:
+                bids:
+                    type: array
+                    items:
+                        $ref: '#/components/schemas/api.pinai_intent.v1.BidMessage'
+                success:
+                    type: boolean
+                message:
+                    type: string
+        api.pinai_intent.v1.GetAgentsStatusResponse:
+            type: object
+            properties:
+                agents:
+                    type: array
+                    items:
+                        $ref: '#/components/schemas/api.pinai_intent.v1.AgentStatus'
+                totalAgents:
+                    type: integer
+                    format: int32
+                success:
+                    type: boolean
+                message:
+                    type: string
+        api.pinai_intent.v1.GetBuildersStatusResponse:
+            type: object
+            properties:
+                builders:
+                    type: array
+                    items:
+                        $ref: '#/components/schemas/api.pinai_intent.v1.BlockBuilderStatus'
+                totalBuilders:
+                    type: integer
+                    format: int32
+                success:
+                    type: boolean
+                message:
+                    type: string
+        api.pinai_intent.v1.GetExecutionMetricsResponse:
+            type: object
+            properties:
+                metrics:
+                    $ref: '#/components/schemas/api.pinai_intent.v1.ExecutionMetrics'
+                success:
+                    type: boolean
+                message:
+                    type: string
         api.pinai_intent.v1.GetIntentStatusResponse:
             type: object
             properties:
                 intent:
                     $ref: '#/components/schemas/api.pinai_intent.v1.Intent'
             description: GetIntentStatus response message
+        api.pinai_intent.v1.GetMatchHistoryResponse:
+            type: object
+            properties:
+                matches:
+                    type: array
+                    items:
+                        $ref: '#/components/schemas/api.pinai_intent.v1.MatchResult'
+                total:
+                    type: integer
+                    format: int32
+                success:
+                    type: boolean
+                message:
+                    type: string
         api.pinai_intent.v1.Intent:
             type: object
             properties:
@@ -248,6 +587,28 @@ components:
                 context:
                     type: string
             description: IntentManifest describes the intent task and requirements
+        api.pinai_intent.v1.MatchResult:
+            type: object
+            properties:
+                intentId:
+                    type: string
+                winningAgent:
+                    type: string
+                winningBid:
+                    type: string
+                totalBids:
+                    type: integer
+                    format: int32
+                matchedAt:
+                    type: string
+                status:
+                    type: string
+                blockBuilderId:
+                    type: string
+                metadata:
+                    type: object
+                    additionalProperties:
+                        type: string
         api.pinai_intent.v1.QueryIntentsResponse:
             type: object
             properties:
@@ -259,6 +620,62 @@ components:
                     type: integer
                     format: int32
             description: QueryIntents response message
+        api.pinai_intent.v1.StartAgentRequest:
+            type: object
+            properties:
+                agentId:
+                    type: string
+        api.pinai_intent.v1.StartAgentResponse:
+            type: object
+            properties:
+                success:
+                    type: boolean
+                message:
+                    type: string
+                agentId:
+                    type: string
+        api.pinai_intent.v1.StartBuilderRequest:
+            type: object
+            properties:
+                builderId:
+                    type: string
+        api.pinai_intent.v1.StartBuilderResponse:
+            type: object
+            properties:
+                success:
+                    type: boolean
+                message:
+                    type: string
+                builderId:
+                    type: string
+        api.pinai_intent.v1.StopAgentRequest:
+            type: object
+            properties:
+                agentId:
+                    type: string
+        api.pinai_intent.v1.StopAgentResponse:
+            type: object
+            properties:
+                success:
+                    type: boolean
+                message:
+                    type: string
+                agentId:
+                    type: string
+        api.pinai_intent.v1.StopBuilderRequest:
+            type: object
+            properties:
+                builderId:
+                    type: string
+        api.pinai_intent.v1.StopBuilderResponse:
+            type: object
+            properties:
+                success:
+                    type: boolean
+                message:
+                    type: string
+                builderId:
+                    type: string
         api.pinai_intent.v1.Tag:
             type: object
             properties:
@@ -278,5 +695,7 @@ components:
 tags:
     - name: Greeter
       description: The greeting service definition.
+    - name: IntentExecutionService
+      description: Intent Execution Service
     - name: IntentService
       description: Intent service definition
