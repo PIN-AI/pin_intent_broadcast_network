@@ -1,0 +1,219 @@
+# Service Agents Configuration
+# 服务代理配置文件
+
+automation:
+  enabled: true
+  auto_start: true
+  log_level: "info"
+
+agents:
+  - agent_id: "trading-agent-001"
+    agent_type: "trading"
+    name: "高频交易代理"
+    description: "专注于加密货币交易和套利操作"
+    auto_start: true
+    
+    # 能力配置
+    capabilities:
+      - "trade"
+      - "trading" 
+      - "arbitrage"
+      - "market_making"
+      - "liquidity_provision"
+    
+    specializations:
+      - "cryptocurrency"
+      - "defi"
+      - "spot_trading"
+      - "derivatives"
+    
+    # 出价策略
+    bid_strategy:
+      type: "aggressive"        # 激进策略，追求高收益
+      base_fee: "2000"
+      profit_margin: 0.20       # 20%利润率
+      risk_factor: 0.15         # 15%风险因子
+    
+    # 资源限制
+    max_concurrent_intents: 10
+    min_bid_amount: "1000"
+    max_bid_amount: "50000"
+    
+    # 意图过滤规则
+    intent_filter:
+      allowed_types:
+        - "trade"
+        - "swap" 
+        - "exchange"
+        - "arbitrage"
+      blocked_types: []
+      allowed_senders: []
+      blocked_senders: []
+      min_priority: 3
+      max_priority: 10
+      required_tags:
+        - "trading_history"
+
+  - agent_id: "data-agent-001"
+    agent_type: "data_access"
+    name: "数据访问代理"
+    description: "专注于数据查询、分析和报告服务"
+    auto_start: true
+    
+    # 能力配置
+    capabilities:
+      - "data_access"
+      - "analytics"
+      - "reporting"
+      - "data_processing"
+      - "market_data"
+    
+    specializations:
+      - "financial_data"
+      - "market_analysis"
+      - "risk_assessment"
+      - "compliance_reporting"
+    
+    # 出价策略
+    bid_strategy:
+      type: "conservative"      # 保守策略，稳定收益
+      base_fee: "1500"
+      profit_margin: 0.10       # 10%利润率
+      risk_factor: 0.05         # 5%风险因子
+    
+    # 资源限制
+    max_concurrent_intents: 15
+    min_bid_amount: "500"
+    max_bid_amount: "20000"
+    
+    # 意图过滤规则
+    intent_filter:
+      allowed_types:
+        - "data_access"
+        - "analytics"
+        - "query"
+        - "reporting"
+      blocked_types:
+        - "trade"  # 不处理交易类意图
+      allowed_senders: []
+      blocked_senders: []
+      min_priority: 1
+      max_priority: 8
+      required_tags: []
+
+  - agent_id: "general-agent-001"
+    agent_type: "general"
+    name: "通用服务代理"
+    description: "处理多种类型的通用服务需求"
+    auto_start: true
+    
+    # 能力配置
+    capabilities:
+      - "general"
+      - "computation"
+      - "processing"
+      - "validation"
+      - "notification"
+    
+    specializations:
+      - "workflow_automation"
+      - "data_validation"
+      - "notification_service"
+      - "batch_processing"
+    
+    # 出价策略
+    bid_strategy:
+      type: "balanced"          # 平衡策略
+      base_fee: "1000"
+      profit_margin: 0.15       # 15%利润率
+      risk_factor: 0.10         # 10%风险因子
+    
+    # 资源限制
+    max_concurrent_intents: 20
+    min_bid_amount: "300"
+    max_bid_amount: "30000"
+    
+    # 意图过滤规则
+    intent_filter:
+      allowed_types: []         # 接受所有类型
+      blocked_types: []
+      allowed_senders: []
+      blocked_senders: []
+      min_priority: 1
+      max_priority: 10
+      required_tags: []
+
+  - agent_id: "computation-agent-001"
+    agent_type: "computation"
+    name: "计算服务代理"
+    description: "专注于高性能计算和算法服务"
+    auto_start: false          # 手动启动
+    
+    # 能力配置
+    capabilities:
+      - "computation"
+      - "algorithm"
+      - "optimization"
+      - "machine_learning"
+      - "simulation"
+    
+    specializations:
+      - "quantitative_analysis"
+      - "risk_modeling"
+      - "portfolio_optimization"
+      - "backtesting"
+    
+    # 出价策略
+    bid_strategy:
+      type: "aggressive"        # 激进策略，计算资源珍贵
+      base_fee: "3000"
+      profit_margin: 0.25       # 25%利润率
+      risk_factor: 0.20         # 20%风险因子
+    
+    # 资源限制
+    max_concurrent_intents: 5   # 计算密集，并发数低
+    min_bid_amount: "2000"
+    max_bid_amount: "100000"
+    
+    # 意图过滤规则
+    intent_filter:
+      allowed_types:
+        - "computation"
+        - "algorithm"
+        - "optimization"
+        - "simulation"
+      blocked_types:
+        - "simple_query"  # 不处理简单查询
+      allowed_senders: []
+      blocked_senders: []
+      min_priority: 5     # 只处理高优先级任务
+      max_priority: 10
+      required_tags:
+        - "computation_required"
+
+# 全局配置
+global_settings:
+  # P2P网络配置
+  p2p_network:
+    enabled: true
+    bootstrap_peers: []
+    
+  # 监控配置
+  monitoring:
+    metrics_enabled: true
+    metrics_interval: 30      # 秒
+    status_check_interval: 10 # 秒
+    
+  # 日志配置
+  logging:
+    level: "info"
+    file_path: "logs/agents.log"
+    max_file_size_mb: 100
+    max_backups: 5
+    
+  # 出价配置
+  bidding:
+    timeout_seconds: 30
+    retry_attempts: 3
+    commitment_enabled: true
+    commitment_algorithm: "sha256"

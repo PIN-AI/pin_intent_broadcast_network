@@ -245,3 +245,432 @@ var IntentService_ServiceDesc = grpc.ServiceDesc{
 	Streams:  []grpc.StreamDesc{},
 	Metadata: "pinai_intent/v1/intent.proto",
 }
+
+const (
+	IntentExecutionService_GetAgentsStatus_FullMethodName     = "/api.pinai_intent.v1.IntentExecutionService/GetAgentsStatus"
+	IntentExecutionService_GetBuildersStatus_FullMethodName   = "/api.pinai_intent.v1.IntentExecutionService/GetBuildersStatus"
+	IntentExecutionService_GetExecutionMetrics_FullMethodName = "/api.pinai_intent.v1.IntentExecutionService/GetExecutionMetrics"
+	IntentExecutionService_StartAgent_FullMethodName          = "/api.pinai_intent.v1.IntentExecutionService/StartAgent"
+	IntentExecutionService_StopAgent_FullMethodName           = "/api.pinai_intent.v1.IntentExecutionService/StopAgent"
+	IntentExecutionService_StartBuilder_FullMethodName        = "/api.pinai_intent.v1.IntentExecutionService/StartBuilder"
+	IntentExecutionService_StopBuilder_FullMethodName         = "/api.pinai_intent.v1.IntentExecutionService/StopBuilder"
+	IntentExecutionService_GetActiveBids_FullMethodName       = "/api.pinai_intent.v1.IntentExecutionService/GetActiveBids"
+	IntentExecutionService_GetMatchHistory_FullMethodName     = "/api.pinai_intent.v1.IntentExecutionService/GetMatchHistory"
+)
+
+// IntentExecutionServiceClient is the client API for IntentExecutionService service.
+//
+// For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
+//
+// Intent Execution Service
+type IntentExecutionServiceClient interface {
+	// Get all service agents status
+	GetAgentsStatus(ctx context.Context, in *GetAgentsStatusRequest, opts ...grpc.CallOption) (*GetAgentsStatusResponse, error)
+	// Get all block builders status
+	GetBuildersStatus(ctx context.Context, in *GetBuildersStatusRequest, opts ...grpc.CallOption) (*GetBuildersStatusResponse, error)
+	// Get overall execution metrics
+	GetExecutionMetrics(ctx context.Context, in *GetExecutionMetricsRequest, opts ...grpc.CallOption) (*GetExecutionMetricsResponse, error)
+	// Start a specific agent
+	StartAgent(ctx context.Context, in *StartAgentRequest, opts ...grpc.CallOption) (*StartAgentResponse, error)
+	// Stop a specific agent
+	StopAgent(ctx context.Context, in *StopAgentRequest, opts ...grpc.CallOption) (*StopAgentResponse, error)
+	// Start a specific builder
+	StartBuilder(ctx context.Context, in *StartBuilderRequest, opts ...grpc.CallOption) (*StartBuilderResponse, error)
+	// Stop a specific builder
+	StopBuilder(ctx context.Context, in *StopBuilderRequest, opts ...grpc.CallOption) (*StopBuilderResponse, error)
+	// Get active bids for an intent
+	GetActiveBids(ctx context.Context, in *GetActiveBidsRequest, opts ...grpc.CallOption) (*GetActiveBidsResponse, error)
+	// Get match history
+	GetMatchHistory(ctx context.Context, in *GetMatchHistoryRequest, opts ...grpc.CallOption) (*GetMatchHistoryResponse, error)
+}
+
+type intentExecutionServiceClient struct {
+	cc grpc.ClientConnInterface
+}
+
+func NewIntentExecutionServiceClient(cc grpc.ClientConnInterface) IntentExecutionServiceClient {
+	return &intentExecutionServiceClient{cc}
+}
+
+func (c *intentExecutionServiceClient) GetAgentsStatus(ctx context.Context, in *GetAgentsStatusRequest, opts ...grpc.CallOption) (*GetAgentsStatusResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(GetAgentsStatusResponse)
+	err := c.cc.Invoke(ctx, IntentExecutionService_GetAgentsStatus_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *intentExecutionServiceClient) GetBuildersStatus(ctx context.Context, in *GetBuildersStatusRequest, opts ...grpc.CallOption) (*GetBuildersStatusResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(GetBuildersStatusResponse)
+	err := c.cc.Invoke(ctx, IntentExecutionService_GetBuildersStatus_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *intentExecutionServiceClient) GetExecutionMetrics(ctx context.Context, in *GetExecutionMetricsRequest, opts ...grpc.CallOption) (*GetExecutionMetricsResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(GetExecutionMetricsResponse)
+	err := c.cc.Invoke(ctx, IntentExecutionService_GetExecutionMetrics_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *intentExecutionServiceClient) StartAgent(ctx context.Context, in *StartAgentRequest, opts ...grpc.CallOption) (*StartAgentResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(StartAgentResponse)
+	err := c.cc.Invoke(ctx, IntentExecutionService_StartAgent_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *intentExecutionServiceClient) StopAgent(ctx context.Context, in *StopAgentRequest, opts ...grpc.CallOption) (*StopAgentResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(StopAgentResponse)
+	err := c.cc.Invoke(ctx, IntentExecutionService_StopAgent_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *intentExecutionServiceClient) StartBuilder(ctx context.Context, in *StartBuilderRequest, opts ...grpc.CallOption) (*StartBuilderResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(StartBuilderResponse)
+	err := c.cc.Invoke(ctx, IntentExecutionService_StartBuilder_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *intentExecutionServiceClient) StopBuilder(ctx context.Context, in *StopBuilderRequest, opts ...grpc.CallOption) (*StopBuilderResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(StopBuilderResponse)
+	err := c.cc.Invoke(ctx, IntentExecutionService_StopBuilder_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *intentExecutionServiceClient) GetActiveBids(ctx context.Context, in *GetActiveBidsRequest, opts ...grpc.CallOption) (*GetActiveBidsResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(GetActiveBidsResponse)
+	err := c.cc.Invoke(ctx, IntentExecutionService_GetActiveBids_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *intentExecutionServiceClient) GetMatchHistory(ctx context.Context, in *GetMatchHistoryRequest, opts ...grpc.CallOption) (*GetMatchHistoryResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(GetMatchHistoryResponse)
+	err := c.cc.Invoke(ctx, IntentExecutionService_GetMatchHistory_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+// IntentExecutionServiceServer is the server API for IntentExecutionService service.
+// All implementations must embed UnimplementedIntentExecutionServiceServer
+// for forward compatibility.
+//
+// Intent Execution Service
+type IntentExecutionServiceServer interface {
+	// Get all service agents status
+	GetAgentsStatus(context.Context, *GetAgentsStatusRequest) (*GetAgentsStatusResponse, error)
+	// Get all block builders status
+	GetBuildersStatus(context.Context, *GetBuildersStatusRequest) (*GetBuildersStatusResponse, error)
+	// Get overall execution metrics
+	GetExecutionMetrics(context.Context, *GetExecutionMetricsRequest) (*GetExecutionMetricsResponse, error)
+	// Start a specific agent
+	StartAgent(context.Context, *StartAgentRequest) (*StartAgentResponse, error)
+	// Stop a specific agent
+	StopAgent(context.Context, *StopAgentRequest) (*StopAgentResponse, error)
+	// Start a specific builder
+	StartBuilder(context.Context, *StartBuilderRequest) (*StartBuilderResponse, error)
+	// Stop a specific builder
+	StopBuilder(context.Context, *StopBuilderRequest) (*StopBuilderResponse, error)
+	// Get active bids for an intent
+	GetActiveBids(context.Context, *GetActiveBidsRequest) (*GetActiveBidsResponse, error)
+	// Get match history
+	GetMatchHistory(context.Context, *GetMatchHistoryRequest) (*GetMatchHistoryResponse, error)
+	mustEmbedUnimplementedIntentExecutionServiceServer()
+}
+
+// UnimplementedIntentExecutionServiceServer must be embedded to have
+// forward compatible implementations.
+//
+// NOTE: this should be embedded by value instead of pointer to avoid a nil
+// pointer dereference when methods are called.
+type UnimplementedIntentExecutionServiceServer struct{}
+
+func (UnimplementedIntentExecutionServiceServer) GetAgentsStatus(context.Context, *GetAgentsStatusRequest) (*GetAgentsStatusResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetAgentsStatus not implemented")
+}
+func (UnimplementedIntentExecutionServiceServer) GetBuildersStatus(context.Context, *GetBuildersStatusRequest) (*GetBuildersStatusResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetBuildersStatus not implemented")
+}
+func (UnimplementedIntentExecutionServiceServer) GetExecutionMetrics(context.Context, *GetExecutionMetricsRequest) (*GetExecutionMetricsResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetExecutionMetrics not implemented")
+}
+func (UnimplementedIntentExecutionServiceServer) StartAgent(context.Context, *StartAgentRequest) (*StartAgentResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method StartAgent not implemented")
+}
+func (UnimplementedIntentExecutionServiceServer) StopAgent(context.Context, *StopAgentRequest) (*StopAgentResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method StopAgent not implemented")
+}
+func (UnimplementedIntentExecutionServiceServer) StartBuilder(context.Context, *StartBuilderRequest) (*StartBuilderResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method StartBuilder not implemented")
+}
+func (UnimplementedIntentExecutionServiceServer) StopBuilder(context.Context, *StopBuilderRequest) (*StopBuilderResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method StopBuilder not implemented")
+}
+func (UnimplementedIntentExecutionServiceServer) GetActiveBids(context.Context, *GetActiveBidsRequest) (*GetActiveBidsResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetActiveBids not implemented")
+}
+func (UnimplementedIntentExecutionServiceServer) GetMatchHistory(context.Context, *GetMatchHistoryRequest) (*GetMatchHistoryResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetMatchHistory not implemented")
+}
+func (UnimplementedIntentExecutionServiceServer) mustEmbedUnimplementedIntentExecutionServiceServer() {
+}
+func (UnimplementedIntentExecutionServiceServer) testEmbeddedByValue() {}
+
+// UnsafeIntentExecutionServiceServer may be embedded to opt out of forward compatibility for this service.
+// Use of this interface is not recommended, as added methods to IntentExecutionServiceServer will
+// result in compilation errors.
+type UnsafeIntentExecutionServiceServer interface {
+	mustEmbedUnimplementedIntentExecutionServiceServer()
+}
+
+func RegisterIntentExecutionServiceServer(s grpc.ServiceRegistrar, srv IntentExecutionServiceServer) {
+	// If the following call pancis, it indicates UnimplementedIntentExecutionServiceServer was
+	// embedded by pointer and is nil.  This will cause panics if an
+	// unimplemented method is ever invoked, so we test this at initialization
+	// time to prevent it from happening at runtime later due to I/O.
+	if t, ok := srv.(interface{ testEmbeddedByValue() }); ok {
+		t.testEmbeddedByValue()
+	}
+	s.RegisterService(&IntentExecutionService_ServiceDesc, srv)
+}
+
+func _IntentExecutionService_GetAgentsStatus_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetAgentsStatusRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(IntentExecutionServiceServer).GetAgentsStatus(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: IntentExecutionService_GetAgentsStatus_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(IntentExecutionServiceServer).GetAgentsStatus(ctx, req.(*GetAgentsStatusRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _IntentExecutionService_GetBuildersStatus_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetBuildersStatusRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(IntentExecutionServiceServer).GetBuildersStatus(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: IntentExecutionService_GetBuildersStatus_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(IntentExecutionServiceServer).GetBuildersStatus(ctx, req.(*GetBuildersStatusRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _IntentExecutionService_GetExecutionMetrics_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetExecutionMetricsRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(IntentExecutionServiceServer).GetExecutionMetrics(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: IntentExecutionService_GetExecutionMetrics_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(IntentExecutionServiceServer).GetExecutionMetrics(ctx, req.(*GetExecutionMetricsRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _IntentExecutionService_StartAgent_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(StartAgentRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(IntentExecutionServiceServer).StartAgent(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: IntentExecutionService_StartAgent_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(IntentExecutionServiceServer).StartAgent(ctx, req.(*StartAgentRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _IntentExecutionService_StopAgent_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(StopAgentRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(IntentExecutionServiceServer).StopAgent(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: IntentExecutionService_StopAgent_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(IntentExecutionServiceServer).StopAgent(ctx, req.(*StopAgentRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _IntentExecutionService_StartBuilder_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(StartBuilderRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(IntentExecutionServiceServer).StartBuilder(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: IntentExecutionService_StartBuilder_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(IntentExecutionServiceServer).StartBuilder(ctx, req.(*StartBuilderRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _IntentExecutionService_StopBuilder_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(StopBuilderRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(IntentExecutionServiceServer).StopBuilder(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: IntentExecutionService_StopBuilder_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(IntentExecutionServiceServer).StopBuilder(ctx, req.(*StopBuilderRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _IntentExecutionService_GetActiveBids_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetActiveBidsRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(IntentExecutionServiceServer).GetActiveBids(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: IntentExecutionService_GetActiveBids_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(IntentExecutionServiceServer).GetActiveBids(ctx, req.(*GetActiveBidsRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _IntentExecutionService_GetMatchHistory_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetMatchHistoryRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(IntentExecutionServiceServer).GetMatchHistory(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: IntentExecutionService_GetMatchHistory_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(IntentExecutionServiceServer).GetMatchHistory(ctx, req.(*GetMatchHistoryRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+// IntentExecutionService_ServiceDesc is the grpc.ServiceDesc for IntentExecutionService service.
+// It's only intended for direct use with grpc.RegisterService,
+// and not to be introspected or modified (even as a copy)
+var IntentExecutionService_ServiceDesc = grpc.ServiceDesc{
+	ServiceName: "api.pinai_intent.v1.IntentExecutionService",
+	HandlerType: (*IntentExecutionServiceServer)(nil),
+	Methods: []grpc.MethodDesc{
+		{
+			MethodName: "GetAgentsStatus",
+			Handler:    _IntentExecutionService_GetAgentsStatus_Handler,
+		},
+		{
+			MethodName: "GetBuildersStatus",
+			Handler:    _IntentExecutionService_GetBuildersStatus_Handler,
+		},
+		{
+			MethodName: "GetExecutionMetrics",
+			Handler:    _IntentExecutionService_GetExecutionMetrics_Handler,
+		},
+		{
+			MethodName: "StartAgent",
+			Handler:    _IntentExecutionService_StartAgent_Handler,
+		},
+		{
+			MethodName: "StopAgent",
+			Handler:    _IntentExecutionService_StopAgent_Handler,
+		},
+		{
+			MethodName: "StartBuilder",
+			Handler:    _IntentExecutionService_StartBuilder_Handler,
+		},
+		{
+			MethodName: "StopBuilder",
+			Handler:    _IntentExecutionService_StopBuilder_Handler,
+		},
+		{
+			MethodName: "GetActiveBids",
+			Handler:    _IntentExecutionService_GetActiveBids_Handler,
+		},
+		{
+			MethodName: "GetMatchHistory",
+			Handler:    _IntentExecutionService_GetMatchHistory_Handler,
+		},
+	},
+	Streams:  []grpc.StreamDesc{},
+	Metadata: "pinai_intent/v1/intent.proto",
+}

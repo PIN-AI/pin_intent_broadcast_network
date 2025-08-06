@@ -11,6 +11,7 @@ import (
 	"github.com/go-kratos/kratos/v2/log"
 	"go.uber.org/zap"
 	"pin_intent_broadcast_network/internal/biz"
+	"pin_intent_broadcast_network/internal/biz/execution"
 	"pin_intent_broadcast_network/internal/biz/intent"
 	"pin_intent_broadcast_network/internal/conf"
 	"pin_intent_broadcast_network/internal/data"
@@ -38,14 +39,16 @@ func wireApp(bootstrap *conf.Bootstrap, logger log.Logger) (*kratos.App, func(),
 	greeterUsecase := biz.NewGreeterUsecase(greeterRepo, logger)
 	greeterService := service.NewGreeterService(greeterUsecase)
 	intentService := service.NewIntentService(logger)
-	grpcServer := server.NewGRPCServer(confServer, greeterService, intentService, logger)
-	httpServer := server.NewHTTPServer(confServer, greeterService, intentService, logger)
 	zapLogger := NewZapLogger(logger)
 	networkManager := p2p.NewNetworkManager(zapLogger)
 	transportManager := transport.NewTransportManagerWithP2P(networkManager, zapLogger)
+	automationManager := execution.NewAutomationManager(transportManager, zapLogger)
+	executionService := service.NewExecutionService(automationManager, zapLogger)
+	grpcServer := server.NewGRPCServer(confServer, greeterService, intentService, executionService, logger)
+	httpServer := server.NewHTTPServer(confServer, greeterService, intentService, executionService, logger)
 	config := intent.NewConfig()
 	manager := intent.NewManagerWithDefaults(transportManager, config, logger)
-	app := newApp(logger, grpcServer, httpServer, networkManager, transportManager, manager, bootstrap)
+	app := newApp(logger, grpcServer, httpServer, networkManager, transportManager, manager, automationManager, bootstrap)
 	return app, func() {
 		cleanup()
 	}, nil

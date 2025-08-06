@@ -7,6 +7,7 @@ import (
 	"time"
 
 	"pin_intent_broadcast_network/internal/biz/common"
+	"pin_intent_broadcast_network/internal/biz/execution"
 	"pin_intent_broadcast_network/internal/biz/intent"
 	"pin_intent_broadcast_network/internal/conf"
 	"pin_intent_broadcast_network/internal/p2p"
@@ -39,7 +40,7 @@ func init() {
 	flag.StringVar(&flagconf, "conf", "../../configs", "config path, eg: -conf config.yaml")
 }
 
-func newApp(logger log.Logger, gs *grpc.Server, hs *http.Server, networkManager p2p.NetworkManager, transportManager transport.TransportManager, intentManager common.IntentManager, bootstrap *conf.Bootstrap) *kratos.App {
+func newApp(logger log.Logger, gs *grpc.Server, hs *http.Server, networkManager p2p.NetworkManager, transportManager transport.TransportManager, intentManager common.IntentManager, automationMgr *execution.AutomationManager, bootstrap *conf.Bootstrap) *kratos.App {
 	return kratos.New(
 		kratos.ID(id),
 		kratos.Name(Name),
@@ -121,9 +122,27 @@ func newApp(logger log.Logger, gs *grpc.Server, hs *http.Server, networkManager 
 				}
 			}
 
+			// Start automation manager
+			if automationMgr != nil {
+				if err := automationMgr.Start(ctx); err != nil {
+					logger.Log(log.LevelError, "msg", "Failed to start automation manager", "error", err)
+					return err
+				}
+				logger.Log(log.LevelInfo, "msg", "Automation manager started successfully")
+			}
+
 			return nil
 		}),
 		kratos.AfterStop(func(ctx context.Context) error {
+			// Stop automation manager
+			if automationMgr != nil {
+				if err := automationMgr.Stop(); err != nil {
+					logger.Log(log.LevelError, "msg", "Failed to stop automation manager", "error", err)
+				} else {
+					logger.Log(log.LevelInfo, "msg", "Automation manager stopped")
+				}
+			}
+
 			// Stop transport manager
 			if transportManager != nil {
 				if err := transportManager.Stop(); err != nil {

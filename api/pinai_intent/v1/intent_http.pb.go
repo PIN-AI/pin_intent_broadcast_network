@@ -191,3 +191,382 @@ func (c *IntentServiceHTTPClientImpl) QueryIntents(ctx context.Context, in *Quer
 	}
 	return &out, nil
 }
+
+const OperationIntentExecutionServiceGetActiveBids = "/api.pinai_intent.v1.IntentExecutionService/GetActiveBids"
+const OperationIntentExecutionServiceGetAgentsStatus = "/api.pinai_intent.v1.IntentExecutionService/GetAgentsStatus"
+const OperationIntentExecutionServiceGetBuildersStatus = "/api.pinai_intent.v1.IntentExecutionService/GetBuildersStatus"
+const OperationIntentExecutionServiceGetExecutionMetrics = "/api.pinai_intent.v1.IntentExecutionService/GetExecutionMetrics"
+const OperationIntentExecutionServiceGetMatchHistory = "/api.pinai_intent.v1.IntentExecutionService/GetMatchHistory"
+const OperationIntentExecutionServiceStartAgent = "/api.pinai_intent.v1.IntentExecutionService/StartAgent"
+const OperationIntentExecutionServiceStartBuilder = "/api.pinai_intent.v1.IntentExecutionService/StartBuilder"
+const OperationIntentExecutionServiceStopAgent = "/api.pinai_intent.v1.IntentExecutionService/StopAgent"
+const OperationIntentExecutionServiceStopBuilder = "/api.pinai_intent.v1.IntentExecutionService/StopBuilder"
+
+type IntentExecutionServiceHTTPServer interface {
+	// GetActiveBids Get active bids for an intent
+	GetActiveBids(context.Context, *GetActiveBidsRequest) (*GetActiveBidsResponse, error)
+	// GetAgentsStatus Get all service agents status
+	GetAgentsStatus(context.Context, *GetAgentsStatusRequest) (*GetAgentsStatusResponse, error)
+	// GetBuildersStatus Get all block builders status
+	GetBuildersStatus(context.Context, *GetBuildersStatusRequest) (*GetBuildersStatusResponse, error)
+	// GetExecutionMetrics Get overall execution metrics
+	GetExecutionMetrics(context.Context, *GetExecutionMetricsRequest) (*GetExecutionMetricsResponse, error)
+	// GetMatchHistory Get match history
+	GetMatchHistory(context.Context, *GetMatchHistoryRequest) (*GetMatchHistoryResponse, error)
+	// StartAgent Start a specific agent
+	StartAgent(context.Context, *StartAgentRequest) (*StartAgentResponse, error)
+	// StartBuilder Start a specific builder
+	StartBuilder(context.Context, *StartBuilderRequest) (*StartBuilderResponse, error)
+	// StopAgent Stop a specific agent
+	StopAgent(context.Context, *StopAgentRequest) (*StopAgentResponse, error)
+	// StopBuilder Stop a specific builder
+	StopBuilder(context.Context, *StopBuilderRequest) (*StopBuilderResponse, error)
+}
+
+func RegisterIntentExecutionServiceHTTPServer(s *http.Server, srv IntentExecutionServiceHTTPServer) {
+	r := s.Route("/")
+	r.GET("/pinai_intent/execution/agents/status", _IntentExecutionService_GetAgentsStatus0_HTTP_Handler(srv))
+	r.GET("/pinai_intent/execution/builders/status", _IntentExecutionService_GetBuildersStatus0_HTTP_Handler(srv))
+	r.GET("/pinai_intent/execution/metrics", _IntentExecutionService_GetExecutionMetrics0_HTTP_Handler(srv))
+	r.POST("/pinai_intent/execution/agents/{agent_id}/start", _IntentExecutionService_StartAgent0_HTTP_Handler(srv))
+	r.POST("/pinai_intent/execution/agents/{agent_id}/stop", _IntentExecutionService_StopAgent0_HTTP_Handler(srv))
+	r.POST("/pinai_intent/execution/builders/{builder_id}/start", _IntentExecutionService_StartBuilder0_HTTP_Handler(srv))
+	r.POST("/pinai_intent/execution/builders/{builder_id}/stop", _IntentExecutionService_StopBuilder0_HTTP_Handler(srv))
+	r.GET("/pinai_intent/execution/intents/{intent_id}/bids", _IntentExecutionService_GetActiveBids0_HTTP_Handler(srv))
+	r.GET("/pinai_intent/execution/matches/history", _IntentExecutionService_GetMatchHistory0_HTTP_Handler(srv))
+}
+
+func _IntentExecutionService_GetAgentsStatus0_HTTP_Handler(srv IntentExecutionServiceHTTPServer) func(ctx http.Context) error {
+	return func(ctx http.Context) error {
+		var in GetAgentsStatusRequest
+		if err := ctx.BindQuery(&in); err != nil {
+			return err
+		}
+		http.SetOperation(ctx, OperationIntentExecutionServiceGetAgentsStatus)
+		h := ctx.Middleware(func(ctx context.Context, req interface{}) (interface{}, error) {
+			return srv.GetAgentsStatus(ctx, req.(*GetAgentsStatusRequest))
+		})
+		out, err := h(ctx, &in)
+		if err != nil {
+			return err
+		}
+		reply := out.(*GetAgentsStatusResponse)
+		return ctx.Result(200, reply)
+	}
+}
+
+func _IntentExecutionService_GetBuildersStatus0_HTTP_Handler(srv IntentExecutionServiceHTTPServer) func(ctx http.Context) error {
+	return func(ctx http.Context) error {
+		var in GetBuildersStatusRequest
+		if err := ctx.BindQuery(&in); err != nil {
+			return err
+		}
+		http.SetOperation(ctx, OperationIntentExecutionServiceGetBuildersStatus)
+		h := ctx.Middleware(func(ctx context.Context, req interface{}) (interface{}, error) {
+			return srv.GetBuildersStatus(ctx, req.(*GetBuildersStatusRequest))
+		})
+		out, err := h(ctx, &in)
+		if err != nil {
+			return err
+		}
+		reply := out.(*GetBuildersStatusResponse)
+		return ctx.Result(200, reply)
+	}
+}
+
+func _IntentExecutionService_GetExecutionMetrics0_HTTP_Handler(srv IntentExecutionServiceHTTPServer) func(ctx http.Context) error {
+	return func(ctx http.Context) error {
+		var in GetExecutionMetricsRequest
+		if err := ctx.BindQuery(&in); err != nil {
+			return err
+		}
+		http.SetOperation(ctx, OperationIntentExecutionServiceGetExecutionMetrics)
+		h := ctx.Middleware(func(ctx context.Context, req interface{}) (interface{}, error) {
+			return srv.GetExecutionMetrics(ctx, req.(*GetExecutionMetricsRequest))
+		})
+		out, err := h(ctx, &in)
+		if err != nil {
+			return err
+		}
+		reply := out.(*GetExecutionMetricsResponse)
+		return ctx.Result(200, reply)
+	}
+}
+
+func _IntentExecutionService_StartAgent0_HTTP_Handler(srv IntentExecutionServiceHTTPServer) func(ctx http.Context) error {
+	return func(ctx http.Context) error {
+		var in StartAgentRequest
+		if err := ctx.Bind(&in); err != nil {
+			return err
+		}
+		if err := ctx.BindQuery(&in); err != nil {
+			return err
+		}
+		if err := ctx.BindVars(&in); err != nil {
+			return err
+		}
+		http.SetOperation(ctx, OperationIntentExecutionServiceStartAgent)
+		h := ctx.Middleware(func(ctx context.Context, req interface{}) (interface{}, error) {
+			return srv.StartAgent(ctx, req.(*StartAgentRequest))
+		})
+		out, err := h(ctx, &in)
+		if err != nil {
+			return err
+		}
+		reply := out.(*StartAgentResponse)
+		return ctx.Result(200, reply)
+	}
+}
+
+func _IntentExecutionService_StopAgent0_HTTP_Handler(srv IntentExecutionServiceHTTPServer) func(ctx http.Context) error {
+	return func(ctx http.Context) error {
+		var in StopAgentRequest
+		if err := ctx.Bind(&in); err != nil {
+			return err
+		}
+		if err := ctx.BindQuery(&in); err != nil {
+			return err
+		}
+		if err := ctx.BindVars(&in); err != nil {
+			return err
+		}
+		http.SetOperation(ctx, OperationIntentExecutionServiceStopAgent)
+		h := ctx.Middleware(func(ctx context.Context, req interface{}) (interface{}, error) {
+			return srv.StopAgent(ctx, req.(*StopAgentRequest))
+		})
+		out, err := h(ctx, &in)
+		if err != nil {
+			return err
+		}
+		reply := out.(*StopAgentResponse)
+		return ctx.Result(200, reply)
+	}
+}
+
+func _IntentExecutionService_StartBuilder0_HTTP_Handler(srv IntentExecutionServiceHTTPServer) func(ctx http.Context) error {
+	return func(ctx http.Context) error {
+		var in StartBuilderRequest
+		if err := ctx.Bind(&in); err != nil {
+			return err
+		}
+		if err := ctx.BindQuery(&in); err != nil {
+			return err
+		}
+		if err := ctx.BindVars(&in); err != nil {
+			return err
+		}
+		http.SetOperation(ctx, OperationIntentExecutionServiceStartBuilder)
+		h := ctx.Middleware(func(ctx context.Context, req interface{}) (interface{}, error) {
+			return srv.StartBuilder(ctx, req.(*StartBuilderRequest))
+		})
+		out, err := h(ctx, &in)
+		if err != nil {
+			return err
+		}
+		reply := out.(*StartBuilderResponse)
+		return ctx.Result(200, reply)
+	}
+}
+
+func _IntentExecutionService_StopBuilder0_HTTP_Handler(srv IntentExecutionServiceHTTPServer) func(ctx http.Context) error {
+	return func(ctx http.Context) error {
+		var in StopBuilderRequest
+		if err := ctx.Bind(&in); err != nil {
+			return err
+		}
+		if err := ctx.BindQuery(&in); err != nil {
+			return err
+		}
+		if err := ctx.BindVars(&in); err != nil {
+			return err
+		}
+		http.SetOperation(ctx, OperationIntentExecutionServiceStopBuilder)
+		h := ctx.Middleware(func(ctx context.Context, req interface{}) (interface{}, error) {
+			return srv.StopBuilder(ctx, req.(*StopBuilderRequest))
+		})
+		out, err := h(ctx, &in)
+		if err != nil {
+			return err
+		}
+		reply := out.(*StopBuilderResponse)
+		return ctx.Result(200, reply)
+	}
+}
+
+func _IntentExecutionService_GetActiveBids0_HTTP_Handler(srv IntentExecutionServiceHTTPServer) func(ctx http.Context) error {
+	return func(ctx http.Context) error {
+		var in GetActiveBidsRequest
+		if err := ctx.BindQuery(&in); err != nil {
+			return err
+		}
+		if err := ctx.BindVars(&in); err != nil {
+			return err
+		}
+		http.SetOperation(ctx, OperationIntentExecutionServiceGetActiveBids)
+		h := ctx.Middleware(func(ctx context.Context, req interface{}) (interface{}, error) {
+			return srv.GetActiveBids(ctx, req.(*GetActiveBidsRequest))
+		})
+		out, err := h(ctx, &in)
+		if err != nil {
+			return err
+		}
+		reply := out.(*GetActiveBidsResponse)
+		return ctx.Result(200, reply)
+	}
+}
+
+func _IntentExecutionService_GetMatchHistory0_HTTP_Handler(srv IntentExecutionServiceHTTPServer) func(ctx http.Context) error {
+	return func(ctx http.Context) error {
+		var in GetMatchHistoryRequest
+		if err := ctx.BindQuery(&in); err != nil {
+			return err
+		}
+		http.SetOperation(ctx, OperationIntentExecutionServiceGetMatchHistory)
+		h := ctx.Middleware(func(ctx context.Context, req interface{}) (interface{}, error) {
+			return srv.GetMatchHistory(ctx, req.(*GetMatchHistoryRequest))
+		})
+		out, err := h(ctx, &in)
+		if err != nil {
+			return err
+		}
+		reply := out.(*GetMatchHistoryResponse)
+		return ctx.Result(200, reply)
+	}
+}
+
+type IntentExecutionServiceHTTPClient interface {
+	GetActiveBids(ctx context.Context, req *GetActiveBidsRequest, opts ...http.CallOption) (rsp *GetActiveBidsResponse, err error)
+	GetAgentsStatus(ctx context.Context, req *GetAgentsStatusRequest, opts ...http.CallOption) (rsp *GetAgentsStatusResponse, err error)
+	GetBuildersStatus(ctx context.Context, req *GetBuildersStatusRequest, opts ...http.CallOption) (rsp *GetBuildersStatusResponse, err error)
+	GetExecutionMetrics(ctx context.Context, req *GetExecutionMetricsRequest, opts ...http.CallOption) (rsp *GetExecutionMetricsResponse, err error)
+	GetMatchHistory(ctx context.Context, req *GetMatchHistoryRequest, opts ...http.CallOption) (rsp *GetMatchHistoryResponse, err error)
+	StartAgent(ctx context.Context, req *StartAgentRequest, opts ...http.CallOption) (rsp *StartAgentResponse, err error)
+	StartBuilder(ctx context.Context, req *StartBuilderRequest, opts ...http.CallOption) (rsp *StartBuilderResponse, err error)
+	StopAgent(ctx context.Context, req *StopAgentRequest, opts ...http.CallOption) (rsp *StopAgentResponse, err error)
+	StopBuilder(ctx context.Context, req *StopBuilderRequest, opts ...http.CallOption) (rsp *StopBuilderResponse, err error)
+}
+
+type IntentExecutionServiceHTTPClientImpl struct {
+	cc *http.Client
+}
+
+func NewIntentExecutionServiceHTTPClient(client *http.Client) IntentExecutionServiceHTTPClient {
+	return &IntentExecutionServiceHTTPClientImpl{client}
+}
+
+func (c *IntentExecutionServiceHTTPClientImpl) GetActiveBids(ctx context.Context, in *GetActiveBidsRequest, opts ...http.CallOption) (*GetActiveBidsResponse, error) {
+	var out GetActiveBidsResponse
+	pattern := "/pinai_intent/execution/intents/{intent_id}/bids"
+	path := binding.EncodeURL(pattern, in, true)
+	opts = append(opts, http.Operation(OperationIntentExecutionServiceGetActiveBids))
+	opts = append(opts, http.PathTemplate(pattern))
+	err := c.cc.Invoke(ctx, "GET", path, nil, &out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return &out, nil
+}
+
+func (c *IntentExecutionServiceHTTPClientImpl) GetAgentsStatus(ctx context.Context, in *GetAgentsStatusRequest, opts ...http.CallOption) (*GetAgentsStatusResponse, error) {
+	var out GetAgentsStatusResponse
+	pattern := "/pinai_intent/execution/agents/status"
+	path := binding.EncodeURL(pattern, in, true)
+	opts = append(opts, http.Operation(OperationIntentExecutionServiceGetAgentsStatus))
+	opts = append(opts, http.PathTemplate(pattern))
+	err := c.cc.Invoke(ctx, "GET", path, nil, &out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return &out, nil
+}
+
+func (c *IntentExecutionServiceHTTPClientImpl) GetBuildersStatus(ctx context.Context, in *GetBuildersStatusRequest, opts ...http.CallOption) (*GetBuildersStatusResponse, error) {
+	var out GetBuildersStatusResponse
+	pattern := "/pinai_intent/execution/builders/status"
+	path := binding.EncodeURL(pattern, in, true)
+	opts = append(opts, http.Operation(OperationIntentExecutionServiceGetBuildersStatus))
+	opts = append(opts, http.PathTemplate(pattern))
+	err := c.cc.Invoke(ctx, "GET", path, nil, &out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return &out, nil
+}
+
+func (c *IntentExecutionServiceHTTPClientImpl) GetExecutionMetrics(ctx context.Context, in *GetExecutionMetricsRequest, opts ...http.CallOption) (*GetExecutionMetricsResponse, error) {
+	var out GetExecutionMetricsResponse
+	pattern := "/pinai_intent/execution/metrics"
+	path := binding.EncodeURL(pattern, in, true)
+	opts = append(opts, http.Operation(OperationIntentExecutionServiceGetExecutionMetrics))
+	opts = append(opts, http.PathTemplate(pattern))
+	err := c.cc.Invoke(ctx, "GET", path, nil, &out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return &out, nil
+}
+
+func (c *IntentExecutionServiceHTTPClientImpl) GetMatchHistory(ctx context.Context, in *GetMatchHistoryRequest, opts ...http.CallOption) (*GetMatchHistoryResponse, error) {
+	var out GetMatchHistoryResponse
+	pattern := "/pinai_intent/execution/matches/history"
+	path := binding.EncodeURL(pattern, in, true)
+	opts = append(opts, http.Operation(OperationIntentExecutionServiceGetMatchHistory))
+	opts = append(opts, http.PathTemplate(pattern))
+	err := c.cc.Invoke(ctx, "GET", path, nil, &out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return &out, nil
+}
+
+func (c *IntentExecutionServiceHTTPClientImpl) StartAgent(ctx context.Context, in *StartAgentRequest, opts ...http.CallOption) (*StartAgentResponse, error) {
+	var out StartAgentResponse
+	pattern := "/pinai_intent/execution/agents/{agent_id}/start"
+	path := binding.EncodeURL(pattern, in, false)
+	opts = append(opts, http.Operation(OperationIntentExecutionServiceStartAgent))
+	opts = append(opts, http.PathTemplate(pattern))
+	err := c.cc.Invoke(ctx, "POST", path, in, &out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return &out, nil
+}
+
+func (c *IntentExecutionServiceHTTPClientImpl) StartBuilder(ctx context.Context, in *StartBuilderRequest, opts ...http.CallOption) (*StartBuilderResponse, error) {
+	var out StartBuilderResponse
+	pattern := "/pinai_intent/execution/builders/{builder_id}/start"
+	path := binding.EncodeURL(pattern, in, false)
+	opts = append(opts, http.Operation(OperationIntentExecutionServiceStartBuilder))
+	opts = append(opts, http.PathTemplate(pattern))
+	err := c.cc.Invoke(ctx, "POST", path, in, &out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return &out, nil
+}
+
+func (c *IntentExecutionServiceHTTPClientImpl) StopAgent(ctx context.Context, in *StopAgentRequest, opts ...http.CallOption) (*StopAgentResponse, error) {
+	var out StopAgentResponse
+	pattern := "/pinai_intent/execution/agents/{agent_id}/stop"
+	path := binding.EncodeURL(pattern, in, false)
+	opts = append(opts, http.Operation(OperationIntentExecutionServiceStopAgent))
+	opts = append(opts, http.PathTemplate(pattern))
+	err := c.cc.Invoke(ctx, "POST", path, in, &out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return &out, nil
+}
+
+func (c *IntentExecutionServiceHTTPClientImpl) StopBuilder(ctx context.Context, in *StopBuilderRequest, opts ...http.CallOption) (*StopBuilderResponse, error) {
+	var out StopBuilderResponse
+	pattern := "/pinai_intent/execution/builders/{builder_id}/stop"
+	path := binding.EncodeURL(pattern, in, false)
+	opts = append(opts, http.Operation(OperationIntentExecutionServiceStopBuilder))
+	opts = append(opts, http.PathTemplate(pattern))
+	err := c.cc.Invoke(ctx, "POST", path, in, &out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return &out, nil
+}

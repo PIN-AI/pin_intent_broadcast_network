@@ -7,6 +7,7 @@ package main
 
 import (
 	"pin_intent_broadcast_network/internal/biz"
+	"pin_intent_broadcast_network/internal/biz/execution"
 	"pin_intent_broadcast_network/internal/conf"
 	"pin_intent_broadcast_network/internal/data"
 	"pin_intent_broadcast_network/internal/p2p"
@@ -35,6 +36,9 @@ func wireApp(*conf.Bootstrap, log.Logger) (*kratos.App, func(), error) {
 		// P2P and Transport providers (they use full bootstrap config)
 		p2p.ProviderSet,
 		transport.ProviderSet,
+
+		// Execution automation providers
+		execution.ProviderSet,
 
 		// Zap logger provider
 		NewZapLogger,

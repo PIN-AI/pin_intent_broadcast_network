@@ -147,3 +147,260 @@ service IntentService {
     };
   }
 }
+
+// Service Agent status and metrics
+message AgentStatus {
+  string agent_id = 1;
+  string agent_type = 2;
+  string status = 3;          // "active", "busy", "offline"
+  int32 active_intents = 4;
+  int64 processed_intents = 5;
+  int64 successful_bids = 6;
+  string total_earnings = 7;
+  int64 last_activity = 8;
+  int32 connected_peers = 9;
+}
+
+message AgentConfig {
+  string agent_id = 1;
+  string agent_type = 2;
+  string name = 3;
+  string description = 4;
+  repeated string capabilities = 5;
+  repeated string specializations = 6;
+  BidStrategy bid_strategy = 7;
+  int32 max_concurrent_intents = 8;
+  string min_bid_amount = 9;
+  string max_bid_amount = 10;
+  IntentFilter intent_filter = 11;
+}
+
+message BidStrategy {
+  string type = 1;              // "conservative", "aggressive", "balanced"
+  string base_fee = 2;
+  double profit_margin = 3;
+  double risk_factor = 4;
+}
+
+message IntentFilter {
+  repeated string allowed_types = 1;
+  repeated string blocked_types = 2;
+  repeated string allowed_senders = 3;
+  repeated string blocked_senders = 4;
+  int32 min_priority = 5;
+  int32 max_priority = 6;
+  repeated string required_tags = 7;
+}
+
+// Block Builder status and metrics
+message BlockBuilderStatus {
+  string builder_id = 1;
+  string status = 2;            // "active", "busy", "offline"
+  int32 active_sessions = 3;
+  int64 completed_matches = 4;
+  int64 total_bids_received = 5;
+  int64 last_activity = 6;
+  int32 connected_peers = 7;
+}
+
+message BlockBuilderConfig {
+  string builder_id = 1;
+  string matching_algorithm = 2;    // "highest_bid", "reputation_weighted", "random"
+  string settlement_mode = 3;       // "simulated", "blockchain"
+  int64 bid_collection_window_ms = 4;
+  int32 max_concurrent_intents = 5;
+  int32 min_bids_required = 6;
+}
+
+message BidMessage {
+  string intent_id = 1;
+  string agent_id = 2;
+  string bid_amount = 3;
+  repeated string capabilities = 4;
+  int64 timestamp = 5;
+  string agent_type = 6;
+  map<string, string> metadata = 7;
+}
+
+message MatchResult {
+  string intent_id = 1;
+  string winning_agent = 2;
+  string winning_bid = 3;
+  int32 total_bids = 4;
+  int64 matched_at = 5;
+  string status = 6;
+  string block_builder_id = 7;
+  map<string, string> metadata = 8;
+}
+
+// Execution API Messages
+message GetAgentsStatusRequest {}
+
+message GetAgentsStatusResponse {
+  repeated AgentStatus agents = 1;
+  int32 total_agents = 2;
+  bool success = 3;
+  string message = 4;
+}
+
+message GetBuildersStatusRequest {}
+
+message GetBuildersStatusResponse {
+  repeated BlockBuilderStatus builders = 1;
+  int32 total_builders = 2;
+  bool success = 3;
+  string message = 4;
+}
+
+message GetExecutionMetricsRequest {}
+
+message ExecutionMetrics {
+  int64 total_intents_processed = 1;
+  int64 total_bids_submitted = 2;
+  int64 total_matches_completed = 3;
+  double success_rate = 4;
+  int64 average_response_time_ms = 5;
+  int32 active_agents = 6;
+  int32 active_builders = 7;
+  int64 last_updated = 8;
+}
+
+message GetExecutionMetricsResponse {
+  ExecutionMetrics metrics = 1;
+  bool success = 2;
+  string message = 3;
+}
+
+message StartAgentRequest {
+  string agent_id = 1;
+}
+
+message StartAgentResponse {
+  bool success = 1;
+  string message = 2;
+  string agent_id = 3;
+}
+
+message StopAgentRequest {
+  string agent_id = 1;
+}
+
+message StopAgentResponse {
+  bool success = 1;
+  string message = 2;
+  string agent_id = 3;
+}
+
+message StartBuilderRequest {
+  string builder_id = 1;
+}
+
+message StartBuilderResponse {
+  bool success = 1;
+  string message = 2;
+  string builder_id = 3;
+}
+
+message StopBuilderRequest {
+  string builder_id = 1;
+}
+
+message StopBuilderResponse {
+  bool success = 1;
+  string message = 2;
+  string builder_id = 3;
+}
+
+message GetActiveBidsRequest {
+  string intent_id = 1;
+}
+
+message GetActiveBidsResponse {
+  repeated BidMessage bids = 1;
+  bool success = 2;
+  string message = 3;
+}
+
+message GetMatchHistoryRequest {
+  int64 start_time = 1;
+  int64 end_time = 2;
+  int32 limit = 3;
+  int32 offset = 4;
+}
+
+message GetMatchHistoryResponse {
+  repeated MatchResult matches = 1;
+  int32 total = 2;
+  bool success = 3;
+  string message = 4;
+}
+
+// Intent Execution Service
+service IntentExecutionService {
+  // Get all service agents status
+  rpc GetAgentsStatus(GetAgentsStatusRequest) returns (GetAgentsStatusResponse) {
+    option (google.api.http) = {
+      get: "/pinai_intent/execution/agents/status"
+    };
+  }
+
+  // Get all block builders status
+  rpc GetBuildersStatus(GetBuildersStatusRequest) returns (GetBuildersStatusResponse) {
+    option (google.api.http) = {
+      get: "/pinai_intent/execution/builders/status"
+    };
+  }
+
+  // Get overall execution metrics
+  rpc GetExecutionMetrics(GetExecutionMetricsRequest) returns (GetExecutionMetricsResponse) {
+    option (google.api.http) = {
+      get: "/pinai_intent/execution/metrics"
+    };
+  }
+
+  // Start a specific agent
+  rpc StartAgent(StartAgentRequest) returns (StartAgentResponse) {
+    option (google.api.http) = {
+      post: "/pinai_intent/execution/agents/{agent_id}/start"
+      body: "*"
+    };
+  }
+
+  // Stop a specific agent
+  rpc StopAgent(StopAgentRequest) returns (StopAgentResponse) {
+    option (google.api.http) = {
+      post: "/pinai_intent/execution/agents/{agent_id}/stop"
+      body: "*"
+    };
+  }
+
+  // Start a specific builder
+  rpc StartBuilder(StartBuilderRequest) returns (StartBuilderResponse) {
+    option (google.api.http) = {
+      post: "/pinai_intent/execution/builders/{builder_id}/start"
+      body: "*"
+    };
+  }
+
+  // Stop a specific builder
+  rpc StopBuilder(StopBuilderRequest) returns (StopBuilderResponse) {
+    option (google.api.http) = {
+      post: "/pinai_intent/execution/builders/{builder_id}/stop"
+      body: "*"
+    };
+  }
+
+  // Get active bids for an intent
+  rpc GetActiveBids(GetActiveBidsRequest) returns (GetActiveBidsResponse) {
+    option (google.api.http) = {
+      get: "/pinai_intent/execution/intents/{intent_id}/bids"
+    };
+  }
+
+  // Get match history
+  rpc GetMatchHistory(GetMatchHistoryRequest) returns (GetMatchHistoryResponse) {
+    option (google.api.http) = {
+      get: "/pinai_intent/execution/matches/history"
+    };
+  }
+}

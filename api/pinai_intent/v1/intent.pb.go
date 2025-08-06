@@ -913,6 +913,1829 @@ func (x *GetIntentStatusResponse) GetIntent() *Intent {
 	return nil
 }
 
+// Service Agent status and metrics
+type AgentStatus struct {
+	state            protoimpl.MessageState `protogen:"open.v1"`
+	AgentId          string                 `protobuf:"bytes,1,opt,name=agent_id,json=agentId,proto3" json:"agent_id,omitempty"`
+	AgentType        string                 `protobuf:"bytes,2,opt,name=agent_type,json=agentType,proto3" json:"agent_type,omitempty"`
+	Status           string                 `protobuf:"bytes,3,opt,name=status,proto3" json:"status,omitempty"` // "active", "busy", "offline"
+	ActiveIntents    int32                  `protobuf:"varint,4,opt,name=active_intents,json=activeIntents,proto3" json:"active_intents,omitempty"`
+	ProcessedIntents int64                  `protobuf:"varint,5,opt,name=processed_intents,json=processedIntents,proto3" json:"processed_intents,omitempty"`
+	SuccessfulBids   int64                  `protobuf:"varint,6,opt,name=successful_bids,json=successfulBids,proto3" json:"successful_bids,omitempty"`
+	TotalEarnings    string                 `protobuf:"bytes,7,opt,name=total_earnings,json=totalEarnings,proto3" json:"total_earnings,omitempty"`
+	LastActivity     int64                  `protobuf:"varint,8,opt,name=last_activity,json=lastActivity,proto3" json:"last_activity,omitempty"`
+	ConnectedPeers   int32                  `protobuf:"varint,9,opt,name=connected_peers,json=connectedPeers,proto3" json:"connected_peers,omitempty"`
+	unknownFields    protoimpl.UnknownFields
+	sizeCache        protoimpl.SizeCache
+}
+
+func (x *AgentStatus) Reset() {
+	*x = AgentStatus{}
+	mi := &file_pinai_intent_v1_intent_proto_msgTypes[11]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *AgentStatus) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*AgentStatus) ProtoMessage() {}
+
+func (x *AgentStatus) ProtoReflect() protoreflect.Message {
+	mi := &file_pinai_intent_v1_intent_proto_msgTypes[11]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use AgentStatus.ProtoReflect.Descriptor instead.
+func (*AgentStatus) Descriptor() ([]byte, []int) {
+	return file_pinai_intent_v1_intent_proto_rawDescGZIP(), []int{11}
+}
+
+func (x *AgentStatus) GetAgentId() string {
+	if x != nil {
+		return x.AgentId
+	}
+	return ""
+}
+
+func (x *AgentStatus) GetAgentType() string {
+	if x != nil {
+		return x.AgentType
+	}
+	return ""
+}
+
+func (x *AgentStatus) GetStatus() string {
+	if x != nil {
+		return x.Status
+	}
+	return ""
+}
+
+func (x *AgentStatus) GetActiveIntents() int32 {
+	if x != nil {
+		return x.ActiveIntents
+	}
+	return 0
+}
+
+func (x *AgentStatus) GetProcessedIntents() int64 {
+	if x != nil {
+		return x.ProcessedIntents
+	}
+	return 0
+}
+
+func (x *AgentStatus) GetSuccessfulBids() int64 {
+	if x != nil {
+		return x.SuccessfulBids
+	}
+	return 0
+}
+
+func (x *AgentStatus) GetTotalEarnings() string {
+	if x != nil {
+		return x.TotalEarnings
+	}
+	return ""
+}
+
+func (x *AgentStatus) GetLastActivity() int64 {
+	if x != nil {
+		return x.LastActivity
+	}
+	return 0
+}
+
+func (x *AgentStatus) GetConnectedPeers() int32 {
+	if x != nil {
+		return x.ConnectedPeers
+	}
+	return 0
+}
+
+type AgentConfig struct {
+	state                protoimpl.MessageState `protogen:"open.v1"`
+	AgentId              string                 `protobuf:"bytes,1,opt,name=agent_id,json=agentId,proto3" json:"agent_id,omitempty"`
+	AgentType            string                 `protobuf:"bytes,2,opt,name=agent_type,json=agentType,proto3" json:"agent_type,omitempty"`
+	Name                 string                 `protobuf:"bytes,3,opt,name=name,proto3" json:"name,omitempty"`
+	Description          string                 `protobuf:"bytes,4,opt,name=description,proto3" json:"description,omitempty"`
+	Capabilities         []string               `protobuf:"bytes,5,rep,name=capabilities,proto3" json:"capabilities,omitempty"`
+	Specializations      []string               `protobuf:"bytes,6,rep,name=specializations,proto3" json:"specializations,omitempty"`
+	BidStrategy          *BidStrategy           `protobuf:"bytes,7,opt,name=bid_strategy,json=bidStrategy,proto3" json:"bid_strategy,omitempty"`
+	MaxConcurrentIntents int32                  `protobuf:"varint,8,opt,name=max_concurrent_intents,json=maxConcurrentIntents,proto3" json:"max_concurrent_intents,omitempty"`
+	MinBidAmount         string                 `protobuf:"bytes,9,opt,name=min_bid_amount,json=minBidAmount,proto3" json:"min_bid_amount,omitempty"`
+	MaxBidAmount         string                 `protobuf:"bytes,10,opt,name=max_bid_amount,json=maxBidAmount,proto3" json:"max_bid_amount,omitempty"`
+	IntentFilter         *IntentFilter          `protobuf:"bytes,11,opt,name=intent_filter,json=intentFilter,proto3" json:"intent_filter,omitempty"`
+	unknownFields        protoimpl.UnknownFields
+	sizeCache            protoimpl.SizeCache
+}
+
+func (x *AgentConfig) Reset() {
+	*x = AgentConfig{}
+	mi := &file_pinai_intent_v1_intent_proto_msgTypes[12]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *AgentConfig) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*AgentConfig) ProtoMessage() {}
+
+func (x *AgentConfig) ProtoReflect() protoreflect.Message {
+	mi := &file_pinai_intent_v1_intent_proto_msgTypes[12]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use AgentConfig.ProtoReflect.Descriptor instead.
+func (*AgentConfig) Descriptor() ([]byte, []int) {
+	return file_pinai_intent_v1_intent_proto_rawDescGZIP(), []int{12}
+}
+
+func (x *AgentConfig) GetAgentId() string {
+	if x != nil {
+		return x.AgentId
+	}
+	return ""
+}
+
+func (x *AgentConfig) GetAgentType() string {
+	if x != nil {
+		return x.AgentType
+	}
+	return ""
+}
+
+func (x *AgentConfig) GetName() string {
+	if x != nil {
+		return x.Name
+	}
+	return ""
+}
+
+func (x *AgentConfig) GetDescription() string {
+	if x != nil {
+		return x.Description
+	}
+	return ""
+}
+
+func (x *AgentConfig) GetCapabilities() []string {
+	if x != nil {
+		return x.Capabilities
+	}
+	return nil
+}
+
+func (x *AgentConfig) GetSpecializations() []string {
+	if x != nil {
+		return x.Specializations
+	}
+	return nil
+}
+
+func (x *AgentConfig) GetBidStrategy() *BidStrategy {
+	if x != nil {
+		return x.BidStrategy
+	}
+	return nil
+}
+
+func (x *AgentConfig) GetMaxConcurrentIntents() int32 {
+	if x != nil {
+		return x.MaxConcurrentIntents
+	}
+	return 0
+}
+
+func (x *AgentConfig) GetMinBidAmount() string {
+	if x != nil {
+		return x.MinBidAmount
+	}
+	return ""
+}
+
+func (x *AgentConfig) GetMaxBidAmount() string {
+	if x != nil {
+		return x.MaxBidAmount
+	}
+	return ""
+}
+
+func (x *AgentConfig) GetIntentFilter() *IntentFilter {
+	if x != nil {
+		return x.IntentFilter
+	}
+	return nil
+}
+
+type BidStrategy struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Type          string                 `protobuf:"bytes,1,opt,name=type,proto3" json:"type,omitempty"` // "conservative", "aggressive", "balanced"
+	BaseFee       string                 `protobuf:"bytes,2,opt,name=base_fee,json=baseFee,proto3" json:"base_fee,omitempty"`
+	ProfitMargin  float64                `protobuf:"fixed64,3,opt,name=profit_margin,json=profitMargin,proto3" json:"profit_margin,omitempty"`
+	RiskFactor    float64                `protobuf:"fixed64,4,opt,name=risk_factor,json=riskFactor,proto3" json:"risk_factor,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *BidStrategy) Reset() {
+	*x = BidStrategy{}
+	mi := &file_pinai_intent_v1_intent_proto_msgTypes[13]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *BidStrategy) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*BidStrategy) ProtoMessage() {}
+
+func (x *BidStrategy) ProtoReflect() protoreflect.Message {
+	mi := &file_pinai_intent_v1_intent_proto_msgTypes[13]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use BidStrategy.ProtoReflect.Descriptor instead.
+func (*BidStrategy) Descriptor() ([]byte, []int) {
+	return file_pinai_intent_v1_intent_proto_rawDescGZIP(), []int{13}
+}
+
+func (x *BidStrategy) GetType() string {
+	if x != nil {
+		return x.Type
+	}
+	return ""
+}
+
+func (x *BidStrategy) GetBaseFee() string {
+	if x != nil {
+		return x.BaseFee
+	}
+	return ""
+}
+
+func (x *BidStrategy) GetProfitMargin() float64 {
+	if x != nil {
+		return x.ProfitMargin
+	}
+	return 0
+}
+
+func (x *BidStrategy) GetRiskFactor() float64 {
+	if x != nil {
+		return x.RiskFactor
+	}
+	return 0
+}
+
+type IntentFilter struct {
+	state          protoimpl.MessageState `protogen:"open.v1"`
+	AllowedTypes   []string               `protobuf:"bytes,1,rep,name=allowed_types,json=allowedTypes,proto3" json:"allowed_types,omitempty"`
+	BlockedTypes   []string               `protobuf:"bytes,2,rep,name=blocked_types,json=blockedTypes,proto3" json:"blocked_types,omitempty"`
+	AllowedSenders []string               `protobuf:"bytes,3,rep,name=allowed_senders,json=allowedSenders,proto3" json:"allowed_senders,omitempty"`
+	BlockedSenders []string               `protobuf:"bytes,4,rep,name=blocked_senders,json=blockedSenders,proto3" json:"blocked_senders,omitempty"`
+	MinPriority    int32                  `protobuf:"varint,5,opt,name=min_priority,json=minPriority,proto3" json:"min_priority,omitempty"`
+	MaxPriority    int32                  `protobuf:"varint,6,opt,name=max_priority,json=maxPriority,proto3" json:"max_priority,omitempty"`
+	RequiredTags   []string               `protobuf:"bytes,7,rep,name=required_tags,json=requiredTags,proto3" json:"required_tags,omitempty"`
+	unknownFields  protoimpl.UnknownFields
+	sizeCache      protoimpl.SizeCache
+}
+
+func (x *IntentFilter) Reset() {
+	*x = IntentFilter{}
+	mi := &file_pinai_intent_v1_intent_proto_msgTypes[14]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *IntentFilter) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*IntentFilter) ProtoMessage() {}
+
+func (x *IntentFilter) ProtoReflect() protoreflect.Message {
+	mi := &file_pinai_intent_v1_intent_proto_msgTypes[14]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use IntentFilter.ProtoReflect.Descriptor instead.
+func (*IntentFilter) Descriptor() ([]byte, []int) {
+	return file_pinai_intent_v1_intent_proto_rawDescGZIP(), []int{14}
+}
+
+func (x *IntentFilter) GetAllowedTypes() []string {
+	if x != nil {
+		return x.AllowedTypes
+	}
+	return nil
+}
+
+func (x *IntentFilter) GetBlockedTypes() []string {
+	if x != nil {
+		return x.BlockedTypes
+	}
+	return nil
+}
+
+func (x *IntentFilter) GetAllowedSenders() []string {
+	if x != nil {
+		return x.AllowedSenders
+	}
+	return nil
+}
+
+func (x *IntentFilter) GetBlockedSenders() []string {
+	if x != nil {
+		return x.BlockedSenders
+	}
+	return nil
+}
+
+func (x *IntentFilter) GetMinPriority() int32 {
+	if x != nil {
+		return x.MinPriority
+	}
+	return 0
+}
+
+func (x *IntentFilter) GetMaxPriority() int32 {
+	if x != nil {
+		return x.MaxPriority
+	}
+	return 0
+}
+
+func (x *IntentFilter) GetRequiredTags() []string {
+	if x != nil {
+		return x.RequiredTags
+	}
+	return nil
+}
+
+// Block Builder status and metrics
+type BlockBuilderStatus struct {
+	state             protoimpl.MessageState `protogen:"open.v1"`
+	BuilderId         string                 `protobuf:"bytes,1,opt,name=builder_id,json=builderId,proto3" json:"builder_id,omitempty"`
+	Status            string                 `protobuf:"bytes,2,opt,name=status,proto3" json:"status,omitempty"` // "active", "busy", "offline"
+	ActiveSessions    int32                  `protobuf:"varint,3,opt,name=active_sessions,json=activeSessions,proto3" json:"active_sessions,omitempty"`
+	CompletedMatches  int64                  `protobuf:"varint,4,opt,name=completed_matches,json=completedMatches,proto3" json:"completed_matches,omitempty"`
+	TotalBidsReceived int64                  `protobuf:"varint,5,opt,name=total_bids_received,json=totalBidsReceived,proto3" json:"total_bids_received,omitempty"`
+	LastActivity      int64                  `protobuf:"varint,6,opt,name=last_activity,json=lastActivity,proto3" json:"last_activity,omitempty"`
+	ConnectedPeers    int32                  `protobuf:"varint,7,opt,name=connected_peers,json=connectedPeers,proto3" json:"connected_peers,omitempty"`
+	unknownFields     protoimpl.UnknownFields
+	sizeCache         protoimpl.SizeCache
+}
+
+func (x *BlockBuilderStatus) Reset() {
+	*x = BlockBuilderStatus{}
+	mi := &file_pinai_intent_v1_intent_proto_msgTypes[15]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *BlockBuilderStatus) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*BlockBuilderStatus) ProtoMessage() {}
+
+func (x *BlockBuilderStatus) ProtoReflect() protoreflect.Message {
+	mi := &file_pinai_intent_v1_intent_proto_msgTypes[15]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use BlockBuilderStatus.ProtoReflect.Descriptor instead.
+func (*BlockBuilderStatus) Descriptor() ([]byte, []int) {
+	return file_pinai_intent_v1_intent_proto_rawDescGZIP(), []int{15}
+}
+
+func (x *BlockBuilderStatus) GetBuilderId() string {
+	if x != nil {
+		return x.BuilderId
+	}
+	return ""
+}
+
+func (x *BlockBuilderStatus) GetStatus() string {
+	if x != nil {
+		return x.Status
+	}
+	return ""
+}
+
+func (x *BlockBuilderStatus) GetActiveSessions() int32 {
+	if x != nil {
+		return x.ActiveSessions
+	}
+	return 0
+}
+
+func (x *BlockBuilderStatus) GetCompletedMatches() int64 {
+	if x != nil {
+		return x.CompletedMatches
+	}
+	return 0
+}
+
+func (x *BlockBuilderStatus) GetTotalBidsReceived() int64 {
+	if x != nil {
+		return x.TotalBidsReceived
+	}
+	return 0
+}
+
+func (x *BlockBuilderStatus) GetLastActivity() int64 {
+	if x != nil {
+		return x.LastActivity
+	}
+	return 0
+}
+
+func (x *BlockBuilderStatus) GetConnectedPeers() int32 {
+	if x != nil {
+		return x.ConnectedPeers
+	}
+	return 0
+}
+
+type BlockBuilderConfig struct {
+	state                 protoimpl.MessageState `protogen:"open.v1"`
+	BuilderId             string                 `protobuf:"bytes,1,opt,name=builder_id,json=builderId,proto3" json:"builder_id,omitempty"`
+	MatchingAlgorithm     string                 `protobuf:"bytes,2,opt,name=matching_algorithm,json=matchingAlgorithm,proto3" json:"matching_algorithm,omitempty"` // "highest_bid", "reputation_weighted", "random"
+	SettlementMode        string                 `protobuf:"bytes,3,opt,name=settlement_mode,json=settlementMode,proto3" json:"settlement_mode,omitempty"`          // "simulated", "blockchain"
+	BidCollectionWindowMs int64                  `protobuf:"varint,4,opt,name=bid_collection_window_ms,json=bidCollectionWindowMs,proto3" json:"bid_collection_window_ms,omitempty"`
+	MaxConcurrentIntents  int32                  `protobuf:"varint,5,opt,name=max_concurrent_intents,json=maxConcurrentIntents,proto3" json:"max_concurrent_intents,omitempty"`
+	MinBidsRequired       int32                  `protobuf:"varint,6,opt,name=min_bids_required,json=minBidsRequired,proto3" json:"min_bids_required,omitempty"`
+	unknownFields         protoimpl.UnknownFields
+	sizeCache             protoimpl.SizeCache
+}
+
+func (x *BlockBuilderConfig) Reset() {
+	*x = BlockBuilderConfig{}
+	mi := &file_pinai_intent_v1_intent_proto_msgTypes[16]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *BlockBuilderConfig) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*BlockBuilderConfig) ProtoMessage() {}
+
+func (x *BlockBuilderConfig) ProtoReflect() protoreflect.Message {
+	mi := &file_pinai_intent_v1_intent_proto_msgTypes[16]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use BlockBuilderConfig.ProtoReflect.Descriptor instead.
+func (*BlockBuilderConfig) Descriptor() ([]byte, []int) {
+	return file_pinai_intent_v1_intent_proto_rawDescGZIP(), []int{16}
+}
+
+func (x *BlockBuilderConfig) GetBuilderId() string {
+	if x != nil {
+		return x.BuilderId
+	}
+	return ""
+}
+
+func (x *BlockBuilderConfig) GetMatchingAlgorithm() string {
+	if x != nil {
+		return x.MatchingAlgorithm
+	}
+	return ""
+}
+
+func (x *BlockBuilderConfig) GetSettlementMode() string {
+	if x != nil {
+		return x.SettlementMode
+	}
+	return ""
+}
+
+func (x *BlockBuilderConfig) GetBidCollectionWindowMs() int64 {
+	if x != nil {
+		return x.BidCollectionWindowMs
+	}
+	return 0
+}
+
+func (x *BlockBuilderConfig) GetMaxConcurrentIntents() int32 {
+	if x != nil {
+		return x.MaxConcurrentIntents
+	}
+	return 0
+}
+
+func (x *BlockBuilderConfig) GetMinBidsRequired() int32 {
+	if x != nil {
+		return x.MinBidsRequired
+	}
+	return 0
+}
+
+type BidMessage struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	IntentId      string                 `protobuf:"bytes,1,opt,name=intent_id,json=intentId,proto3" json:"intent_id,omitempty"`
+	AgentId       string                 `protobuf:"bytes,2,opt,name=agent_id,json=agentId,proto3" json:"agent_id,omitempty"`
+	BidAmount     string                 `protobuf:"bytes,3,opt,name=bid_amount,json=bidAmount,proto3" json:"bid_amount,omitempty"`
+	Capabilities  []string               `protobuf:"bytes,4,rep,name=capabilities,proto3" json:"capabilities,omitempty"`
+	Timestamp     int64                  `protobuf:"varint,5,opt,name=timestamp,proto3" json:"timestamp,omitempty"`
+	AgentType     string                 `protobuf:"bytes,6,opt,name=agent_type,json=agentType,proto3" json:"agent_type,omitempty"`
+	Metadata      map[string]string      `protobuf:"bytes,7,rep,name=metadata,proto3" json:"metadata,omitempty" protobuf_key:"bytes,1,opt,name=key" protobuf_val:"bytes,2,opt,name=value"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *BidMessage) Reset() {
+	*x = BidMessage{}
+	mi := &file_pinai_intent_v1_intent_proto_msgTypes[17]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *BidMessage) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*BidMessage) ProtoMessage() {}
+
+func (x *BidMessage) ProtoReflect() protoreflect.Message {
+	mi := &file_pinai_intent_v1_intent_proto_msgTypes[17]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use BidMessage.ProtoReflect.Descriptor instead.
+func (*BidMessage) Descriptor() ([]byte, []int) {
+	return file_pinai_intent_v1_intent_proto_rawDescGZIP(), []int{17}
+}
+
+func (x *BidMessage) GetIntentId() string {
+	if x != nil {
+		return x.IntentId
+	}
+	return ""
+}
+
+func (x *BidMessage) GetAgentId() string {
+	if x != nil {
+		return x.AgentId
+	}
+	return ""
+}
+
+func (x *BidMessage) GetBidAmount() string {
+	if x != nil {
+		return x.BidAmount
+	}
+	return ""
+}
+
+func (x *BidMessage) GetCapabilities() []string {
+	if x != nil {
+		return x.Capabilities
+	}
+	return nil
+}
+
+func (x *BidMessage) GetTimestamp() int64 {
+	if x != nil {
+		return x.Timestamp
+	}
+	return 0
+}
+
+func (x *BidMessage) GetAgentType() string {
+	if x != nil {
+		return x.AgentType
+	}
+	return ""
+}
+
+func (x *BidMessage) GetMetadata() map[string]string {
+	if x != nil {
+		return x.Metadata
+	}
+	return nil
+}
+
+type MatchResult struct {
+	state          protoimpl.MessageState `protogen:"open.v1"`
+	IntentId       string                 `protobuf:"bytes,1,opt,name=intent_id,json=intentId,proto3" json:"intent_id,omitempty"`
+	WinningAgent   string                 `protobuf:"bytes,2,opt,name=winning_agent,json=winningAgent,proto3" json:"winning_agent,omitempty"`
+	WinningBid     string                 `protobuf:"bytes,3,opt,name=winning_bid,json=winningBid,proto3" json:"winning_bid,omitempty"`
+	TotalBids      int32                  `protobuf:"varint,4,opt,name=total_bids,json=totalBids,proto3" json:"total_bids,omitempty"`
+	MatchedAt      int64                  `protobuf:"varint,5,opt,name=matched_at,json=matchedAt,proto3" json:"matched_at,omitempty"`
+	Status         string                 `protobuf:"bytes,6,opt,name=status,proto3" json:"status,omitempty"`
+	BlockBuilderId string                 `protobuf:"bytes,7,opt,name=block_builder_id,json=blockBuilderId,proto3" json:"block_builder_id,omitempty"`
+	Metadata       map[string]string      `protobuf:"bytes,8,rep,name=metadata,proto3" json:"metadata,omitempty" protobuf_key:"bytes,1,opt,name=key" protobuf_val:"bytes,2,opt,name=value"`
+	unknownFields  protoimpl.UnknownFields
+	sizeCache      protoimpl.SizeCache
+}
+
+func (x *MatchResult) Reset() {
+	*x = MatchResult{}
+	mi := &file_pinai_intent_v1_intent_proto_msgTypes[18]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *MatchResult) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*MatchResult) ProtoMessage() {}
+
+func (x *MatchResult) ProtoReflect() protoreflect.Message {
+	mi := &file_pinai_intent_v1_intent_proto_msgTypes[18]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use MatchResult.ProtoReflect.Descriptor instead.
+func (*MatchResult) Descriptor() ([]byte, []int) {
+	return file_pinai_intent_v1_intent_proto_rawDescGZIP(), []int{18}
+}
+
+func (x *MatchResult) GetIntentId() string {
+	if x != nil {
+		return x.IntentId
+	}
+	return ""
+}
+
+func (x *MatchResult) GetWinningAgent() string {
+	if x != nil {
+		return x.WinningAgent
+	}
+	return ""
+}
+
+func (x *MatchResult) GetWinningBid() string {
+	if x != nil {
+		return x.WinningBid
+	}
+	return ""
+}
+
+func (x *MatchResult) GetTotalBids() int32 {
+	if x != nil {
+		return x.TotalBids
+	}
+	return 0
+}
+
+func (x *MatchResult) GetMatchedAt() int64 {
+	if x != nil {
+		return x.MatchedAt
+	}
+	return 0
+}
+
+func (x *MatchResult) GetStatus() string {
+	if x != nil {
+		return x.Status
+	}
+	return ""
+}
+
+func (x *MatchResult) GetBlockBuilderId() string {
+	if x != nil {
+		return x.BlockBuilderId
+	}
+	return ""
+}
+
+func (x *MatchResult) GetMetadata() map[string]string {
+	if x != nil {
+		return x.Metadata
+	}
+	return nil
+}
+
+// Execution API Messages
+type GetAgentsStatusRequest struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *GetAgentsStatusRequest) Reset() {
+	*x = GetAgentsStatusRequest{}
+	mi := &file_pinai_intent_v1_intent_proto_msgTypes[19]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *GetAgentsStatusRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*GetAgentsStatusRequest) ProtoMessage() {}
+
+func (x *GetAgentsStatusRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_pinai_intent_v1_intent_proto_msgTypes[19]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use GetAgentsStatusRequest.ProtoReflect.Descriptor instead.
+func (*GetAgentsStatusRequest) Descriptor() ([]byte, []int) {
+	return file_pinai_intent_v1_intent_proto_rawDescGZIP(), []int{19}
+}
+
+type GetAgentsStatusResponse struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Agents        []*AgentStatus         `protobuf:"bytes,1,rep,name=agents,proto3" json:"agents,omitempty"`
+	TotalAgents   int32                  `protobuf:"varint,2,opt,name=total_agents,json=totalAgents,proto3" json:"total_agents,omitempty"`
+	Success       bool                   `protobuf:"varint,3,opt,name=success,proto3" json:"success,omitempty"`
+	Message       string                 `protobuf:"bytes,4,opt,name=message,proto3" json:"message,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *GetAgentsStatusResponse) Reset() {
+	*x = GetAgentsStatusResponse{}
+	mi := &file_pinai_intent_v1_intent_proto_msgTypes[20]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *GetAgentsStatusResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*GetAgentsStatusResponse) ProtoMessage() {}
+
+func (x *GetAgentsStatusResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_pinai_intent_v1_intent_proto_msgTypes[20]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use GetAgentsStatusResponse.ProtoReflect.Descriptor instead.
+func (*GetAgentsStatusResponse) Descriptor() ([]byte, []int) {
+	return file_pinai_intent_v1_intent_proto_rawDescGZIP(), []int{20}
+}
+
+func (x *GetAgentsStatusResponse) GetAgents() []*AgentStatus {
+	if x != nil {
+		return x.Agents
+	}
+	return nil
+}
+
+func (x *GetAgentsStatusResponse) GetTotalAgents() int32 {
+	if x != nil {
+		return x.TotalAgents
+	}
+	return 0
+}
+
+func (x *GetAgentsStatusResponse) GetSuccess() bool {
+	if x != nil {
+		return x.Success
+	}
+	return false
+}
+
+func (x *GetAgentsStatusResponse) GetMessage() string {
+	if x != nil {
+		return x.Message
+	}
+	return ""
+}
+
+type GetBuildersStatusRequest struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *GetBuildersStatusRequest) Reset() {
+	*x = GetBuildersStatusRequest{}
+	mi := &file_pinai_intent_v1_intent_proto_msgTypes[21]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *GetBuildersStatusRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*GetBuildersStatusRequest) ProtoMessage() {}
+
+func (x *GetBuildersStatusRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_pinai_intent_v1_intent_proto_msgTypes[21]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use GetBuildersStatusRequest.ProtoReflect.Descriptor instead.
+func (*GetBuildersStatusRequest) Descriptor() ([]byte, []int) {
+	return file_pinai_intent_v1_intent_proto_rawDescGZIP(), []int{21}
+}
+
+type GetBuildersStatusResponse struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Builders      []*BlockBuilderStatus  `protobuf:"bytes,1,rep,name=builders,proto3" json:"builders,omitempty"`
+	TotalBuilders int32                  `protobuf:"varint,2,opt,name=total_builders,json=totalBuilders,proto3" json:"total_builders,omitempty"`
+	Success       bool                   `protobuf:"varint,3,opt,name=success,proto3" json:"success,omitempty"`
+	Message       string                 `protobuf:"bytes,4,opt,name=message,proto3" json:"message,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *GetBuildersStatusResponse) Reset() {
+	*x = GetBuildersStatusResponse{}
+	mi := &file_pinai_intent_v1_intent_proto_msgTypes[22]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *GetBuildersStatusResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*GetBuildersStatusResponse) ProtoMessage() {}
+
+func (x *GetBuildersStatusResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_pinai_intent_v1_intent_proto_msgTypes[22]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use GetBuildersStatusResponse.ProtoReflect.Descriptor instead.
+func (*GetBuildersStatusResponse) Descriptor() ([]byte, []int) {
+	return file_pinai_intent_v1_intent_proto_rawDescGZIP(), []int{22}
+}
+
+func (x *GetBuildersStatusResponse) GetBuilders() []*BlockBuilderStatus {
+	if x != nil {
+		return x.Builders
+	}
+	return nil
+}
+
+func (x *GetBuildersStatusResponse) GetTotalBuilders() int32 {
+	if x != nil {
+		return x.TotalBuilders
+	}
+	return 0
+}
+
+func (x *GetBuildersStatusResponse) GetSuccess() bool {
+	if x != nil {
+		return x.Success
+	}
+	return false
+}
+
+func (x *GetBuildersStatusResponse) GetMessage() string {
+	if x != nil {
+		return x.Message
+	}
+	return ""
+}
+
+type GetExecutionMetricsRequest struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *GetExecutionMetricsRequest) Reset() {
+	*x = GetExecutionMetricsRequest{}
+	mi := &file_pinai_intent_v1_intent_proto_msgTypes[23]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *GetExecutionMetricsRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*GetExecutionMetricsRequest) ProtoMessage() {}
+
+func (x *GetExecutionMetricsRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_pinai_intent_v1_intent_proto_msgTypes[23]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use GetExecutionMetricsRequest.ProtoReflect.Descriptor instead.
+func (*GetExecutionMetricsRequest) Descriptor() ([]byte, []int) {
+	return file_pinai_intent_v1_intent_proto_rawDescGZIP(), []int{23}
+}
+
+type ExecutionMetrics struct {
+	state                 protoimpl.MessageState `protogen:"open.v1"`
+	TotalIntentsProcessed int64                  `protobuf:"varint,1,opt,name=total_intents_processed,json=totalIntentsProcessed,proto3" json:"total_intents_processed,omitempty"`
+	TotalBidsSubmitted    int64                  `protobuf:"varint,2,opt,name=total_bids_submitted,json=totalBidsSubmitted,proto3" json:"total_bids_submitted,omitempty"`
+	TotalMatchesCompleted int64                  `protobuf:"varint,3,opt,name=total_matches_completed,json=totalMatchesCompleted,proto3" json:"total_matches_completed,omitempty"`
+	SuccessRate           float64                `protobuf:"fixed64,4,opt,name=success_rate,json=successRate,proto3" json:"success_rate,omitempty"`
+	AverageResponseTimeMs int64                  `protobuf:"varint,5,opt,name=average_response_time_ms,json=averageResponseTimeMs,proto3" json:"average_response_time_ms,omitempty"`
+	ActiveAgents          int32                  `protobuf:"varint,6,opt,name=active_agents,json=activeAgents,proto3" json:"active_agents,omitempty"`
+	ActiveBuilders        int32                  `protobuf:"varint,7,opt,name=active_builders,json=activeBuilders,proto3" json:"active_builders,omitempty"`
+	LastUpdated           int64                  `protobuf:"varint,8,opt,name=last_updated,json=lastUpdated,proto3" json:"last_updated,omitempty"`
+	unknownFields         protoimpl.UnknownFields
+	sizeCache             protoimpl.SizeCache
+}
+
+func (x *ExecutionMetrics) Reset() {
+	*x = ExecutionMetrics{}
+	mi := &file_pinai_intent_v1_intent_proto_msgTypes[24]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *ExecutionMetrics) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*ExecutionMetrics) ProtoMessage() {}
+
+func (x *ExecutionMetrics) ProtoReflect() protoreflect.Message {
+	mi := &file_pinai_intent_v1_intent_proto_msgTypes[24]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use ExecutionMetrics.ProtoReflect.Descriptor instead.
+func (*ExecutionMetrics) Descriptor() ([]byte, []int) {
+	return file_pinai_intent_v1_intent_proto_rawDescGZIP(), []int{24}
+}
+
+func (x *ExecutionMetrics) GetTotalIntentsProcessed() int64 {
+	if x != nil {
+		return x.TotalIntentsProcessed
+	}
+	return 0
+}
+
+func (x *ExecutionMetrics) GetTotalBidsSubmitted() int64 {
+	if x != nil {
+		return x.TotalBidsSubmitted
+	}
+	return 0
+}
+
+func (x *ExecutionMetrics) GetTotalMatchesCompleted() int64 {
+	if x != nil {
+		return x.TotalMatchesCompleted
+	}
+	return 0
+}
+
+func (x *ExecutionMetrics) GetSuccessRate() float64 {
+	if x != nil {
+		return x.SuccessRate
+	}
+	return 0
+}
+
+func (x *ExecutionMetrics) GetAverageResponseTimeMs() int64 {
+	if x != nil {
+		return x.AverageResponseTimeMs
+	}
+	return 0
+}
+
+func (x *ExecutionMetrics) GetActiveAgents() int32 {
+	if x != nil {
+		return x.ActiveAgents
+	}
+	return 0
+}
+
+func (x *ExecutionMetrics) GetActiveBuilders() int32 {
+	if x != nil {
+		return x.ActiveBuilders
+	}
+	return 0
+}
+
+func (x *ExecutionMetrics) GetLastUpdated() int64 {
+	if x != nil {
+		return x.LastUpdated
+	}
+	return 0
+}
+
+type GetExecutionMetricsResponse struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Metrics       *ExecutionMetrics      `protobuf:"bytes,1,opt,name=metrics,proto3" json:"metrics,omitempty"`
+	Success       bool                   `protobuf:"varint,2,opt,name=success,proto3" json:"success,omitempty"`
+	Message       string                 `protobuf:"bytes,3,opt,name=message,proto3" json:"message,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *GetExecutionMetricsResponse) Reset() {
+	*x = GetExecutionMetricsResponse{}
+	mi := &file_pinai_intent_v1_intent_proto_msgTypes[25]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *GetExecutionMetricsResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*GetExecutionMetricsResponse) ProtoMessage() {}
+
+func (x *GetExecutionMetricsResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_pinai_intent_v1_intent_proto_msgTypes[25]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use GetExecutionMetricsResponse.ProtoReflect.Descriptor instead.
+func (*GetExecutionMetricsResponse) Descriptor() ([]byte, []int) {
+	return file_pinai_intent_v1_intent_proto_rawDescGZIP(), []int{25}
+}
+
+func (x *GetExecutionMetricsResponse) GetMetrics() *ExecutionMetrics {
+	if x != nil {
+		return x.Metrics
+	}
+	return nil
+}
+
+func (x *GetExecutionMetricsResponse) GetSuccess() bool {
+	if x != nil {
+		return x.Success
+	}
+	return false
+}
+
+func (x *GetExecutionMetricsResponse) GetMessage() string {
+	if x != nil {
+		return x.Message
+	}
+	return ""
+}
+
+type StartAgentRequest struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	AgentId       string                 `protobuf:"bytes,1,opt,name=agent_id,json=agentId,proto3" json:"agent_id,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *StartAgentRequest) Reset() {
+	*x = StartAgentRequest{}
+	mi := &file_pinai_intent_v1_intent_proto_msgTypes[26]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *StartAgentRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*StartAgentRequest) ProtoMessage() {}
+
+func (x *StartAgentRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_pinai_intent_v1_intent_proto_msgTypes[26]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use StartAgentRequest.ProtoReflect.Descriptor instead.
+func (*StartAgentRequest) Descriptor() ([]byte, []int) {
+	return file_pinai_intent_v1_intent_proto_rawDescGZIP(), []int{26}
+}
+
+func (x *StartAgentRequest) GetAgentId() string {
+	if x != nil {
+		return x.AgentId
+	}
+	return ""
+}
+
+type StartAgentResponse struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Success       bool                   `protobuf:"varint,1,opt,name=success,proto3" json:"success,omitempty"`
+	Message       string                 `protobuf:"bytes,2,opt,name=message,proto3" json:"message,omitempty"`
+	AgentId       string                 `protobuf:"bytes,3,opt,name=agent_id,json=agentId,proto3" json:"agent_id,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *StartAgentResponse) Reset() {
+	*x = StartAgentResponse{}
+	mi := &file_pinai_intent_v1_intent_proto_msgTypes[27]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *StartAgentResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*StartAgentResponse) ProtoMessage() {}
+
+func (x *StartAgentResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_pinai_intent_v1_intent_proto_msgTypes[27]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use StartAgentResponse.ProtoReflect.Descriptor instead.
+func (*StartAgentResponse) Descriptor() ([]byte, []int) {
+	return file_pinai_intent_v1_intent_proto_rawDescGZIP(), []int{27}
+}
+
+func (x *StartAgentResponse) GetSuccess() bool {
+	if x != nil {
+		return x.Success
+	}
+	return false
+}
+
+func (x *StartAgentResponse) GetMessage() string {
+	if x != nil {
+		return x.Message
+	}
+	return ""
+}
+
+func (x *StartAgentResponse) GetAgentId() string {
+	if x != nil {
+		return x.AgentId
+	}
+	return ""
+}
+
+type StopAgentRequest struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	AgentId       string                 `protobuf:"bytes,1,opt,name=agent_id,json=agentId,proto3" json:"agent_id,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *StopAgentRequest) Reset() {
+	*x = StopAgentRequest{}
+	mi := &file_pinai_intent_v1_intent_proto_msgTypes[28]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *StopAgentRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*StopAgentRequest) ProtoMessage() {}
+
+func (x *StopAgentRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_pinai_intent_v1_intent_proto_msgTypes[28]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use StopAgentRequest.ProtoReflect.Descriptor instead.
+func (*StopAgentRequest) Descriptor() ([]byte, []int) {
+	return file_pinai_intent_v1_intent_proto_rawDescGZIP(), []int{28}
+}
+
+func (x *StopAgentRequest) GetAgentId() string {
+	if x != nil {
+		return x.AgentId
+	}
+	return ""
+}
+
+type StopAgentResponse struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Success       bool                   `protobuf:"varint,1,opt,name=success,proto3" json:"success,omitempty"`
+	Message       string                 `protobuf:"bytes,2,opt,name=message,proto3" json:"message,omitempty"`
+	AgentId       string                 `protobuf:"bytes,3,opt,name=agent_id,json=agentId,proto3" json:"agent_id,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *StopAgentResponse) Reset() {
+	*x = StopAgentResponse{}
+	mi := &file_pinai_intent_v1_intent_proto_msgTypes[29]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *StopAgentResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*StopAgentResponse) ProtoMessage() {}
+
+func (x *StopAgentResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_pinai_intent_v1_intent_proto_msgTypes[29]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use StopAgentResponse.ProtoReflect.Descriptor instead.
+func (*StopAgentResponse) Descriptor() ([]byte, []int) {
+	return file_pinai_intent_v1_intent_proto_rawDescGZIP(), []int{29}
+}
+
+func (x *StopAgentResponse) GetSuccess() bool {
+	if x != nil {
+		return x.Success
+	}
+	return false
+}
+
+func (x *StopAgentResponse) GetMessage() string {
+	if x != nil {
+		return x.Message
+	}
+	return ""
+}
+
+func (x *StopAgentResponse) GetAgentId() string {
+	if x != nil {
+		return x.AgentId
+	}
+	return ""
+}
+
+type StartBuilderRequest struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	BuilderId     string                 `protobuf:"bytes,1,opt,name=builder_id,json=builderId,proto3" json:"builder_id,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *StartBuilderRequest) Reset() {
+	*x = StartBuilderRequest{}
+	mi := &file_pinai_intent_v1_intent_proto_msgTypes[30]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *StartBuilderRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*StartBuilderRequest) ProtoMessage() {}
+
+func (x *StartBuilderRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_pinai_intent_v1_intent_proto_msgTypes[30]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use StartBuilderRequest.ProtoReflect.Descriptor instead.
+func (*StartBuilderRequest) Descriptor() ([]byte, []int) {
+	return file_pinai_intent_v1_intent_proto_rawDescGZIP(), []int{30}
+}
+
+func (x *StartBuilderRequest) GetBuilderId() string {
+	if x != nil {
+		return x.BuilderId
+	}
+	return ""
+}
+
+type StartBuilderResponse struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Success       bool                   `protobuf:"varint,1,opt,name=success,proto3" json:"success,omitempty"`
+	Message       string                 `protobuf:"bytes,2,opt,name=message,proto3" json:"message,omitempty"`
+	BuilderId     string                 `protobuf:"bytes,3,opt,name=builder_id,json=builderId,proto3" json:"builder_id,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *StartBuilderResponse) Reset() {
+	*x = StartBuilderResponse{}
+	mi := &file_pinai_intent_v1_intent_proto_msgTypes[31]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *StartBuilderResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*StartBuilderResponse) ProtoMessage() {}
+
+func (x *StartBuilderResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_pinai_intent_v1_intent_proto_msgTypes[31]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use StartBuilderResponse.ProtoReflect.Descriptor instead.
+func (*StartBuilderResponse) Descriptor() ([]byte, []int) {
+	return file_pinai_intent_v1_intent_proto_rawDescGZIP(), []int{31}
+}
+
+func (x *StartBuilderResponse) GetSuccess() bool {
+	if x != nil {
+		return x.Success
+	}
+	return false
+}
+
+func (x *StartBuilderResponse) GetMessage() string {
+	if x != nil {
+		return x.Message
+	}
+	return ""
+}
+
+func (x *StartBuilderResponse) GetBuilderId() string {
+	if x != nil {
+		return x.BuilderId
+	}
+	return ""
+}
+
+type StopBuilderRequest struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	BuilderId     string                 `protobuf:"bytes,1,opt,name=builder_id,json=builderId,proto3" json:"builder_id,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *StopBuilderRequest) Reset() {
+	*x = StopBuilderRequest{}
+	mi := &file_pinai_intent_v1_intent_proto_msgTypes[32]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *StopBuilderRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*StopBuilderRequest) ProtoMessage() {}
+
+func (x *StopBuilderRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_pinai_intent_v1_intent_proto_msgTypes[32]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use StopBuilderRequest.ProtoReflect.Descriptor instead.
+func (*StopBuilderRequest) Descriptor() ([]byte, []int) {
+	return file_pinai_intent_v1_intent_proto_rawDescGZIP(), []int{32}
+}
+
+func (x *StopBuilderRequest) GetBuilderId() string {
+	if x != nil {
+		return x.BuilderId
+	}
+	return ""
+}
+
+type StopBuilderResponse struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Success       bool                   `protobuf:"varint,1,opt,name=success,proto3" json:"success,omitempty"`
+	Message       string                 `protobuf:"bytes,2,opt,name=message,proto3" json:"message,omitempty"`
+	BuilderId     string                 `protobuf:"bytes,3,opt,name=builder_id,json=builderId,proto3" json:"builder_id,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *StopBuilderResponse) Reset() {
+	*x = StopBuilderResponse{}
+	mi := &file_pinai_intent_v1_intent_proto_msgTypes[33]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *StopBuilderResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*StopBuilderResponse) ProtoMessage() {}
+
+func (x *StopBuilderResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_pinai_intent_v1_intent_proto_msgTypes[33]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use StopBuilderResponse.ProtoReflect.Descriptor instead.
+func (*StopBuilderResponse) Descriptor() ([]byte, []int) {
+	return file_pinai_intent_v1_intent_proto_rawDescGZIP(), []int{33}
+}
+
+func (x *StopBuilderResponse) GetSuccess() bool {
+	if x != nil {
+		return x.Success
+	}
+	return false
+}
+
+func (x *StopBuilderResponse) GetMessage() string {
+	if x != nil {
+		return x.Message
+	}
+	return ""
+}
+
+func (x *StopBuilderResponse) GetBuilderId() string {
+	if x != nil {
+		return x.BuilderId
+	}
+	return ""
+}
+
+type GetActiveBidsRequest struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	IntentId      string                 `protobuf:"bytes,1,opt,name=intent_id,json=intentId,proto3" json:"intent_id,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *GetActiveBidsRequest) Reset() {
+	*x = GetActiveBidsRequest{}
+	mi := &file_pinai_intent_v1_intent_proto_msgTypes[34]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *GetActiveBidsRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*GetActiveBidsRequest) ProtoMessage() {}
+
+func (x *GetActiveBidsRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_pinai_intent_v1_intent_proto_msgTypes[34]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use GetActiveBidsRequest.ProtoReflect.Descriptor instead.
+func (*GetActiveBidsRequest) Descriptor() ([]byte, []int) {
+	return file_pinai_intent_v1_intent_proto_rawDescGZIP(), []int{34}
+}
+
+func (x *GetActiveBidsRequest) GetIntentId() string {
+	if x != nil {
+		return x.IntentId
+	}
+	return ""
+}
+
+type GetActiveBidsResponse struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Bids          []*BidMessage          `protobuf:"bytes,1,rep,name=bids,proto3" json:"bids,omitempty"`
+	Success       bool                   `protobuf:"varint,2,opt,name=success,proto3" json:"success,omitempty"`
+	Message       string                 `protobuf:"bytes,3,opt,name=message,proto3" json:"message,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *GetActiveBidsResponse) Reset() {
+	*x = GetActiveBidsResponse{}
+	mi := &file_pinai_intent_v1_intent_proto_msgTypes[35]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *GetActiveBidsResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*GetActiveBidsResponse) ProtoMessage() {}
+
+func (x *GetActiveBidsResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_pinai_intent_v1_intent_proto_msgTypes[35]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use GetActiveBidsResponse.ProtoReflect.Descriptor instead.
+func (*GetActiveBidsResponse) Descriptor() ([]byte, []int) {
+	return file_pinai_intent_v1_intent_proto_rawDescGZIP(), []int{35}
+}
+
+func (x *GetActiveBidsResponse) GetBids() []*BidMessage {
+	if x != nil {
+		return x.Bids
+	}
+	return nil
+}
+
+func (x *GetActiveBidsResponse) GetSuccess() bool {
+	if x != nil {
+		return x.Success
+	}
+	return false
+}
+
+func (x *GetActiveBidsResponse) GetMessage() string {
+	if x != nil {
+		return x.Message
+	}
+	return ""
+}
+
+type GetMatchHistoryRequest struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	StartTime     int64                  `protobuf:"varint,1,opt,name=start_time,json=startTime,proto3" json:"start_time,omitempty"`
+	EndTime       int64                  `protobuf:"varint,2,opt,name=end_time,json=endTime,proto3" json:"end_time,omitempty"`
+	Limit         int32                  `protobuf:"varint,3,opt,name=limit,proto3" json:"limit,omitempty"`
+	Offset        int32                  `protobuf:"varint,4,opt,name=offset,proto3" json:"offset,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *GetMatchHistoryRequest) Reset() {
+	*x = GetMatchHistoryRequest{}
+	mi := &file_pinai_intent_v1_intent_proto_msgTypes[36]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *GetMatchHistoryRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*GetMatchHistoryRequest) ProtoMessage() {}
+
+func (x *GetMatchHistoryRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_pinai_intent_v1_intent_proto_msgTypes[36]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use GetMatchHistoryRequest.ProtoReflect.Descriptor instead.
+func (*GetMatchHistoryRequest) Descriptor() ([]byte, []int) {
+	return file_pinai_intent_v1_intent_proto_rawDescGZIP(), []int{36}
+}
+
+func (x *GetMatchHistoryRequest) GetStartTime() int64 {
+	if x != nil {
+		return x.StartTime
+	}
+	return 0
+}
+
+func (x *GetMatchHistoryRequest) GetEndTime() int64 {
+	if x != nil {
+		return x.EndTime
+	}
+	return 0
+}
+
+func (x *GetMatchHistoryRequest) GetLimit() int32 {
+	if x != nil {
+		return x.Limit
+	}
+	return 0
+}
+
+func (x *GetMatchHistoryRequest) GetOffset() int32 {
+	if x != nil {
+		return x.Offset
+	}
+	return 0
+}
+
+type GetMatchHistoryResponse struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Matches       []*MatchResult         `protobuf:"bytes,1,rep,name=matches,proto3" json:"matches,omitempty"`
+	Total         int32                  `protobuf:"varint,2,opt,name=total,proto3" json:"total,omitempty"`
+	Success       bool                   `protobuf:"varint,3,opt,name=success,proto3" json:"success,omitempty"`
+	Message       string                 `protobuf:"bytes,4,opt,name=message,proto3" json:"message,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *GetMatchHistoryResponse) Reset() {
+	*x = GetMatchHistoryResponse{}
+	mi := &file_pinai_intent_v1_intent_proto_msgTypes[37]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *GetMatchHistoryResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*GetMatchHistoryResponse) ProtoMessage() {}
+
+func (x *GetMatchHistoryResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_pinai_intent_v1_intent_proto_msgTypes[37]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use GetMatchHistoryResponse.ProtoReflect.Descriptor instead.
+func (*GetMatchHistoryResponse) Descriptor() ([]byte, []int) {
+	return file_pinai_intent_v1_intent_proto_rawDescGZIP(), []int{37}
+}
+
+func (x *GetMatchHistoryResponse) GetMatches() []*MatchResult {
+	if x != nil {
+		return x.Matches
+	}
+	return nil
+}
+
+func (x *GetMatchHistoryResponse) GetTotal() int32 {
+	if x != nil {
+		return x.Total
+	}
+	return 0
+}
+
+func (x *GetMatchHistoryResponse) GetSuccess() bool {
+	if x != nil {
+		return x.Success
+	}
+	return false
+}
+
+func (x *GetMatchHistoryResponse) GetMessage() string {
+	if x != nil {
+		return x.Message
+	}
+	return ""
+}
+
 var File_pinai_intent_v1_intent_proto protoreflect.FileDescriptor
 
 const file_pinai_intent_v1_intent_proto_rawDesc = "" +
@@ -993,7 +2816,163 @@ const file_pinai_intent_v1_intent_proto_rawDesc = "" +
 	"\x16GetIntentStatusRequest\x12\x1b\n" +
 	"\tintent_id\x18\x01 \x01(\tR\bintentId\"N\n" +
 	"\x17GetIntentStatusResponse\x123\n" +
-	"\x06intent\x18\x01 \x01(\v2\x1b.api.pinai_intent.v1.IntentR\x06intent*\x8e\x02\n" +
+	"\x06intent\x18\x01 \x01(\v2\x1b.api.pinai_intent.v1.IntentR\x06intent\"\xd1\x02\n" +
+	"\vAgentStatus\x12\x19\n" +
+	"\bagent_id\x18\x01 \x01(\tR\aagentId\x12\x1d\n" +
+	"\n" +
+	"agent_type\x18\x02 \x01(\tR\tagentType\x12\x16\n" +
+	"\x06status\x18\x03 \x01(\tR\x06status\x12%\n" +
+	"\x0eactive_intents\x18\x04 \x01(\x05R\ractiveIntents\x12+\n" +
+	"\x11processed_intents\x18\x05 \x01(\x03R\x10processedIntents\x12'\n" +
+	"\x0fsuccessful_bids\x18\x06 \x01(\x03R\x0esuccessfulBids\x12%\n" +
+	"\x0etotal_earnings\x18\a \x01(\tR\rtotalEarnings\x12#\n" +
+	"\rlast_activity\x18\b \x01(\x03R\flastActivity\x12'\n" +
+	"\x0fconnected_peers\x18\t \x01(\x05R\x0econnectedPeers\"\xda\x03\n" +
+	"\vAgentConfig\x12\x19\n" +
+	"\bagent_id\x18\x01 \x01(\tR\aagentId\x12\x1d\n" +
+	"\n" +
+	"agent_type\x18\x02 \x01(\tR\tagentType\x12\x12\n" +
+	"\x04name\x18\x03 \x01(\tR\x04name\x12 \n" +
+	"\vdescription\x18\x04 \x01(\tR\vdescription\x12\"\n" +
+	"\fcapabilities\x18\x05 \x03(\tR\fcapabilities\x12(\n" +
+	"\x0fspecializations\x18\x06 \x03(\tR\x0fspecializations\x12C\n" +
+	"\fbid_strategy\x18\a \x01(\v2 .api.pinai_intent.v1.BidStrategyR\vbidStrategy\x124\n" +
+	"\x16max_concurrent_intents\x18\b \x01(\x05R\x14maxConcurrentIntents\x12$\n" +
+	"\x0emin_bid_amount\x18\t \x01(\tR\fminBidAmount\x12$\n" +
+	"\x0emax_bid_amount\x18\n" +
+	" \x01(\tR\fmaxBidAmount\x12F\n" +
+	"\rintent_filter\x18\v \x01(\v2!.api.pinai_intent.v1.IntentFilterR\fintentFilter\"\x82\x01\n" +
+	"\vBidStrategy\x12\x12\n" +
+	"\x04type\x18\x01 \x01(\tR\x04type\x12\x19\n" +
+	"\bbase_fee\x18\x02 \x01(\tR\abaseFee\x12#\n" +
+	"\rprofit_margin\x18\x03 \x01(\x01R\fprofitMargin\x12\x1f\n" +
+	"\vrisk_factor\x18\x04 \x01(\x01R\n" +
+	"riskFactor\"\x95\x02\n" +
+	"\fIntentFilter\x12#\n" +
+	"\rallowed_types\x18\x01 \x03(\tR\fallowedTypes\x12#\n" +
+	"\rblocked_types\x18\x02 \x03(\tR\fblockedTypes\x12'\n" +
+	"\x0fallowed_senders\x18\x03 \x03(\tR\x0eallowedSenders\x12'\n" +
+	"\x0fblocked_senders\x18\x04 \x03(\tR\x0eblockedSenders\x12!\n" +
+	"\fmin_priority\x18\x05 \x01(\x05R\vminPriority\x12!\n" +
+	"\fmax_priority\x18\x06 \x01(\x05R\vmaxPriority\x12#\n" +
+	"\rrequired_tags\x18\a \x03(\tR\frequiredTags\"\x9f\x02\n" +
+	"\x12BlockBuilderStatus\x12\x1d\n" +
+	"\n" +
+	"builder_id\x18\x01 \x01(\tR\tbuilderId\x12\x16\n" +
+	"\x06status\x18\x02 \x01(\tR\x06status\x12'\n" +
+	"\x0factive_sessions\x18\x03 \x01(\x05R\x0eactiveSessions\x12+\n" +
+	"\x11completed_matches\x18\x04 \x01(\x03R\x10completedMatches\x12.\n" +
+	"\x13total_bids_received\x18\x05 \x01(\x03R\x11totalBidsReceived\x12#\n" +
+	"\rlast_activity\x18\x06 \x01(\x03R\flastActivity\x12'\n" +
+	"\x0fconnected_peers\x18\a \x01(\x05R\x0econnectedPeers\"\xa6\x02\n" +
+	"\x12BlockBuilderConfig\x12\x1d\n" +
+	"\n" +
+	"builder_id\x18\x01 \x01(\tR\tbuilderId\x12-\n" +
+	"\x12matching_algorithm\x18\x02 \x01(\tR\x11matchingAlgorithm\x12'\n" +
+	"\x0fsettlement_mode\x18\x03 \x01(\tR\x0esettlementMode\x127\n" +
+	"\x18bid_collection_window_ms\x18\x04 \x01(\x03R\x15bidCollectionWindowMs\x124\n" +
+	"\x16max_concurrent_intents\x18\x05 \x01(\x05R\x14maxConcurrentIntents\x12*\n" +
+	"\x11min_bids_required\x18\x06 \x01(\x05R\x0fminBidsRequired\"\xcc\x02\n" +
+	"\n" +
+	"BidMessage\x12\x1b\n" +
+	"\tintent_id\x18\x01 \x01(\tR\bintentId\x12\x19\n" +
+	"\bagent_id\x18\x02 \x01(\tR\aagentId\x12\x1d\n" +
+	"\n" +
+	"bid_amount\x18\x03 \x01(\tR\tbidAmount\x12\"\n" +
+	"\fcapabilities\x18\x04 \x03(\tR\fcapabilities\x12\x1c\n" +
+	"\ttimestamp\x18\x05 \x01(\x03R\ttimestamp\x12\x1d\n" +
+	"\n" +
+	"agent_type\x18\x06 \x01(\tR\tagentType\x12I\n" +
+	"\bmetadata\x18\a \x03(\v2-.api.pinai_intent.v1.BidMessage.MetadataEntryR\bmetadata\x1a;\n" +
+	"\rMetadataEntry\x12\x10\n" +
+	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
+	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01\"\xf9\x02\n" +
+	"\vMatchResult\x12\x1b\n" +
+	"\tintent_id\x18\x01 \x01(\tR\bintentId\x12#\n" +
+	"\rwinning_agent\x18\x02 \x01(\tR\fwinningAgent\x12\x1f\n" +
+	"\vwinning_bid\x18\x03 \x01(\tR\n" +
+	"winningBid\x12\x1d\n" +
+	"\n" +
+	"total_bids\x18\x04 \x01(\x05R\ttotalBids\x12\x1d\n" +
+	"\n" +
+	"matched_at\x18\x05 \x01(\x03R\tmatchedAt\x12\x16\n" +
+	"\x06status\x18\x06 \x01(\tR\x06status\x12(\n" +
+	"\x10block_builder_id\x18\a \x01(\tR\x0eblockBuilderId\x12J\n" +
+	"\bmetadata\x18\b \x03(\v2..api.pinai_intent.v1.MatchResult.MetadataEntryR\bmetadata\x1a;\n" +
+	"\rMetadataEntry\x12\x10\n" +
+	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
+	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01\"\x18\n" +
+	"\x16GetAgentsStatusRequest\"\xaa\x01\n" +
+	"\x17GetAgentsStatusResponse\x128\n" +
+	"\x06agents\x18\x01 \x03(\v2 .api.pinai_intent.v1.AgentStatusR\x06agents\x12!\n" +
+	"\ftotal_agents\x18\x02 \x01(\x05R\vtotalAgents\x12\x18\n" +
+	"\asuccess\x18\x03 \x01(\bR\asuccess\x12\x18\n" +
+	"\amessage\x18\x04 \x01(\tR\amessage\"\x1a\n" +
+	"\x18GetBuildersStatusRequest\"\xbb\x01\n" +
+	"\x19GetBuildersStatusResponse\x12C\n" +
+	"\bbuilders\x18\x01 \x03(\v2'.api.pinai_intent.v1.BlockBuilderStatusR\bbuilders\x12%\n" +
+	"\x0etotal_builders\x18\x02 \x01(\x05R\rtotalBuilders\x12\x18\n" +
+	"\asuccess\x18\x03 \x01(\bR\asuccess\x12\x18\n" +
+	"\amessage\x18\x04 \x01(\tR\amessage\"\x1c\n" +
+	"\x1aGetExecutionMetricsRequest\"\x81\x03\n" +
+	"\x10ExecutionMetrics\x126\n" +
+	"\x17total_intents_processed\x18\x01 \x01(\x03R\x15totalIntentsProcessed\x120\n" +
+	"\x14total_bids_submitted\x18\x02 \x01(\x03R\x12totalBidsSubmitted\x126\n" +
+	"\x17total_matches_completed\x18\x03 \x01(\x03R\x15totalMatchesCompleted\x12!\n" +
+	"\fsuccess_rate\x18\x04 \x01(\x01R\vsuccessRate\x127\n" +
+	"\x18average_response_time_ms\x18\x05 \x01(\x03R\x15averageResponseTimeMs\x12#\n" +
+	"\ractive_agents\x18\x06 \x01(\x05R\factiveAgents\x12'\n" +
+	"\x0factive_builders\x18\a \x01(\x05R\x0eactiveBuilders\x12!\n" +
+	"\flast_updated\x18\b \x01(\x03R\vlastUpdated\"\x92\x01\n" +
+	"\x1bGetExecutionMetricsResponse\x12?\n" +
+	"\ametrics\x18\x01 \x01(\v2%.api.pinai_intent.v1.ExecutionMetricsR\ametrics\x12\x18\n" +
+	"\asuccess\x18\x02 \x01(\bR\asuccess\x12\x18\n" +
+	"\amessage\x18\x03 \x01(\tR\amessage\".\n" +
+	"\x11StartAgentRequest\x12\x19\n" +
+	"\bagent_id\x18\x01 \x01(\tR\aagentId\"c\n" +
+	"\x12StartAgentResponse\x12\x18\n" +
+	"\asuccess\x18\x01 \x01(\bR\asuccess\x12\x18\n" +
+	"\amessage\x18\x02 \x01(\tR\amessage\x12\x19\n" +
+	"\bagent_id\x18\x03 \x01(\tR\aagentId\"-\n" +
+	"\x10StopAgentRequest\x12\x19\n" +
+	"\bagent_id\x18\x01 \x01(\tR\aagentId\"b\n" +
+	"\x11StopAgentResponse\x12\x18\n" +
+	"\asuccess\x18\x01 \x01(\bR\asuccess\x12\x18\n" +
+	"\amessage\x18\x02 \x01(\tR\amessage\x12\x19\n" +
+	"\bagent_id\x18\x03 \x01(\tR\aagentId\"4\n" +
+	"\x13StartBuilderRequest\x12\x1d\n" +
+	"\n" +
+	"builder_id\x18\x01 \x01(\tR\tbuilderId\"i\n" +
+	"\x14StartBuilderResponse\x12\x18\n" +
+	"\asuccess\x18\x01 \x01(\bR\asuccess\x12\x18\n" +
+	"\amessage\x18\x02 \x01(\tR\amessage\x12\x1d\n" +
+	"\n" +
+	"builder_id\x18\x03 \x01(\tR\tbuilderId\"3\n" +
+	"\x12StopBuilderRequest\x12\x1d\n" +
+	"\n" +
+	"builder_id\x18\x01 \x01(\tR\tbuilderId\"h\n" +
+	"\x13StopBuilderResponse\x12\x18\n" +
+	"\asuccess\x18\x01 \x01(\bR\asuccess\x12\x18\n" +
+	"\amessage\x18\x02 \x01(\tR\amessage\x12\x1d\n" +
+	"\n" +
+	"builder_id\x18\x03 \x01(\tR\tbuilderId\"3\n" +
+	"\x14GetActiveBidsRequest\x12\x1b\n" +
+	"\tintent_id\x18\x01 \x01(\tR\bintentId\"\x80\x01\n" +
+	"\x15GetActiveBidsResponse\x123\n" +
+	"\x04bids\x18\x01 \x03(\v2\x1f.api.pinai_intent.v1.BidMessageR\x04bids\x12\x18\n" +
+	"\asuccess\x18\x02 \x01(\bR\asuccess\x12\x18\n" +
+	"\amessage\x18\x03 \x01(\tR\amessage\"\x80\x01\n" +
+	"\x16GetMatchHistoryRequest\x12\x1d\n" +
+	"\n" +
+	"start_time\x18\x01 \x01(\x03R\tstartTime\x12\x19\n" +
+	"\bend_time\x18\x02 \x01(\x03R\aendTime\x12\x14\n" +
+	"\x05limit\x18\x03 \x01(\x05R\x05limit\x12\x16\n" +
+	"\x06offset\x18\x04 \x01(\x05R\x06offset\"\x9f\x01\n" +
+	"\x17GetMatchHistoryResponse\x12:\n" +
+	"\amatches\x18\x01 \x03(\v2 .api.pinai_intent.v1.MatchResultR\amatches\x12\x14\n" +
+	"\x05total\x18\x02 \x01(\x05R\x05total\x12\x18\n" +
+	"\asuccess\x18\x03 \x01(\bR\asuccess\x12\x18\n" +
+	"\amessage\x18\x04 \x01(\tR\amessage*\x8e\x02\n" +
 	"\fIntentStatus\x12\x1d\n" +
 	"\x19INTENT_STATUS_UNSPECIFIED\x10\x00\x12\x19\n" +
 	"\x15INTENT_STATUS_CREATED\x10\x01\x12\x1b\n" +
@@ -1008,7 +2987,18 @@ const file_pinai_intent_v1_intent_proto_rawDesc = "" +
 	"\fCreateIntent\x12(.api.pinai_intent.v1.CreateIntentRequest\x1a).api.pinai_intent.v1.CreateIntentResponse\"&\x82\xd3\xe4\x93\x02 :\x01*\"\x1b/pinai_intent/intent/create\x12\x97\x01\n" +
 	"\x0fBroadcastIntent\x12+.api.pinai_intent.v1.BroadcastIntentRequest\x1a,.api.pinai_intent.v1.BroadcastIntentResponse\")\x82\xd3\xe4\x93\x02#:\x01*\"\x1e/pinai_intent/intent/broadcast\x12\x86\x01\n" +
 	"\fQueryIntents\x12(.api.pinai_intent.v1.QueryIntentsRequest\x1a).api.pinai_intent.v1.QueryIntentsResponse\"!\x82\xd3\xe4\x93\x02\x1b\x12\x19/pinai_intent/intent/list\x12\x91\x01\n" +
-	"\x0fGetIntentStatus\x12+.api.pinai_intent.v1.GetIntentStatusRequest\x1a,.api.pinai_intent.v1.GetIntentStatusResponse\"#\x82\xd3\xe4\x93\x02\x1d\x12\x1b/pinai_intent/intent/statusBLZJgithub.com/pin-project/pin_intent_broadcast_network/api/pinai_intent/v1;v1b\x06proto3"
+	"\x0fGetIntentStatus\x12+.api.pinai_intent.v1.GetIntentStatusRequest\x1a,.api.pinai_intent.v1.GetIntentStatusResponse\"#\x82\xd3\xe4\x93\x02\x1d\x12\x1b/pinai_intent/intent/status2\xbf\v\n" +
+	"\x16IntentExecutionService\x12\x9b\x01\n" +
+	"\x0fGetAgentsStatus\x12+.api.pinai_intent.v1.GetAgentsStatusRequest\x1a,.api.pinai_intent.v1.GetAgentsStatusResponse\"-\x82\xd3\xe4\x93\x02'\x12%/pinai_intent/execution/agents/status\x12\xa3\x01\n" +
+	"\x11GetBuildersStatus\x12-.api.pinai_intent.v1.GetBuildersStatusRequest\x1a..api.pinai_intent.v1.GetBuildersStatusResponse\"/\x82\xd3\xe4\x93\x02)\x12'/pinai_intent/execution/builders/status\x12\xa1\x01\n" +
+	"\x13GetExecutionMetrics\x12/.api.pinai_intent.v1.GetExecutionMetricsRequest\x1a0.api.pinai_intent.v1.GetExecutionMetricsResponse\"'\x82\xd3\xe4\x93\x02!\x12\x1f/pinai_intent/execution/metrics\x12\x99\x01\n" +
+	"\n" +
+	"StartAgent\x12&.api.pinai_intent.v1.StartAgentRequest\x1a'.api.pinai_intent.v1.StartAgentResponse\":\x82\xd3\xe4\x93\x024:\x01*\"//pinai_intent/execution/agents/{agent_id}/start\x12\x95\x01\n" +
+	"\tStopAgent\x12%.api.pinai_intent.v1.StopAgentRequest\x1a&.api.pinai_intent.v1.StopAgentResponse\"9\x82\xd3\xe4\x93\x023:\x01*\"./pinai_intent/execution/agents/{agent_id}/stop\x12\xa3\x01\n" +
+	"\fStartBuilder\x12(.api.pinai_intent.v1.StartBuilderRequest\x1a).api.pinai_intent.v1.StartBuilderResponse\">\x82\xd3\xe4\x93\x028:\x01*\"3/pinai_intent/execution/builders/{builder_id}/start\x12\x9f\x01\n" +
+	"\vStopBuilder\x12'.api.pinai_intent.v1.StopBuilderRequest\x1a(.api.pinai_intent.v1.StopBuilderResponse\"=\x82\xd3\xe4\x93\x027:\x01*\"2/pinai_intent/execution/builders/{builder_id}/stop\x12\xa0\x01\n" +
+	"\rGetActiveBids\x12).api.pinai_intent.v1.GetActiveBidsRequest\x1a*.api.pinai_intent.v1.GetActiveBidsResponse\"8\x82\xd3\xe4\x93\x022\x120/pinai_intent/execution/intents/{intent_id}/bids\x12\x9d\x01\n" +
+	"\x0fGetMatchHistory\x12+.api.pinai_intent.v1.GetMatchHistoryRequest\x1a,.api.pinai_intent.v1.GetMatchHistoryResponse\"/\x82\xd3\xe4\x93\x02)\x12'/pinai_intent/execution/matches/historyBLZJgithub.com/pin-project/pin_intent_broadcast_network/api/pinai_intent/v1;v1b\x06proto3"
 
 var (
 	file_pinai_intent_v1_intent_proto_rawDescOnce sync.Once
@@ -1023,50 +3013,106 @@ func file_pinai_intent_v1_intent_proto_rawDescGZIP() []byte {
 }
 
 var file_pinai_intent_v1_intent_proto_enumTypes = make([]protoimpl.EnumInfo, 1)
-var file_pinai_intent_v1_intent_proto_msgTypes = make([]protoimpl.MessageInfo, 14)
+var file_pinai_intent_v1_intent_proto_msgTypes = make([]protoimpl.MessageInfo, 43)
 var file_pinai_intent_v1_intent_proto_goTypes = []any{
-	(IntentStatus)(0),               // 0: api.pinai_intent.v1.IntentStatus
-	(*Tag)(nil),                     // 1: api.pinai_intent.v1.Tag
-	(*IntentManifest)(nil),          // 2: api.pinai_intent.v1.IntentManifest
-	(*Intent)(nil),                  // 3: api.pinai_intent.v1.Intent
-	(*CreateIntentRequest)(nil),     // 4: api.pinai_intent.v1.CreateIntentRequest
-	(*CreateIntentResponse)(nil),    // 5: api.pinai_intent.v1.CreateIntentResponse
-	(*BroadcastIntentRequest)(nil),  // 6: api.pinai_intent.v1.BroadcastIntentRequest
-	(*BroadcastIntentResponse)(nil), // 7: api.pinai_intent.v1.BroadcastIntentResponse
-	(*QueryIntentsRequest)(nil),     // 8: api.pinai_intent.v1.QueryIntentsRequest
-	(*QueryIntentsResponse)(nil),    // 9: api.pinai_intent.v1.QueryIntentsResponse
-	(*GetIntentStatusRequest)(nil),  // 10: api.pinai_intent.v1.GetIntentStatusRequest
-	(*GetIntentStatusResponse)(nil), // 11: api.pinai_intent.v1.GetIntentStatusResponse
-	nil,                             // 12: api.pinai_intent.v1.IntentManifest.RequirementsEntry
-	nil,                             // 13: api.pinai_intent.v1.Intent.MetadataEntry
-	nil,                             // 14: api.pinai_intent.v1.CreateIntentRequest.MetadataEntry
+	(IntentStatus)(0),                   // 0: api.pinai_intent.v1.IntentStatus
+	(*Tag)(nil),                         // 1: api.pinai_intent.v1.Tag
+	(*IntentManifest)(nil),              // 2: api.pinai_intent.v1.IntentManifest
+	(*Intent)(nil),                      // 3: api.pinai_intent.v1.Intent
+	(*CreateIntentRequest)(nil),         // 4: api.pinai_intent.v1.CreateIntentRequest
+	(*CreateIntentResponse)(nil),        // 5: api.pinai_intent.v1.CreateIntentResponse
+	(*BroadcastIntentRequest)(nil),      // 6: api.pinai_intent.v1.BroadcastIntentRequest
+	(*BroadcastIntentResponse)(nil),     // 7: api.pinai_intent.v1.BroadcastIntentResponse
+	(*QueryIntentsRequest)(nil),         // 8: api.pinai_intent.v1.QueryIntentsRequest
+	(*QueryIntentsResponse)(nil),        // 9: api.pinai_intent.v1.QueryIntentsResponse
+	(*GetIntentStatusRequest)(nil),      // 10: api.pinai_intent.v1.GetIntentStatusRequest
+	(*GetIntentStatusResponse)(nil),     // 11: api.pinai_intent.v1.GetIntentStatusResponse
+	(*AgentStatus)(nil),                 // 12: api.pinai_intent.v1.AgentStatus
+	(*AgentConfig)(nil),                 // 13: api.pinai_intent.v1.AgentConfig
+	(*BidStrategy)(nil),                 // 14: api.pinai_intent.v1.BidStrategy
+	(*IntentFilter)(nil),                // 15: api.pinai_intent.v1.IntentFilter
+	(*BlockBuilderStatus)(nil),          // 16: api.pinai_intent.v1.BlockBuilderStatus
+	(*BlockBuilderConfig)(nil),          // 17: api.pinai_intent.v1.BlockBuilderConfig
+	(*BidMessage)(nil),                  // 18: api.pinai_intent.v1.BidMessage
+	(*MatchResult)(nil),                 // 19: api.pinai_intent.v1.MatchResult
+	(*GetAgentsStatusRequest)(nil),      // 20: api.pinai_intent.v1.GetAgentsStatusRequest
+	(*GetAgentsStatusResponse)(nil),     // 21: api.pinai_intent.v1.GetAgentsStatusResponse
+	(*GetBuildersStatusRequest)(nil),    // 22: api.pinai_intent.v1.GetBuildersStatusRequest
+	(*GetBuildersStatusResponse)(nil),   // 23: api.pinai_intent.v1.GetBuildersStatusResponse
+	(*GetExecutionMetricsRequest)(nil),  // 24: api.pinai_intent.v1.GetExecutionMetricsRequest
+	(*ExecutionMetrics)(nil),            // 25: api.pinai_intent.v1.ExecutionMetrics
+	(*GetExecutionMetricsResponse)(nil), // 26: api.pinai_intent.v1.GetExecutionMetricsResponse
+	(*StartAgentRequest)(nil),           // 27: api.pinai_intent.v1.StartAgentRequest
+	(*StartAgentResponse)(nil),          // 28: api.pinai_intent.v1.StartAgentResponse
+	(*StopAgentRequest)(nil),            // 29: api.pinai_intent.v1.StopAgentRequest
+	(*StopAgentResponse)(nil),           // 30: api.pinai_intent.v1.StopAgentResponse
+	(*StartBuilderRequest)(nil),         // 31: api.pinai_intent.v1.StartBuilderRequest
+	(*StartBuilderResponse)(nil),        // 32: api.pinai_intent.v1.StartBuilderResponse
+	(*StopBuilderRequest)(nil),          // 33: api.pinai_intent.v1.StopBuilderRequest
+	(*StopBuilderResponse)(nil),         // 34: api.pinai_intent.v1.StopBuilderResponse
+	(*GetActiveBidsRequest)(nil),        // 35: api.pinai_intent.v1.GetActiveBidsRequest
+	(*GetActiveBidsResponse)(nil),       // 36: api.pinai_intent.v1.GetActiveBidsResponse
+	(*GetMatchHistoryRequest)(nil),      // 37: api.pinai_intent.v1.GetMatchHistoryRequest
+	(*GetMatchHistoryResponse)(nil),     // 38: api.pinai_intent.v1.GetMatchHistoryResponse
+	nil,                                 // 39: api.pinai_intent.v1.IntentManifest.RequirementsEntry
+	nil,                                 // 40: api.pinai_intent.v1.Intent.MetadataEntry
+	nil,                                 // 41: api.pinai_intent.v1.CreateIntentRequest.MetadataEntry
+	nil,                                 // 42: api.pinai_intent.v1.BidMessage.MetadataEntry
+	nil,                                 // 43: api.pinai_intent.v1.MatchResult.MetadataEntry
 }
 var file_pinai_intent_v1_intent_proto_depIdxs = []int32{
-	12, // 0: api.pinai_intent.v1.IntentManifest.requirements:type_name -> api.pinai_intent.v1.IntentManifest.RequirementsEntry
-	13, // 1: api.pinai_intent.v1.Intent.metadata:type_name -> api.pinai_intent.v1.Intent.MetadataEntry
+	39, // 0: api.pinai_intent.v1.IntentManifest.requirements:type_name -> api.pinai_intent.v1.IntentManifest.RequirementsEntry
+	40, // 1: api.pinai_intent.v1.Intent.metadata:type_name -> api.pinai_intent.v1.Intent.MetadataEntry
 	0,  // 2: api.pinai_intent.v1.Intent.status:type_name -> api.pinai_intent.v1.IntentStatus
 	2,  // 3: api.pinai_intent.v1.Intent.intent_manifest:type_name -> api.pinai_intent.v1.IntentManifest
 	1,  // 4: api.pinai_intent.v1.Intent.relevant_tags:type_name -> api.pinai_intent.v1.Tag
-	14, // 5: api.pinai_intent.v1.CreateIntentRequest.metadata:type_name -> api.pinai_intent.v1.CreateIntentRequest.MetadataEntry
+	41, // 5: api.pinai_intent.v1.CreateIntentRequest.metadata:type_name -> api.pinai_intent.v1.CreateIntentRequest.MetadataEntry
 	2,  // 6: api.pinai_intent.v1.CreateIntentRequest.intent_manifest:type_name -> api.pinai_intent.v1.IntentManifest
 	1,  // 7: api.pinai_intent.v1.CreateIntentRequest.relevant_tags:type_name -> api.pinai_intent.v1.Tag
 	3,  // 8: api.pinai_intent.v1.CreateIntentResponse.intent:type_name -> api.pinai_intent.v1.Intent
 	0,  // 9: api.pinai_intent.v1.QueryIntentsRequest.status:type_name -> api.pinai_intent.v1.IntentStatus
 	3,  // 10: api.pinai_intent.v1.QueryIntentsResponse.intents:type_name -> api.pinai_intent.v1.Intent
 	3,  // 11: api.pinai_intent.v1.GetIntentStatusResponse.intent:type_name -> api.pinai_intent.v1.Intent
-	4,  // 12: api.pinai_intent.v1.IntentService.CreateIntent:input_type -> api.pinai_intent.v1.CreateIntentRequest
-	6,  // 13: api.pinai_intent.v1.IntentService.BroadcastIntent:input_type -> api.pinai_intent.v1.BroadcastIntentRequest
-	8,  // 14: api.pinai_intent.v1.IntentService.QueryIntents:input_type -> api.pinai_intent.v1.QueryIntentsRequest
-	10, // 15: api.pinai_intent.v1.IntentService.GetIntentStatus:input_type -> api.pinai_intent.v1.GetIntentStatusRequest
-	5,  // 16: api.pinai_intent.v1.IntentService.CreateIntent:output_type -> api.pinai_intent.v1.CreateIntentResponse
-	7,  // 17: api.pinai_intent.v1.IntentService.BroadcastIntent:output_type -> api.pinai_intent.v1.BroadcastIntentResponse
-	9,  // 18: api.pinai_intent.v1.IntentService.QueryIntents:output_type -> api.pinai_intent.v1.QueryIntentsResponse
-	11, // 19: api.pinai_intent.v1.IntentService.GetIntentStatus:output_type -> api.pinai_intent.v1.GetIntentStatusResponse
-	16, // [16:20] is the sub-list for method output_type
-	12, // [12:16] is the sub-list for method input_type
-	12, // [12:12] is the sub-list for extension type_name
-	12, // [12:12] is the sub-list for extension extendee
-	0,  // [0:12] is the sub-list for field type_name
+	14, // 12: api.pinai_intent.v1.AgentConfig.bid_strategy:type_name -> api.pinai_intent.v1.BidStrategy
+	15, // 13: api.pinai_intent.v1.AgentConfig.intent_filter:type_name -> api.pinai_intent.v1.IntentFilter
+	42, // 14: api.pinai_intent.v1.BidMessage.metadata:type_name -> api.pinai_intent.v1.BidMessage.MetadataEntry
+	43, // 15: api.pinai_intent.v1.MatchResult.metadata:type_name -> api.pinai_intent.v1.MatchResult.MetadataEntry
+	12, // 16: api.pinai_intent.v1.GetAgentsStatusResponse.agents:type_name -> api.pinai_intent.v1.AgentStatus
+	16, // 17: api.pinai_intent.v1.GetBuildersStatusResponse.builders:type_name -> api.pinai_intent.v1.BlockBuilderStatus
+	25, // 18: api.pinai_intent.v1.GetExecutionMetricsResponse.metrics:type_name -> api.pinai_intent.v1.ExecutionMetrics
+	18, // 19: api.pinai_intent.v1.GetActiveBidsResponse.bids:type_name -> api.pinai_intent.v1.BidMessage
+	19, // 20: api.pinai_intent.v1.GetMatchHistoryResponse.matches:type_name -> api.pinai_intent.v1.MatchResult
+	4,  // 21: api.pinai_intent.v1.IntentService.CreateIntent:input_type -> api.pinai_intent.v1.CreateIntentRequest
+	6,  // 22: api.pinai_intent.v1.IntentService.BroadcastIntent:input_type -> api.pinai_intent.v1.BroadcastIntentRequest
+	8,  // 23: api.pinai_intent.v1.IntentService.QueryIntents:input_type -> api.pinai_intent.v1.QueryIntentsRequest
+	10, // 24: api.pinai_intent.v1.IntentService.GetIntentStatus:input_type -> api.pinai_intent.v1.GetIntentStatusRequest
+	20, // 25: api.pinai_intent.v1.IntentExecutionService.GetAgentsStatus:input_type -> api.pinai_intent.v1.GetAgentsStatusRequest
+	22, // 26: api.pinai_intent.v1.IntentExecutionService.GetBuildersStatus:input_type -> api.pinai_intent.v1.GetBuildersStatusRequest
+	24, // 27: api.pinai_intent.v1.IntentExecutionService.GetExecutionMetrics:input_type -> api.pinai_intent.v1.GetExecutionMetricsRequest
+	27, // 28: api.pinai_intent.v1.IntentExecutionService.StartAgent:input_type -> api.pinai_intent.v1.StartAgentRequest
+	29, // 29: api.pinai_intent.v1.IntentExecutionService.StopAgent:input_type -> api.pinai_intent.v1.StopAgentRequest
+	31, // 30: api.pinai_intent.v1.IntentExecutionService.StartBuilder:input_type -> api.pinai_intent.v1.StartBuilderRequest
+	33, // 31: api.pinai_intent.v1.IntentExecutionService.StopBuilder:input_type -> api.pinai_intent.v1.StopBuilderRequest
+	35, // 32: api.pinai_intent.v1.IntentExecutionService.GetActiveBids:input_type -> api.pinai_intent.v1.GetActiveBidsRequest
+	37, // 33: api.pinai_intent.v1.IntentExecutionService.GetMatchHistory:input_type -> api.pinai_intent.v1.GetMatchHistoryRequest
+	5,  // 34: api.pinai_intent.v1.IntentService.CreateIntent:output_type -> api.pinai_intent.v1.CreateIntentResponse
+	7,  // 35: api.pinai_intent.v1.IntentService.BroadcastIntent:output_type -> api.pinai_intent.v1.BroadcastIntentResponse
+	9,  // 36: api.pinai_intent.v1.IntentService.QueryIntents:output_type -> api.pinai_intent.v1.QueryIntentsResponse
+	11, // 37: api.pinai_intent.v1.IntentService.GetIntentStatus:output_type -> api.pinai_intent.v1.GetIntentStatusResponse
+	21, // 38: api.pinai_intent.v1.IntentExecutionService.GetAgentsStatus:output_type -> api.pinai_intent.v1.GetAgentsStatusResponse
+	23, // 39: api.pinai_intent.v1.IntentExecutionService.GetBuildersStatus:output_type -> api.pinai_intent.v1.GetBuildersStatusResponse
+	26, // 40: api.pinai_intent.v1.IntentExecutionService.GetExecutionMetrics:output_type -> api.pinai_intent.v1.GetExecutionMetricsResponse
+	28, // 41: api.pinai_intent.v1.IntentExecutionService.StartAgent:output_type -> api.pinai_intent.v1.StartAgentResponse
+	30, // 42: api.pinai_intent.v1.IntentExecutionService.StopAgent:output_type -> api.pinai_intent.v1.StopAgentResponse
+	32, // 43: api.pinai_intent.v1.IntentExecutionService.StartBuilder:output_type -> api.pinai_intent.v1.StartBuilderResponse
+	34, // 44: api.pinai_intent.v1.IntentExecutionService.StopBuilder:output_type -> api.pinai_intent.v1.StopBuilderResponse
+	36, // 45: api.pinai_intent.v1.IntentExecutionService.GetActiveBids:output_type -> api.pinai_intent.v1.GetActiveBidsResponse
+	38, // 46: api.pinai_intent.v1.IntentExecutionService.GetMatchHistory:output_type -> api.pinai_intent.v1.GetMatchHistoryResponse
+	34, // [34:47] is the sub-list for method output_type
+	21, // [21:34] is the sub-list for method input_type
+	21, // [21:21] is the sub-list for extension type_name
+	21, // [21:21] is the sub-list for extension extendee
+	0,  // [0:21] is the sub-list for field type_name
 }
 
 func init() { file_pinai_intent_v1_intent_proto_init() }
@@ -1080,9 +3126,9 @@ func file_pinai_intent_v1_intent_proto_init() {
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_pinai_intent_v1_intent_proto_rawDesc), len(file_pinai_intent_v1_intent_proto_rawDesc)),
 			NumEnums:      1,
-			NumMessages:   14,
+			NumMessages:   43,
 			NumExtensions: 0,
-			NumServices:   1,
+			NumServices:   2,
 		},
 		GoTypes:           file_pinai_intent_v1_intent_proto_goTypes,
 		DependencyIndexes: file_pinai_intent_v1_intent_proto_depIdxs,
