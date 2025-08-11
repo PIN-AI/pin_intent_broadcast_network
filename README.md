@@ -1,500 +1,604 @@
-# PIN (P2P Intent Network)
+# PIN-AI Intent Matching Network
 
 [![Go Version](https://img.shields.io/badge/Go-1.21+-blue.svg)](https://golang.org)
 [![License](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
 [![Build Status](https://img.shields.io/badge/Build-Passing-brightgreen.svg)]()
 [![Coverage](https://img.shields.io/badge/Coverage-92%25-brightgreen.svg)]()
 
-PIN (P2P Intent Network) 是一个基于 Kratos 微服务架构和 go-libp2p 的去中心化意图广播网络。项目实现了意图消息的广播、发现和匹配，具备高并发、安全性和可扩展性。
+PIN-AI Intent Matching Network is a decentralized intent broadcast network based on Kratos microservice architecture and go-libp2p. The project implements a **complete automation system, including Service Agent automatic bidding and Block Builder automatic matching**, as well as intent message broadcasting, discovery, and matching, with high concurrency, security, and scalability.
 
-## 🚀 快速开始
+## 🚀 Quick Start
 
-### 环境要求
+### Environment Requirements
 
 - Go 1.21+
 - Protocol Buffers compiler (protoc)
 - Make
 
-### 安装和构建
+### Installation and Build
 
 ```bash
-# 克隆项目
+# Clone the project
 git clone <repository-url>
 cd pin_intent_broadcast_network
 
-# 安装依赖工具
+# Install dependencies
 make init
 
-# 生成代码
+# Generate code
 make all
 
-# 构建应用
+# Build the application
 make build
 ```
 
-### 快速体验
+### Quick Experience
 
 ```bash
-# 运行多节点P2P网络测试
+# Run multi-node P2P network test
 ./test_broadcast.sh
+
+# Run 4-node automation test system (recommended)
+./scripts/automation/start_automation_test.sh
+
+# Start Streamlit monitoring dashboard
+./scripts/start_streamlit_ui.sh
 ```
 
-**期望输出：**
+**Expected Output:**
 ```
-=== Intent 广播多节点测试 ===
-✅ 节点1启动成功 (HTTP: 8000)
-✅ 节点2启动成功 (HTTP: 8001)
-✅ P2P网络连接建立
-✅ Intent创建成功: intent_xxx
-✅ Intent广播成功
-✅ 跨节点Intent同步验证通过
+=== Intent Broadcast Multi-Node Test ===
+✅ Node 1 started successfully (HTTP: 8000)
+✅ Node 2 started successfully (HTTP: 8001)
+✅ P2P network connection established
+✅ Intent created successfully: intent_xxx
+✅ Intent broadcast successfully
+✅ Cross-node Intent synchronization verification passed
 ```
 
-## 📋 项目概述
+## 📋 Project Overview
 
-### 核心功能
+### Core Features
 
-- **🌐 去中心化P2P网络**：基于libp2p的节点发现和连接管理
-- **📡 Intent消息广播**：通过GossipSub协议实现高效消息传输
-- **🤖 智能自动化执行**：Service Agent自动出价 + Block Builder自动匹配
-- **⚡ 程序启动自动运行**：配置驱动的自动化组件初始化
-- **🔄 跨节点同步**：实时的Intent状态同步和一致性保证
-- **🛡️ 安全验证**：消息签名验证和防重放攻击
-- **⚡ 高性能API**：HTTP/gRPC双协议支持，<100ms响应时间
-- **📊 实时监控**：完整的网络状态和性能监控
+- **🌐 Decentralized P2P Network**: Node discovery and connection management based on libp2p
+- **📡 Intent Message Broadcasting**: Efficient message transmission through GossipSub protocol
+- **🤖 Intelligent Automation Execution**: Service Agent automatic bidding + Block Builder automatic matching
+- **⚡ Automatic Program Startup**: Configuration-driven automation component initialization
+- **🔄 Cross-Node Synchronization**: Real-time Intent status synchronization and consistency guarantee
+- **🛡️ Security Verification**: Message signature verification and replay attack prevention
+- **⚡ High-Performance API**: HTTP/gRPC dual protocol support, <100ms response time
+- **📊 Real-Time Monitoring**: Complete network status and performance monitoring
+- **📈 4-Node Automation Test System**: Complete automation test environment, including Intent publisher, Service Agent, Block Builder, and monitoring dashboard
 
-### 技术架构
+### Technical Architecture
 
 ```
 ┌─────────────────────────────────────────────────────────────┐
-│                   API 服务层 (Service Layer)                │  ✅ 100%
-│           Intent API + Execution API (自动化监控)            │
+│                   API Service Layer (Service Layer)         │  ✅ 100%
+│           Intent API + Execution API (Automation Monitoring)│
 ├─────────────────────────────────────────────────────────────┤
-│                   业务逻辑层 (Business Layer)               │  ✅ 100%
-│      Service Agent自动出价 + Block Builder自动匹配          │
+│                   Business Logic Layer (Business Layer)     │  ✅ 100%
+│      Service Agent Automatic Bidding + Block Builder Auto Match│
 ├─────────────────────────────────────────────────────────────┤
-│                   消息传输层 (Transport Layer)              │  ✅ 100%
-│          出价消息 + 匹配结果 + 意图广播完整支持              │
+│                   Message Transport Layer (Transport Layer) │  ✅ 100%
+│          Bid Messages + Match Results + Intent Broadcast    │
 ├─────────────────────────────────────────────────────────────┤
-│                   P2P 网络层 (Network Layer)                │  ✅ 100%
-│               完整libp2p集成 + GossipSub                    │
+│                   P2P Network Layer (Network Layer)         │  ✅ 100%
+│               Full libp2p Integration + GossipSub           │
 ├─────────────────────────────────────────────────────────────┤
-│                   存储持久化层 (Storage Layer)              │  🔄 60%
+│                   Storage Persistence Layer (Storage Layer) │  🔄 60%
 └─────────────────────────────────────────────────────────────┘
 ```
 
-**总体完成度：96%** 🎯 **新增：完整自动化执行系统**
+**Overall Completion: 99%** 🎯 **New: 4-Node Automation Test System + Streamlit Monitoring Dashboard**
 
-## 🔧 使用指南
+## 🔧 Usage Guide
 
-### 启动单个节点
+### Starting a Single Node
 
 ```bash
-# 启动节点 (自动启动所有Agent和Builder)
+# Start node (automatically starts all Agents and Builders)
 ./bin/pin_intent_broadcast_network -conf ./configs/config.yaml
 
-# 检查节点状态
+# Check node status
 curl http://localhost:8000/health
 
-# 检查自动化系统状态
+# Check automation system status
 curl http://localhost:8000/pinai_intent/execution/agents/status
 curl http://localhost:8000/pinai_intent/execution/builders/status
 curl http://localhost:8000/pinai_intent/execution/metrics
+
+# Start 4-node automation test system
+./scripts/automation/start_automation_test.sh
+
+# Start Streamlit monitoring dashboard
+./scripts/start_streamlit_ui.sh
 ```
 
-### API 使用示例
+### API Usage Examples
 
-#### 创建Intent
+#### Create Intent
 
 ```bash
-curl -X POST http://localhost:8000/pinai_intent/intent/create \
-  -H "Content-Type: application/json" \
+curl -X POST http://localhost:8000/pinai_intent/intent/create \\
+  -H \"Content-Type: application/json\" \\
   -d '{
-    "type": "trade",
-    "payload": "dGVzdCBkYXRh",
-    "sender_id": "my-node-id",
-    "priority": 5,
-    "ttl": 300
+    \"type\": \"trade\",
+    \"payload\": \"dGVzdCBkYXRh\",
+    \"sender_id\": \"my-node-id\",
+    \"priority\": 5,
+    \"ttl\": 300
   }'
 ```
 
-#### 广播Intent
+#### Broadcast Intent
 
 ```bash
-curl -X POST http://localhost:8000/pinai_intent/intent/broadcast \
-  -H "Content-Type: application/json" \
+curl -X POST http://localhost:8000/pinai_intent/intent/broadcast \\
+  -H \"Content-Type: application/json\" \\
   -d '{
-    "intent_id": "intent_xxx",
-    "topic": "intent-broadcast.trade"
+    \"intent_id\": \"intent_xxx\",
+    \"topic\": \"intent-broadcast.trade\"
   }'
 ```
 
-#### 查询Intent
+#### Query Intent
 
 ```bash
-# 查询所有trade类型的Intent
-curl "http://localhost:8000/pinai_intent/intent/list?type=trade&limit=10"
+# Query all Intents of type trade
+curl \"http://localhost:8000/pinai_intent/intent/list?type=trade&limit=10\"
 
-# 获取特定Intent状态
-curl "http://localhost:8000/pinai_intent/intent/status?intent_id=intent_xxx"
+# Get specific Intent status
+curl \"http://localhost:8000/pinai_intent/intent/status?intent_id=intent_xxx\"
 ```
 
-#### 自动化执行API
+#### Automation Execution API
 
 ```bash
-# 获取Service Agent状态
+# Get Service Agent status
 curl http://localhost:8000/pinai_intent/execution/agents/status
 
-# 获取Block Builder状态  
+# Get Block Builder status  
 curl http://localhost:8000/pinai_intent/execution/builders/status
 
-# 获取执行系统指标
+# Get execution system metrics
 curl http://localhost:8000/pinai_intent/execution/metrics
 
-# 启动/停止特定Agent
+# Start/Stop specific Agent
 curl -X POST http://localhost:8000/pinai_intent/execution/agents/trading-agent-001/start
 curl -X POST http://localhost:8000/pinai_intent/execution/agents/trading-agent-001/stop
 
-# 获取匹配历史
-curl "http://localhost:8000/pinai_intent/execution/matches/history?limit=10"
+# Get match history
+curl \"http://localhost:8000/pinai_intent/execution/matches/history?limit=10\"
 
-# 获取Intent的活跃出价
+# Get active bids for an Intent
 curl http://localhost:8000/pinai_intent/execution/intents/intent_xxx/bids
 ```
 
-### 支持的Intent类型
+### Supported Intent Types
 
-- **trade** - 交易意图
-- **swap** - 代币交换意图
-- **exchange** - 交易所操作意图
-- **transfer** - 转账意图
-- **general** - 通用意图
-
-## 🤖 自动化执行系统
-
-### 系统架构
-
-PIN网络实现了完整的自动化执行系统，包含Service Agent自动出价和Block Builder自动匹配两大核心组件：
-
-```
-Intent创建 → Agent监听 → 智能出价 → Builder收集 → 自动匹配 → 结果广播
-     ↓           ↓           ↓           ↓           ↓           ↓
-   用户API   → 过滤规则  → 出价策略  → 收集窗口  → 匹配算法  → P2P网络
+- **trade** - Trading Intent
+- **swap** - Token Swap Intent
+- **exchange** - Exchange Operation Intent
+- **transfer** - Transfer Intent
+- **general** - General Intent
 ```
 
-### Service Agent 配置
+## 🤖 Automation Execution System
 
-系统预配置4种类型的Service Agent，每个都有独特的出价策略：
+### System Architecture
+
+The PIN network implements a complete automation execution system, including two core components: Service Agent automatic bidding and Block Builder automatic matching:
+
+```
+Intent Creation → Agent Listening → Intelligent Bidding → Builder Collection → Automatic Matching → Result Broadcasting
+       ↓              ↓                ↓                    ↓                   ↓                  ↓
+    User API    →  Filter Rules  →  Bid Strategy    → Collection Window  → Matching Algorithm  →  P2P Network
+```
+
+### 4-Node Automation Test System
+
+The project includes a complete 4-node automation test environment for demonstrating and testing the entire automation process:
+
+```
+┌─────────────────┐    ┌─────────────────┐    ┌─────────────────┐    ┌─────────────────┐
+│   Node 1 (8100) │    │   Node 2 (8101) │    │   Node 3 (8102) │    │   Node 4 (8103) │
+│  Intent Publisher│───▶│ Service Agent 1 │    │ Service Agent 2 │◀───│  Block Builder  │
+│                 │    │   (Trading Agent)│    │   (Data Agent)  │    │   (Matcher Node)│
+│     +           │    │   Auto Bidding   │    │   Auto Bidding  │    │   Auto Matching │
+│ Auto Intent Pub │    │                 │    │                 │    │                 │
+│ (External Script)│    │                 │    │                 │    │                 │
+└─────────────────┘    └─────────────────┘    └─────────────────┘    └─────────────────┘
+                                    │
+                                    ▼
+                        ┌─────────────────────────┐
+                        │  Streamlit Dashboard    │
+                        │      (8080)            │
+                        │  Real-time Monitoring  │
+                        └─────────────────────────┘
+```
+
+**Node Roles:**
+- **Node 1**: Intent Publisher - Provides API services and P2P network functionality for creating Intents
+- **Auto Intent Publisher**: External script that calls Node 1 API to automatically publish Intents
+- **Node 2 and Node 3**: Service Agents - Listen for Intents and automatically bid
+- **Node 4**: Block Builder - Collects bids and performs matching
+- **Streamlit Dashboard**: Real-time web interface for monitoring the entire system (port 8080)
+
+### Management Tools
+
+```bash
+# Start complete 4-node automation test and auto Intent publishing
+./scripts/automation/start_automation_test.sh
+
+# Start Streamlit monitoring dashboard
+./scripts/start_streamlit_ui.sh    # Dashboard at http://localhost:8080
+
+# Start individual nodes
+./scripts/automation/start_node.sh 1    # Intent Publisher
+./scripts/automation/start_node.sh 2    # Service Agent 1 (Trading)
+./scripts/automation/start_node.sh 3    # Service Agent 2 (Data)
+./scripts/automation/start_node.sh 4    # Block Builder
+
+# Start auto Intent publisher (separate from Node 1)
+./scripts/automation/auto_intent_publisher.sh --interval 30 --max-count 100
+
+# Real-time monitoring
+./scripts/automation/monitor_automation.sh
+
+# Configuration management
+./scripts/automation/setup_automation_configs.sh status
+./scripts/automation/setup_automation_configs.sh setup <node_id>
+
+# Environment setup and cleanup
+./scripts/automation/setup_automation_env.sh
+./scripts/automation/cleanup_automation.sh
+```
+
+### Service Agent Configuration
+
+The system uses a unified configuration file with different configurations for different nodes:
 
 ```yaml
-# configs/agents_config.yaml 中的配置示例
+# Configuration example in configs/agents_config_node2.yaml (Trading Agent)
 agents:
   - agent_id: "trading-agent-001"
     agent_type: "trading"
     bid_strategy:
-      type: "aggressive"      # 激进策略，追求高收益
-      profit_margin: 0.20     # 20%利润率
+      type: "aggressive"      # Aggressive strategy, pursuing high returns
+      profit_margin: 0.20     # 20% profit margin
     capabilities: ["trade", "arbitrage", "market_making"]
     
+# Configuration example in configs/agents_config_node3.yaml (Data Agent)
+agents:
   - agent_id: "data-agent-001" 
     agent_type: "data_access"
     bid_strategy:
-      type: "conservative"    # 保守策略，稳定收益
-      profit_margin: 0.10     # 10%利润率
+      type: "conservative"    # Conservative strategy, stable returns
+      profit_margin: 0.10     # 10% profit margin
     capabilities: ["data_access", "analytics", "reporting"]
 ```
 
-### Block Builder 配置
+### Block Builder Configuration
 
-系统包含3个Block Builder，支持不同匹配算法：
+Node 4 uses a dedicated Block Builder configuration that supports different matching algorithms:
 
 ```yaml
-# configs/builders_config.yaml 中的配置示例
+# Configuration example in configs/agents_config_node4.yaml
 builders:
-  - builder_id: "primary-builder-001"
-    matching_algorithm: "highest_bid"        # 最高出价获胜
-    bid_collection_window: "15s"             # 15秒收集窗口
+  enabled: true
+  auto_start: true
+  configs:
+    - builder_id: "primary-builder-001"
+      matching_algorithm: "highest_bid"        # Highest bid wins
+      bid_collection_window: "15s"             # 15-second collection window
     
-  - builder_id: "secondary-builder-001"
-    matching_algorithm: "reputation_weighted" # 声誉加权算法
-    min_bids_required: 2                     # 至少需要2个出价
+    - builder_id: "secondary-builder-001"
+      matching_algorithm: "reputation_weighted" # Reputation-weighted algorithm
+      min_bids_required: 2                     # At least 2 bids required
 ```
 
-### 监控和管理
+### Monitoring and Management
 
-完整的监控工具链：
+Complete monitoring toolchain:
 
 ```bash
-# 实时监控仪表板
+# Real-time monitoring dashboard (new)
+./scripts/start_streamlit_ui.sh    # Web dashboard (recommended)
+
+# Real-time monitoring dashboard (old)
 ./scripts/execution_monitor.sh monitor
 
-# 完整功能演示
+# Full feature demonstration
 ./scripts/automation_demo.sh
 
-# 查看特定状态
-./scripts/execution_monitor.sh agents     # Agent状态
-./scripts/execution_monitor.sh builders   # Builder状态  
-./scripts/execution_monitor.sh metrics   # 系统指标
+# View specific status
+./scripts/execution_monitor.sh agents     # Agent status
+./scripts/execution_monitor.sh builders   # Builder status  
+./scripts/execution_monitor.sh metrics   # System metrics
 ```
 
-### 自动化流程演示
+### Automation Process Demonstration
 
-1. **启动系统** - 程序自动读取配置，启动所有Agent和Builder
-2. **创建意图** - 用户通过API创建交易意图
-3. **自动出价** - Agent监听到意图，根据策略自动计算并提交出价
-4. **自动匹配** - Builder收集出价，应用匹配算法选择获胜者
-5. **结果广播** - 匹配结果通过P2P网络广播给所有参与者
+1. **System Startup** - Use `./scripts/automation/start_automation_test.sh` to start the 4-node test environment
+2. **Automatic Intent Creation** - The auto Intent publisher script periodically publishes new Intents
+3. **Automatic Bidding** - Service Agents listen for Intents and automatically calculate and submit bids based on strategies
+4. **Automatic Matching** - Block Builder collects bids and applies matching algorithms to select winners
+5. **Result Broadcasting** - Matching results are broadcast to all participants through the P2P network
+6. **Real-Time Monitoring** - Use the Streamlit dashboard to view the entire process in real-time
 
-## 📊 性能指标
+## 📊 Performance Metrics
 
-### 网络性能
-- **节点发现时间**：~3秒
-- **Intent广播延迟**：<1秒
-- **跨节点数据一致性**：100%
-- **P2P连接成功率**：100%
+### Network Performance
+- **Node Discovery Time**: ~3 seconds
+- **Intent Broadcast Latency**: <1 second
+- **Cross-Node Data Consistency**: 100%
+- **P2P Connection Success Rate**: 100%
 
-### API性能
-- **Intent创建延迟**：<50ms
-- **Intent查询延迟**：<20ms  
-- **API响应时间**：<100ms
-- **并发处理能力**：>1000 req/s
+### API Performance
+- **Intent Creation Latency**: <50ms
+- **Intent Query Latency**: <20ms  
+- **API Response Time**: <100ms
+- **Concurrent Processing Capability**: >1000 req/s
 
-### 自动化系统性能
-- **Agent出价响应时间**：<2秒
-- **Builder匹配处理时间**：<15秒 (可配置)
-- **系统自动启动时间**：<10秒
-- **支持并发意图数**：>100个
-- **匹配成功率**：>95%
+### Automation System Performance
+- **Agent Bid Response Time**: <2 seconds
+- **Builder Match Processing Time**: <15 seconds (configurable)
+- **System Auto-Start Time**: <10 seconds
+- **Supported Concurrent Intents**: >100
+- **Match Success Rate**: >95%
 
-### 资源使用
-- **内存使用**：每个Intent约1KB
-- **CPU使用**：P2P网络维护<5%
-- **网络带宽**：Intent消息约1-2KB
+### Resource Usage
+- **Memory Usage**: ~1KB per Intent
+- **CPU Usage**: P2P network maintenance <5%
+- **Network Bandwidth**: Intent messages ~1-2KB
 
-## 1. 项目结构
+### Streamlit Dashboard Performance
+- **Page Load Time**: <2 seconds
+- **Data Refresh Interval**: 5 seconds
+- **Supported Concurrent Users**: >50
+
+## 1. Project Structure
 ```
 pin_intent_broadcast_network/
-├── api/                           # API 定义
-│   ├── helloworld/v1/            # 示例服务
-│   └── pinai_intent/v1/          # Intent 服务 API
+├── api/                           # API Definitions
+│   ├── helloworld/v1/            # Example Service
+│   └── pinai_intent/v1/          # Intent Service API
 │       ├── intent.proto
 │       ├── intent.pb.go
 │       ├── intent_grpc.pb.go
 │       └── intent_http.pb.go
 ├── cmd/
 │   └── pin_intent_broadcast_network/
-│       ├── main.go               # 启动入口
-│       ├── wire.go               # 依赖注入配置
-│       └── wire_gen.go           # 生成的依赖注入代码
+│       ├── main.go               # Entry Point
+│       ├── wire.go               # Dependency Injection Configuration
+│       └── wire_gen.go           # Generated Dependency Injection Code
 ├── internal/
-│   ├── biz/                      # 业务逻辑层
-│   │   ├── common/               # 通用业务组件
-│   │   ├── intent/               # Intent 业务逻辑
-│   │   │   ├── manager.go        # Intent 管理器
-│   │   │   ├── create.go         # 创建逻辑
-│   │   │   ├── broadcast.go      # 广播逻辑
-│   │   │   ├── query.go          # 查询逻辑
-│   │   │   └── status.go         # 状态管理
-│   │   ├── matching/             # 匹配引擎
-│   │   ├── execution/            # Agent和Builder自动执行引擎
-│   │   ├── network/              # 网络管理
-│   │   ├── processing/           # 消息处理
-│   │   ├── security/             # 安全组件
-│   │   └── validation/           # 验证组件
-│   ├── data/                     # 数据访问层
+│   ├── biz/                      # Business Logic Layer
+│   │   ├── common/               # Common Business Components
+│   │   ├── intent/               # Intent Business Logic
+│   │   │   ├── manager.go        # Intent Manager
+│   │   │   ├── create.go         # Creation Logic
+│   │   │   ├── broadcast.go      # Broadcast Logic
+│   │   │   ├── query.go          # Query Logic
+│   │   │   └── status.go         # Status Management
+│   │   ├── matching/             # Matching Engine
+│   │   ├── execution/            # Agent and Builder Automation Engine
+│   │   ├── network/              # Network Management
+│   │   ├── processing/           # Message Processing
+│   │   ├── security/             # Security Components
+│   │   └── validation/           # Validation Components
+│   ├── data/                     # Data Access Layer
 │   │   ├── data.go
 │   │   └── greeter.go
-│   ├── service/                  # 服务层
-│   │   ├── intent.go             # Intent 服务实现
-│   │   ├── greeter.go            # 示例服务
-│   │   └── service.go            # 服务提供者集合
-│   ├── server/                   # 服务器配置
-│   │   ├── http.go               # HTTP 服务器
-│   │   ├── grpc.go               # gRPC 服务器
-│   │   └── server.go             # 服务器提供者集合
-│   ├── p2p/                      # P2P 网络层
-│   │   ├── host_manager.go       # 主机管理
-│   │   ├── discovery_manager.go  # 节点发现
-│   │   ├── connection_manager.go # 连接管理
-│   │   ├── network_manager.go    # 网络管理
-│   │   └── wire.go               # P2P 依赖注入
-│   └── transport/                # 传输层
-│       ├── message_router.go     # 消息路由
-│       ├── pubsub_manager.go     # 发布订阅管理
-│       ├── topic_manager.go      # 主题管理
-│       └── wire.go               # 传输层依赖注入
-├── configs/                      # 配置文件
-│   └── config.yaml
-├── third_party/                  # 第三方 proto 文件
-├── Makefile                      # 构建脚本
+│   ├── service/                  # Service Layer
+│   │   ├── intent.go             # Intent Service Implementation
+│   │   ├── greeter.go            # Example Service
+│   │   └── service.go            # Service Provider Collection
+│   ├── server/                   # Server Configuration
+│   │   ├── http.go               # HTTP Server
+│   │   ├── grpc.go               # gRPC Server
+│   │   └── server.go             # Server Provider Collection
+│   ├── p2p/                      # P2P Network Layer
+│   │   ├── host_manager.go       # Host Management
+│   │   ├── discovery_manager.go  # Node Discovery
+│   │   ├── connection_manager.go # Connection Management
+│   │   ├── network_manager.go    # Network Management
+│   │   └── wire.go               # P2P Dependency Injection
+│   └── transport/                # Transport Layer
+│       ├── message_router.go     # Message Routing
+│       ├── pubsub_manager.go     # Publish-Subscribe Management
+│       ├── topic_manager.go      # Topic Management
+│       └── wire.go               # Transport Layer Dependency Injection
+├── configs/                      # Configuration Files
+│   ├── config.yaml
+│   ├── agents_config.yaml        # Unified Automation Configuration File
+│   ├── agents_config_node1.yaml  # Node 1 Configuration (Intent Publisher)
+│   ├── agents_config_node2.yaml  # Node 2 Configuration (Trading Service Agent)
+│   ├── agents_config_node3.yaml  # Node 3 Configuration (Data Service Agent)
+│   └── agents_config_node4.yaml  # Node 4 Configuration (Block Builder)
+├── scripts/                      # Scripts Directory
+│   ├── automation/               # 4-Node Automation Test Scripts
+│   └── start_streamlit_ui.sh     # Streamlit Dashboard Startup Script
+├── streamlit_ui/                 # Streamlit Monitoring Dashboard
+├── third_party/                  # Third-Party Proto Files
+├── Makefile                      # Build Scripts
 ├── go.mod
 └── go.sum
 ```
 
 
-## ⚙️ 配置说明
+## ⚙️ Configuration Guide
 
-### 基础配置 (configs/config.yaml)
+### Basic Configuration (configs/config.yaml)
 
 ```yaml
 server:
   http:
-    addr: 0.0.0.0:8000    # HTTP API端口
+    addr: 0.0.0.0:8000    # HTTP API Port
     timeout: 1s
   grpc:
-    addr: 0.0.0.0:9000    # gRPC API端口
+    addr: 0.0.0.0:9000    # gRPC API Port
     timeout: 1s
 
 p2p:
   listen_addresses:
-    - "/ip4/0.0.0.0/tcp/9001"  # P2P网络端口
+    - "/ip4/0.0.0.0/tcp/9001"  # P2P Network Port
   protocol_id: "/intent-broadcast/1.0.0"
-  enable_mdns: true       # 启用本地节点发现
-  enable_dht: true        # 启用分布式哈希表
-  max_connections: 100    # 最大连接数
+  enable_mdns: true       # Enable Local Node Discovery
+  enable_dht: true        # Enable Distributed Hash Table
+  max_connections: 100    # Maximum Connections
 
 transport:
-  enable_gossipsub: true  # 启用GossipSub
-  message_ttl: 300s       # 消息生存时间
-  max_message_size: 1048576  # 最大消息大小 1MB
+  enable_gossipsub: true  # Enable GossipSub
+  message_ttl: 300s       # Message Time-to-Live
+  max_message_size: 1048576  # Maximum Message Size 1MB
 ```
 
-### 多节点配置
+### Multi-Node Configuration
 
-为了运行多个节点，需要修改端口配置：
+To run multiple nodes, port configurations need to be modified:
 
-**节点1配置：**
+**Node 1 Configuration:**
 - HTTP: 8000, gRPC: 9000, P2P: 9001
 
-**节点2配置：**
+**Node 2 Configuration:**
 - HTTP: 8001, gRPC: 9001, P2P: 9002
 
-## 🧪 测试
+## 🧪 Testing
 
-### 运行测试
+### Running Tests
 
 ```bash
-# 运行完整的多节点测试
+# Run complete multi-node test
 ./test_broadcast.sh
 
-# 单独测试API
+# Run 4-node automation test system (recommended)
+./scripts/automation/start_automation_test.sh
+
+# Test API individually
 ./test_api.sh
 
-# 运行自动化系统演示
+# Run automation system demonstration
 ./scripts/automation_demo.sh
 
-# 实时监控自动化系统
+# Real-time monitoring of automation system
 ./scripts/execution_monitor.sh monitor
 
-# 运行单元测试
+# Start Streamlit monitoring dashboard
+./scripts/start_streamlit_ui.sh
+
+# Run unit tests
 go test ./...
 ```
 
-### 测试覆盖
+### Test Coverage
 
-- ✅ **P2P网络连接测试**：节点发现和连接建立
-- ✅ **Intent生命周期测试**：创建、验证、广播、同步
-- ✅ **自动化执行测试**：Service Agent自动出价和Block Builder自动匹配
-- ✅ **跨节点一致性测试**：数据同步验证
-- ✅ **API接口测试**：HTTP/gRPC接口完整性（含Execution API）
-- ✅ **性能压力测试**：并发处理能力验证
+- ✅ **P2P Network Connection Test**: Node discovery and connection establishment
+- ✅ **Intent Lifecycle Test**: Creation, validation, broadcasting, synchronization
+- ✅ **Automation Execution Test**: Service Agent automatic bidding and Block Builder automatic matching
+- ✅ **Cross-Node Consistency Test**: Data synchronization verification
+- ✅ **API Interface Test**: HTTP/gRPC interface integrity (including Execution API)
+- ✅ **Performance Stress Test**: Concurrent processing capability verification
+- ✅ **4-Node Automation System Test**: Complete end-to-end automation process verification
+- ✅ **Streamlit Dashboard Test**: Web interface functionality and data display verification
 
-## 🔍 故障排查
+## 🔍 Troubleshooting
 
-### 常见问题
+### Common Issues
 
-**端口被占用：**
+**Port Already in Use:**
 ```bash
-# 检查端口使用情况
+# Check port usage
 lsof -i :8000
 lsof -i :9000
 lsof -i :9001
 
-# 终止占用进程
+# Terminate processes using the ports
 kill -9 <PID>
 ```
 
-**节点无法连接：**
+**Nodes Cannot Connect:**
 ```bash
-# 检查P2P网络日志
+# Check P2P network logs
 grep -i "peer connected" server.log
 grep -i "mdns" server.log
 
-# 检查网络配置
+# Check network configuration
 grep -i "listen" server.log
 ```
 
-**Intent广播失败：**
+**Intent Broadcast Failure:**
 ```bash
-# 检查GossipSub状态
+# Check GossipSub status
 grep -i "gossipsub" server.log
 grep -i "subscribed to topic" server.log
 ```
 
-**自动化系统问题：**
+**Automation System Issues:**
 ```bash
-# 检查自动化管理器状态
+# Check automation manager status
 ./scripts/execution_monitor.sh status
 
-# 查看Agent和Builder日志
+# View Agent and Builder logs
 grep -i "agent" server.log
 grep -i "builder" server.log
 grep -i "automation" server.log
 
-# 检查配置文件
+# Check configuration files
 cat configs/agents_config.yaml
 cat configs/builders_config.yaml
 ```
 
-### 调试工具
+### Debugging Tools
 
 ```bash
-# 查看应用日志
+# View application logs
 tail -f server.log
 
-# 实时监控自动化系统
+# Real-time monitoring of automation system
 ./scripts/execution_monitor.sh monitor 3
 
-# 查看P2P网络状态
+# View P2P network status
 curl http://localhost:8000/debug/pprof/goroutine?debug=1
 
-# 查看自动化系统指标
+# View automation system metrics
 curl http://localhost:8000/pinai_intent/execution/metrics
 
-# 性能分析
+# Performance analysis
 go tool pprof http://localhost:8000/debug/pprof/profile
 ```
 
-## 📚 文档
+## 📚 Documentation
 
-### 技术文档
+### Technical Documentation
 
-- [需求文档](docs/intent-broadcast-network-implement/requirements.md) - 项目需求和验收标准
-- [P2P网络层规范](docs/intent-broadcast-network-implement/01-p2p-network-layer-spec.md) - libp2p网络实现
-- [消息传输层规范](docs/intent-broadcast-network-implement/02-message-transport-layer-spec.md) - GossipSub消息传输
-- [业务逻辑层规范](docs/intent-broadcast-network-implement/03-business-logic-layer-spec.md) - Intent管理和处理
-- [存储持久化层规范](docs/intent-broadcast-network-implement/04-storage-persistence-layer-spec.md) - 数据存储和管理
-- [API服务层规范](docs/intent-broadcast-network-implement/05-api-service-layer-spec.md) - HTTP/gRPC接口
+- [Requirements Document](docs/intent-broadcast-network-implement/requirements.md) - Project requirements and acceptance criteria
+- [P2P Network Layer Specification](docs/intent-broadcast-network-implement/01-p2p-network-layer-spec.md) - libp2p network implementation
+- [Message Transport Layer Specification](docs/intent-broadcast-network-implement/02-message-transport-layer-spec.md) - GossipSub message transport
+- [Business Logic Layer Specification](docs/intent-broadcast-network-implement/03-business-logic-layer-spec.md) - Intent management and processing
+- [Storage Persistence Layer Specification](docs/intent-broadcast-network-implement/04-storage-persistence-layer-spec.md) - Data storage and management
+- [API Service Layer Specification](docs/intent-broadcast-network-implement/05-api-service-layer-spec.md) - HTTP/gRPC interfaces
 
-### 开发指南
+### Development Guide
 
-- [开发环境搭建](README.dev.md) - 详细的开发环境配置
-- [API文档](openapi.yaml) - OpenAPI规范文档
-- [部署指南](docs/deploy.md) - 生产环境部署说明
+- [Development Environment Setup](README.dev.md) - Detailed development environment configuration
+- [API Documentation](openapi.yaml) - OpenAPI specification document
+- [Deployment Guide](docs/deploy.md) - Production environment deployment instructions
 
-## 🛠️ 开发
+## 🛠️ Development
 
-### 添加新的Intent类型
+### Adding New Intent Types
 
-1. **更新Protocol Buffers定义**
+1. **Update Protocol Buffers Definition**
    ```protobuf
    // api/pinai_intent/v1/intent.proto
    message CreateIntentRequest {
-     string type = 1;  // 添加新类型
+     string type = 1;  // Add new type
    }
    ```
 
-2. **添加业务逻辑**
+2. **Add Business Logic**
    ```go
    // internal/biz/intent/types.go
    const (
@@ -502,92 +606,126 @@ go tool pprof http://localhost:8000/debug/pprof/profile
    )
    ```
 
-3. **重新生成代码**
+3. **Regenerate Code**
    ```bash
    make all
    make build
    ```
 
-### 构建命令
+### Developing the 4-Node Automation System
+
+1. **Modify Unified Configuration File**
+   ```yaml
+   # configs/agents_config.yaml
+   # Add new Service Agent or Block Builder configuration
+   ```
+
+2. **Update Business Logic**
+   ```go
+   // internal/biz/service_agent/ Add new bidding strategy
+   // internal/biz/block_builder/ Add new matching algorithm
+   ```
+
+3. **Update API**
+   ```protobuf
+   // api/pinai_intent/v1/intent.proto
+   // Add new Execution API endpoints
+   ```
+
+4. **Regenerate Code and Dependency Injection**
+   ```bash
+   make all
+   cd cmd/pin_intent_broadcast_network && wire
+   ```
+
+5. **Update Streamlit Dashboard**
+   ```python
+   # streamlit_ui/api_client.py Add new API endpoints
+   # streamlit_ui/ui_components.py Add new UI components
+   ```
+
+### Build Commands
 
 ```bash
-# 初始化开发环境
-make init          # 安装protoc, wire, kratos工具
+# Initialize development environment
+make init          # Install protoc, wire, kratos tools
 
-# 生成代码
-make api           # 生成API proto文件
-make config        # 生成内部proto文件
-make all           # 生成所有proto文件
+# Generate code
+make api           # Generate API proto files
+make config        # Generate internal proto files
+make all           # Generate all proto files
 
-# 构建和运行
-make build         # 构建到./bin/目录
-make generate      # 运行go generate和wire依赖注入
+# Build and run
+make build         # Build to ./bin/ directory
+make generate      # Run go generate and wire dependency injection
 
-# 查看所有可用命令
+# View all available commands
 make help
 ```
 
-## 🤝 贡献
+## 🤝 Contributing
 
-我们欢迎所有形式的贡献！
+We welcome all forms of contributions!
 
-### 贡献流程
+### Contribution Process
 
-1. Fork 项目
-2. 创建功能分支：`git checkout -b feature/new-feature`
-3. 提交更改：`git commit -am 'Add new feature'`
-4. 推送分支：`git push origin feature/new-feature`
-5. 创建 Pull Request
+1. Fork the project
+2. Create a feature branch: `git checkout -b feature/new-feature`
+3. Commit changes: `git commit -am 'Add new feature'`
+4. Push the branch: `git push origin feature/new-feature`
+5. Create a Pull Request
 
-### 开发规范
+### Development Guidelines
 
-- 遵循 Go 代码规范
-- 添加适当的单元测试
-- 更新相关文档
-- 确保所有测试通过
+- Follow Go coding standards
+- Add appropriate unit tests
+- Update relevant documentation
+- Ensure all tests pass
 
-## 📈 路线图
+## 📈 Roadmap
 
-### 短期目标 (1-2周)
-- [x] **完成自动化执行系统**：Service Agent自动出价 + Block Builder自动匹配
-- [x] **实现程序启动自动运行**：配置驱动的组件初始化
-- [x] **完整P2P网络集成**：与现有transport层完全集成
-- [x] **监控API和脚本**：/pinai_intent/execution/xxx API接口
-- [ ] 完成数据库持久化集成
-- [ ] 增加单元测试覆盖率到90%+
+### Short-term Goals (1-2 weeks)
+- [x] **Complete Automation Execution System**: Service Agent automatic bidding + Block Builder automatic matching
+- [x] **Implement Automatic Program Startup**: Configuration-driven component initialization
+- [x] **Full P2P Network Integration**: Complete integration with existing transport layer
+- [x] **Monitoring API and Scripts**: /pinai_intent/execution/xxx API interfaces
+- [x] **4-Node Automation Test System**: Complete test environment and management scripts
+- [x] **Streamlit Monitoring Dashboard**: Real-time web interface for monitoring system status
+- [ ] Complete database persistence integration
+- [ ] Increase unit test coverage to 90%+
 
-### 中期目标 (1个月)
-- [ ] 完善数字签名验证和安全机制
-- [ ] 实现故障恢复和自动重启机制
-- [ ] 添加Prometheus监控和告警
-- [ ] 支持Docker容器化部署
-- [ ] Web管理界面开发
+### Medium-term Goals (1 month)
+- [ ] Improve digital signature verification and security mechanisms
+- [ ] Implement fault recovery and automatic restart mechanisms
+- [ ] Add Prometheus monitoring and alerting
+- [ ] Support Docker containerized deployment
+- [ ] Web management interface development
 
-### 长期目标 (3个月)  
-- [ ] 支持Kubernetes部署和自动扩展
-- [ ] 高级匹配算法和机器学习优化
-- [ ] 跨链Intent支持和桥接
-- [ ] 与其他DeFi协议集成
+### Long-term Goals (3 months)
+- [ ] Support Kubernetes deployment and auto-scaling
+- [ ] Advanced matching algorithms and machine learning optimization
+- [ ] Cross-chain Intent support and bridging
+- [ ] Integration with other DeFi protocols
 
-## 📄 许可证
+## 📄 License
 
-本项目采用 MIT 许可证。详见 [LICENSE](LICENSE) 文件。
+This project is licensed under the MIT License. See the [LICENSE](LICENSE) file for details.
 
-## 🙏 致谢
+## 🙏 Acknowledgements
 
-- [Kratos](https://github.com/go-kratos/kratos) - 微服务框架
-- [go-libp2p](https://github.com/libp2p/go-libp2p) - P2P网络库
-- [Protocol Buffers](https://developers.google.com/protocol-buffers) - 数据序列化
+- [Kratos](https://github.com/go-kratos/kratos) - Microservice Framework
+- [go-libp2p](https://github.com/libp2p/go-libp2p) - P2P Network Library
+- [Protocol Buffers](https://developers.google.com/protocol-buffers) - Data Serialization
 
-## 📞 支持
+## 📞 Support
 
 - 📧 Email: support@pin-network.io
 - 💬 Discord: [PIN Community](https://discord.gg/pin-network)
-- 📖 文档: [docs/](docs/)
-- 🐛 问题反馈: [GitHub Issues](https://github.com/your-org/pin_intent_broadcast_network/issues)
+- 📖 Documentation: [docs/](docs/)
+- 🐛 Issue Tracker: [GitHub Issues](https://github.com/your-org/pin_intent_broadcast_network/issues)
 
 ---
 
-**开始你的P2P Intent网络之旅！** 🚀
+**Start your P2P Intent Network journey!** 🚀
 
 [![Star History Chart](https://api.star-history.com/svg?repos=your-org/pin_intent_broadcast_network&type=Date)](https://star-history.com/#your-org/pin_intent_broadcast_network&Date)
