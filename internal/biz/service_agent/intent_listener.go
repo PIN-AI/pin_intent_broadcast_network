@@ -3,6 +3,7 @@ package service_agent
 import (
 	"context"
 	"fmt"
+	"strings"
 	"time"
 	
 	"pin_intent_broadcast_network/internal/biz/common"
@@ -38,16 +39,23 @@ func (il *IntentListener) Start(ctx context.Context) error {
 	
 	// 订阅意图广播主题
 	topics := []string{
-		transport.TopicIntentBroadcast,
-		"intent-broadcast.trade",
-		"intent-broadcast.swap",
-		"intent-broadcast.exchange",
-		"intent-broadcast.general",
+		common.TopicIntentBroadcast,
+		common.TopicIntentBroadcast + ".trade",
+		common.TopicIntentBroadcast + ".swap", 
+		common.TopicIntentBroadcast + ".exchange",
+		common.TopicIntentBroadcast + ".general",
 	}
 	
 	for _, topic := range topics {
 		_, err := il.transportMgr.SubscribeToTopic(topic, il.handleIntentMessage)
 		if err != nil {
+			// 如果是重复订阅错误，忽略并继续
+			if strings.Contains(err.Error(), "ALREADY_SUBSCRIBED") {
+				il.logger.Debug("Topic already subscribed (expected in multi-agent setup)",
+					zap.String("topic", topic),
+				)
+				continue
+			}
 			il.logger.Error("Failed to subscribe to topic",
 				zap.String("topic", topic),
 				zap.Error(err),
