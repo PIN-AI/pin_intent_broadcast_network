@@ -22,8 +22,9 @@ type pubSubManager struct {
 	logger    *zap.Logger
 	isRunning bool
 
-	// Subscription management
-	subscriptions map[string]*pubSubSubscription
+	// Subscription management - support multiple handlers per topic
+	subscriptions map[string]*pubSubSubscription  // topic -> subscription
+	handlers map[string][]MessageHandler          // topic -> list of handlers
 	// Topic management
 	topics map[string]*pubsub.Topic
 	mu     sync.RWMutex
@@ -48,6 +49,7 @@ func NewPubSubManager(h host.Host, logger *zap.Logger) PubSubManager {
 		host:          h,
 		logger:        logger.Named("pubsub_manager"),
 		subscriptions: make(map[string]*pubSubSubscription),
+		handlers:      make(map[string][]MessageHandler),
 		topics:        make(map[string]*pubsub.Topic),
 	}
 }
@@ -214,9 +216,18 @@ func (pm *pubSubManager) Subscribe(topic string, handler MessageHandler) (Subscr
 	pm.mu.Lock()
 	defer pm.mu.Unlock()
 
-	// Check if already subscribed
+	// Add handler to the list for this topic
+	pm.handlers[topic] = append(pm.handlers[topic], handler)
+
+	// Check if we already have a subscription for this topic
 	if _, exists := pm.subscriptions[topic]; exists {
-		return nil, &TransportError{"ALREADY_SUBSCRIBED", "Already subscribed to topic", topic}
+		// Just add the handler, subscription already exists
+		pm.logger.Info("Added handler to existing topic subscription",
+			zap.String("topic", FormatTopic(topic)),
+			zap.Int("total_handlers", len(pm.handlers[topic])),
+		)
+		// Return a dummy subscription for consistency
+		return &pubSubSubscription{topic: topic, isActive: true}, nil
 	}
 
 	// Get or create topic handle
@@ -225,6 +236,8 @@ func (pm *pubSubManager) Subscribe(topic string, handler MessageHandler) (Subscr
 		var err error
 		topicHandle, err = pm.pubsub.Join(topic)
 		if err != nil {
+			// Remove the handler we just added since subscription failed
+			pm.handlers[topic] = pm.handlers[topic][:len(pm.handlers[topic])-1]
 			return nil, fmt.Errorf("failed to join topic %s: %w", topic, err)
 		}
 		pm.topics[topic] = topicHandle
@@ -233,18 +246,19 @@ func (pm *pubSubManager) Subscribe(topic string, handler MessageHandler) (Subscr
 	// Subscribe to topic
 	subscription, err := topicHandle.Subscribe()
 	if err != nil {
-		// Don't close the topic handle as it might be shared
+		// Remove the handler we just added since subscription failed
+		pm.handlers[topic] = pm.handlers[topic][:len(pm.handlers[topic])-1]
 		return nil, fmt.Errorf("failed to subscribe to topic %s: %w", topic, err)
 	}
 
 	// Create subscription context
 	subCtx, subCancel := context.WithCancel(pm.ctx)
 
-	// Create subscription wrapper
+	// Create subscription wrapper - this will handle messages for ALL handlers
 	pubsubSub := &pubSubSubscription{
 		topic:        topic,
 		subscription: subscription,
-		handler:      handler,
+		handler:      nil, // We'll handle multiple handlers in handleMessages
 		isActive:     true,
 		cancel:       subCancel,
 	}
@@ -252,11 +266,12 @@ func (pm *pubSubManager) Subscribe(topic string, handler MessageHandler) (Subscr
 	// Store subscription
 	pm.subscriptions[topic] = pubsubSub
 
-	// Start message handling goroutine
-	go pm.handleMessages(subCtx, topicHandle, pubsubSub)
+	// Start message handling goroutine with multi-handler support
+	go pm.handleMessagesMultiHandler(subCtx, topicHandle, pubsubSub, topic)
 
-	pm.logger.Info("Successfully subscribed to topic",
+	pm.logger.Info("Successfully subscribed to topic with multi-handler support",
 		zap.String("topic", FormatTopic(topic)),
+		zap.Int("handlers_count", len(pm.handlers[topic])),
 	)
 
 	return pubsubSub, nil
@@ -323,6 +338,89 @@ func (pm *pubSubManager) GetPeerCount(topic string) int {
 	}
 
 	return len(pm.pubsub.ListPeers(topic))
+}
+
+// handleMessagesMultiHandler handles messages with support for multiple handlers per topic
+func (pm *pubSubManager) handleMessagesMultiHandler(ctx context.Context, topicHandle *pubsub.Topic, sub *pubSubSubscription, topic string) {
+	defer func() {
+		// Don't close topicHandle as it's shared, just cancel the subscription
+		sub.subscription.Cancel()
+	}()
+
+	for {
+		select {
+		case <-ctx.Done():
+			pm.logger.Debug("Multi-handler message handler context cancelled",
+				zap.String("topic", FormatTopic(sub.topic)),
+			)
+			return
+
+		default:
+			// Receive message with timeout
+			msgCtx, cancel := context.WithTimeout(ctx, 5*time.Second)
+			msg, err := sub.subscription.Next(msgCtx)
+			cancel()
+
+			if err != nil {
+				if ctx.Err() != nil {
+					return // Context cancelled
+				}
+				pm.logger.Debug("Failed to receive message",
+					zap.String("topic", FormatTopic(sub.topic)),
+					zap.Error(err),
+				)
+				continue
+			}
+
+			// Skip messages from self
+			if msg.ReceivedFrom == pm.host.ID() {
+				continue
+			}
+
+			// Create transport message
+			transportMsg := &TransportMessage{
+				ID: GenerateMessageID(&TransportMessage{
+					Type:      "pubsub",
+					Payload:   msg.Data,
+					Timestamp: time.Now().UnixMilli(),
+					Sender:    msg.ReceivedFrom.String(),
+				}),
+				Type:      "pubsub",
+				Payload:   msg.Data,
+				Timestamp: time.Now().UnixMilli(),
+				Sender:    msg.ReceivedFrom.String(),
+				Priority:  PriorityNormal,
+				Metadata:  make(map[string]string),
+			}
+
+			// Add topic to metadata
+			transportMsg.Metadata["topic"] = sub.topic
+			transportMsg.Metadata["sequence"] = fmt.Sprintf("%d", msg.Message.GetSeqno())
+
+			// Handle message with all registered handlers for this topic
+			pm.mu.RLock()
+			handlers := pm.handlers[topic]
+			pm.mu.RUnlock()
+
+			for i, handler := range handlers {
+				if err := handler(transportMsg); err != nil {
+					pm.logger.Error("Multi-handler message handler failed",
+						zap.String("topic", FormatTopic(sub.topic)),
+						zap.String("sender", FormatPeerID(msg.ReceivedFrom)),
+						zap.Int("handler_index", i),
+						zap.Error(err),
+					)
+				} else {
+					pm.logger.Debug("Multi-handler message handled successfully",
+						zap.String("topic", FormatTopic(sub.topic)),
+						zap.String("sender", FormatPeerID(msg.ReceivedFrom)),
+						zap.Int("handler_index", i),
+						zap.Int("payload_size", len(msg.Data)),
+					)
+				}
+			}
+		}
+	}
 }
 
 // handleMessages handles incoming messages for a subscription
