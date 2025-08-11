@@ -469,25 +469,32 @@ def render_fallback_dashboard() -> None:
 
 def handle_auto_refresh() -> None:
     """Handle automatic refresh mechanism."""
-    # Create placeholder for refresh countdown
-    refresh_placeholder = st.empty()
-    
     ui_state = st.session_state.ui_state
     current_time = time.time()
+    
     time_since_refresh = current_time - ui_state.last_refresh
     time_until_refresh = REFRESH_INTERVAL_SECONDS - time_since_refresh
     
+    # Create a prominent refresh indicator in the sidebar
+    st.sidebar.markdown("---")
     if time_until_refresh <= 0:
         # Time to refresh
         ui_state.last_refresh = current_time
+        st.sidebar.success("🔄 Refreshing dashboard...")
         st.rerun()
     else:
         # Show countdown
-        countdown_text = f"Next refresh in {int(time_until_refresh)}s"
-        refresh_placeholder.markdown(
-            f'<div class="refresh-indicator">{countdown_text}</div>',
-            unsafe_allow_html=True
-        )
+        countdown_seconds = int(time_until_refresh)
+        progress = (REFRESH_INTERVAL_SECONDS - time_until_refresh) / REFRESH_INTERVAL_SECONDS
+        
+        st.sidebar.markdown("### 🔄 Auto Refresh")
+        st.sidebar.progress(progress)
+        st.sidebar.markdown(f"**Next refresh in: {countdown_seconds}s**")
+        
+        # Add a refresh button for manual refresh
+        if st.sidebar.button("🔄 Refresh Now", use_container_width=True):
+            ui_state.last_refresh = current_time
+            st.rerun()
 
 
 def main() -> None:
@@ -498,11 +505,11 @@ def main() -> None:
     # Initialize session state
     initialize_session_state()
     
-    # Handle auto-refresh
-    handle_auto_refresh()
-    
     # Render main dashboard
     render_dashboard()
+    
+    # Handle auto-refresh at the end
+    handle_auto_refresh()
     
     # Add footer information
     st.markdown("---")

@@ -178,6 +178,32 @@ def calculate_success_rate(successful: int, total: int) -> float:
         return 0.0
 
 
+def format_intent_status(status: str) -> str:
+    """
+    Format intent status for display.
+    
+    Args:
+        status: Raw intent status
+        
+    Returns:
+        Formatted status string
+    """
+    status_mapping = {
+        "INTENT_STATUS_UNSPECIFIED": "Unspecified",
+        "INTENT_STATUS_CREATED": "Created",
+        "INTENT_STATUS_VALIDATED": "Validated", 
+        "INTENT_STATUS_BROADCASTED": "Broadcasted",
+        "INTENT_STATUS_PROCESSED": "Processing",
+        "INTENT_STATUS_MATCHED": "Matched",
+        "INTENT_STATUS_COMPLETED": "Completed",
+        "INTENT_STATUS_FAILED": "Failed",
+        "INTENT_STATUS_EXPIRED": "Expired",
+        "INTENT_STATUS_UNKNOWN": "Unknown"
+    }
+    
+    return status_mapping.get(status, status.replace("INTENT_STATUS_", "").title())
+
+
 def get_status_emoji(status: str) -> str:
     """
     Get emoji for status.
@@ -287,7 +313,7 @@ def create_intents_dataframe(intents: List[IntentInfo]) -> pd.DataFrame:
         data.append({
             "intent_id": intent.intent_id,
             "type": intent.intent_type,
-            "status": intent.status,
+            "status": format_intent_status(intent.status),
             "sender": intent.sender_id,
             "created_at": format_timestamp(intent.created_at),
             "broadcasts": intent.broadcast_count,

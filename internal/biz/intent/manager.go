@@ -765,22 +765,22 @@ func (m *Manager) StartIntentSubscription(ctx context.Context) error {
 
 	// Subscribe to all known intent broadcast topics (expanded list)
 	topics := []string{
-		"intent-broadcast.trade",
-		"intent-broadcast.swap",
-		"intent-broadcast.exchange",
-		"intent-broadcast.transfer",
-		"intent-broadcast.send",
-		"intent-broadcast.payment",
-		"intent-broadcast.lending",
-		"intent-broadcast.borrow",
-		"intent-broadcast.loan",
-		"intent-broadcast.investment",
-		"intent-broadcast.staking",
-		"intent-broadcast.yield",
-		"intent-broadcast.general",
-		"intent-broadcast.matching",
-		"intent-broadcast.notification",
-		"intent-broadcast.status",
+		common.TopicIntentBroadcast + ".trade",
+		common.TopicIntentBroadcast + ".swap",
+		common.TopicIntentBroadcast + ".exchange",
+		common.TopicIntentBroadcast + ".transfer",
+		common.TopicIntentBroadcast + ".send",
+		common.TopicIntentBroadcast + ".payment",
+		common.TopicIntentBroadcast + ".lending",
+		common.TopicIntentBroadcast + ".borrow",
+		common.TopicIntentBroadcast + ".loan",
+		common.TopicIntentBroadcast + ".investment",
+		common.TopicIntentBroadcast + ".staking",
+		common.TopicIntentBroadcast + ".yield",
+		common.TopicIntentBroadcast + ".general",
+		common.TopicIntentBroadcast + ".matching",
+		common.TopicIntentBroadcast + ".notification",
+		common.TopicIntentBroadcast + ".status",
 	}
 
 	for _, topic := range topics {

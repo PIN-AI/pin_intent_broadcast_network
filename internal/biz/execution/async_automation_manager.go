@@ -529,12 +529,12 @@ func (aam *AsyncAutomationManager) startServiceAgents() error {
 		return nil
 	}
 
-	// Start agents with timeout
-	startCtx, cancel := context.WithTimeout(aam.initContext, aam.config.ComponentStartTimeout)
-	defer cancel()
+	// Create background context for long-running agents (not tied to startup timeout)
+	backgroundCtx, _ := context.WithCancel(aam.initContext)
 
 	for _, component := range agentComponents {
-		if err := component.Start(startCtx); err != nil {
+		// Use backgroundCtx for long-running operations
+		if err := component.Start(backgroundCtx); err != nil {
 			return fmt.Errorf("failed to start service agent %s: %w", component.GetID(), err)
 		}
 		aam.logger.Info("Service agent started", zap.String("agent_id", component.GetID()))

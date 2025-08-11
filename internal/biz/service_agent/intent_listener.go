@@ -47,6 +47,10 @@ func (il *IntentListener) Start(ctx context.Context) error {
 	}
 	
 	for _, topic := range topics {
+		il.logger.Info("Attempting to subscribe to topic", 
+			zap.String("topic", topic),
+		)
+		
 		_, err := il.transportMgr.SubscribeToTopic(topic, il.handleIntentMessage)
 		if err != nil {
 			// 如果是重复订阅错误，忽略并继续
@@ -62,7 +66,7 @@ func (il *IntentListener) Start(ctx context.Context) error {
 			)
 			continue
 		}
-		il.logger.Info("Subscribed to intent topic",
+		il.logger.Info("Successfully subscribed to intent topic",
 			zap.String("topic", topic),
 		)
 	}
@@ -94,18 +98,38 @@ func (il *IntentListener) Stop() error {
 }
 
 func (il *IntentListener) handleIntentMessage(msg *transport.TransportMessage) error {
+	il.logger.Debug("Received message in handleIntentMessage", 
+		zap.String("message_type", msg.Type),
+		zap.String("sender", msg.Sender),
+	)
+	
 	if msg.Type != transport.MessageTypeIntentBroadcast {
+		il.logger.Debug("Message type mismatch, skipping",
+			zap.String("expected", transport.MessageTypeIntentBroadcast),
+			zap.String("actual", msg.Type),
+		)
 		return nil
 	}
+	
+	il.logger.Info("Processing intent broadcast message",
+		zap.String("sender", msg.Sender),
+		zap.String("message_id", msg.ID),
+	)
 	
 	// 反序列化意图
 	intent, err := il.deserializeIntent(msg.Payload)
 	if err != nil {
 		il.logger.Error("Failed to deserialize intent",
 			zap.Error(err),
+			zap.String("payload_length", fmt.Sprintf("%d", len(msg.Payload))),
 		)
 		return err
 	}
+	
+	il.logger.Info("Successfully deserialized intent", 
+		zap.String("intent_id", intent.ID),
+		zap.String("intent_type", intent.Type),
+	)
 	
 	// 创建意图事件
 	event := &IntentEvent{
@@ -118,7 +142,7 @@ func (il *IntentListener) handleIntentMessage(msg *transport.TransportMessage) e
 	// 发送到处理队列
 	select {
 	case il.intentChan <- event:
-		il.logger.Debug("Intent event queued",
+		il.logger.Info("Intent event queued",
 			zap.String("intent_id", intent.ID),
 			zap.String("intent_type", intent.Type),
 		)
@@ -132,9 +156,11 @@ func (il *IntentListener) handleIntentMessage(msg *transport.TransportMessage) e
 }
 
 func (il *IntentListener) processIntents(ctx context.Context) {
+	il.logger.Info("processIntents goroutine started")
 	for {
 		select {
 		case <-ctx.Done():
+			il.logger.Info("processIntents goroutine stopping due to context cancellation")
 			return
 		case event, ok := <-il.intentChan:
 			if !ok {
@@ -143,10 +169,14 @@ func (il *IntentListener) processIntents(ctx context.Context) {
 			
 			// 应用过滤器
 			intent := event.Intent.(*common.Intent)
+			il.logger.Info("Processing intent from channel",
+				zap.String("intent_id", intent.ID),
+				zap.String("intent_type", intent.Type),
+			)
 			if il.shouldProcessIntent(intent) {
 				select {
 				case il.processingQueue <- event:
-					il.logger.Debug("Intent passed filter, queued for processing",
+					il.logger.Info("Intent passed filter, queued for processing",
 						zap.String("intent_id", intent.ID),
 					)
 				default:
@@ -155,7 +185,7 @@ func (il *IntentListener) processIntents(ctx context.Context) {
 					)
 				}
 			} else {
-				il.logger.Debug("Intent filtered out",
+				il.logger.Info("Intent filtered out",
 					zap.String("intent_id", intent.ID),
 					zap.String("reason", "filter_rules"),
 				)
@@ -199,12 +229,18 @@ func (il *IntentListener) processIntentEvent(ctx context.Context, event *IntentE
 	}
 	
 	if !bidDecision.ShouldBid {
-		il.logger.Debug("Decision: do not bid",
+		il.logger.Info("Decision: do not bid",
 			zap.String("intent_id", intent.ID),
 			zap.String("reason", bidDecision.Reason),
 		)
 		return
 	}
+	
+	il.logger.Info("Decision: will bid on intent",
+		zap.String("intent_id", intent.ID),
+		zap.String("bid_amount", bidDecision.BidAmount),
+		zap.String("reason", bidDecision.Reason),
+	)
 	
 	// 提交出价
 	err = il.submitBid(ctx, intent, bidDecision)
@@ -225,6 +261,13 @@ func (il *IntentListener) processIntentEvent(ctx context.Context, event *IntentE
 func (il *IntentListener) shouldProcessIntent(intent *common.Intent) bool {
 	filter := il.config.IntentFilter
 	
+	il.logger.Info("Evaluating intent against filters",
+		zap.String("intent_id", intent.ID),
+		zap.String("intent_type", intent.Type),
+		zap.String("intent_sender", intent.SenderID),
+		zap.Int32("intent_priority", intent.Priority),
+	)
+	
 	// 检查类型过滤
 	if len(filter.AllowedTypes) > 0 {
 		allowed := false
@@ -235,6 +278,10 @@ func (il *IntentListener) shouldProcessIntent(intent *common.Intent) bool {
 			}
 		}
 		if !allowed {
+			il.logger.Info("Intent filtered out by type",
+				zap.String("intent_type", intent.Type),
+				zap.Strings("allowed_types", filter.AllowedTypes),
+			)
 			return false
 		}
 	}

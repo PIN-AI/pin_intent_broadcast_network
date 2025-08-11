@@ -47,7 +47,8 @@ check_config_files() {
     local missing=0
     local configs=(
         "configs/agents_config_node1.yaml"
-        "configs/agents_config.yaml" 
+        "configs/agents_config_node2.yaml"
+        "configs/agents_config_node3.yaml"
         "configs/agents_config_node4.yaml"
     )
     
@@ -77,9 +78,13 @@ setup_node_config() {
             config_source="configs/agents_config_node1.yaml"
             node_name="Intent发布者"
             ;;
-        2|3)
-            config_source="configs/agents_config.yaml.backup"
-            node_name="Service Agent"
+        2)
+            config_source="configs/agents_config_node2.yaml"
+            node_name="Service Agent 1 (交易代理)"
+            ;;
+        3)
+            config_source="configs/agents_config_node3.yaml"
+            node_name="Service Agent 2 (数据代理)"
             ;;
         4) 
             config_source="configs/agents_config_node4.yaml"

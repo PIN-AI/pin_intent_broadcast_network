@@ -40,7 +40,9 @@ func (bdm *BidDecisionManager) MakeBidDecision(ctx context.Context, intent *comm
 	
 	// 2. 评估能力匹配度
 	capabilityScore := bdm.evaluateCapabilityMatch(intent)
-	if capabilityScore < 0.3 {
+	
+	// 对于激进策略，即使能力匹配度低也要出价（POC需求）
+	if capabilityScore < 0.3 && bdm.config.BidStrategy.Type != "aggressive" {
 		return &BidDecision{
 			ShouldBid: false,
 			Reason:    "Insufficient capability match",

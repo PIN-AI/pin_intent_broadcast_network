@@ -22,7 +22,7 @@ from data_models import (
 )
 from utils import (
     format_timestamp, format_currency, format_percentage, 
-    format_number, get_time_ago, get_status_emoji, 
+    format_number, get_time_ago, get_status_emoji, format_intent_status,
     create_intents_dataframe, create_agents_dataframe, 
     create_matches_dataframe, is_node_healthy
 )
