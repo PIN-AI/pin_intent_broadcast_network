@@ -72,13 +72,38 @@ func (bb *BlockBuilder) Start(ctx context.Context) error {
 		return fmt.Errorf("block builder already running")
 	}
 	
-	// 订阅意图广播
-	_, err := bb.transportMgr.SubscribeToTopic(transport.TopicIntentBroadcast, bb.handleIntentBroadcast)
-	if err != nil {
-		return fmt.Errorf("failed to subscribe to intent broadcasts: %w", err)
+	// 订阅意图广播 - 订阅所有Intent类型的广播topics
+	intentTopics := []string{
+		"intent.broadcast",
+		"intent.broadcast.trade",
+		"intent.broadcast.swap", 
+		"intent.broadcast.exchange",
+		"intent.broadcast.transfer",
+		"intent.broadcast.send",
+		"intent.broadcast.payment",
+		"intent.broadcast.lending",
+		"intent.broadcast.borrow",
+		"intent.broadcast.loan",
+		"intent.broadcast.investment",
+		"intent.broadcast.staking",
+		"intent.broadcast.yield",
+		"intent.broadcast.general",
+		"intent.broadcast.matching",
+		"intent.broadcast.notification",
+		"intent.broadcast.status",
+	}
+	
+	for _, topic := range intentTopics {
+		_, err := bb.transportMgr.SubscribeToTopic(topic, bb.handleIntentBroadcast)
+		if err != nil {
+			bb.logger.Warn("Failed to subscribe to intent topic", zap.String("topic", topic), zap.Error(err))
+		} else {
+			bb.logger.Info("Subscribed to intent topic", zap.String("topic", topic))
+		}
 	}
 	
 	// 订阅出价提交
+	var err error
 	_, err = bb.transportMgr.SubscribeToBids(bb.handleBidSubmission)
 	if err != nil {
 		return fmt.Errorf("failed to subscribe to bid submissions: %w", err)

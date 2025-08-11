@@ -188,7 +188,7 @@ EOF
 broadcast_intent() {
     local intent_id=$1
     local intent_type=$2
-    local topic="intent-broadcast.${intent_type}"
+    local topic="intent.broadcast.${intent_type}"
     
     log_publish "广播Intent: ID=$intent_id, 主题=$topic"
     
