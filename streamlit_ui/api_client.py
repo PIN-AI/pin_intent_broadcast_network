@@ -408,8 +408,8 @@ class NodeAPIClient:
         # Add metadata about the fetch operation
         data["_fetch_metadata"] = {
             "timestamp": time.time(),
-            "total_tasks": len(tasks),  # 总任务数
-            "successful_tasks": sum(  # 成功任务数
+            "total_tasks": len(tasks),  # Total number of tasks
+            "successful_tasks": sum(  # Number of successful tasks
                 1 for result in results 
                 if not (isinstance(result, dict) and result.get("error"))
             ),

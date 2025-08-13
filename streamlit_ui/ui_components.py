@@ -301,23 +301,23 @@ def render_bidding_activity_panel(agents_data: Dict[int, Any]) -> None:
                 debug_info.append(f"  - Generated {len(demo_agents)} demo agents")
     
     # Show debug info in development
-    if st.checkbox("🔍 显示调试信息", key="agent_debug"):
+    if st.checkbox("🔍 Show Debug Info", key="agent_debug"):
         st.text("\n".join(debug_info))
     
     if not all_agents:
-        st.warning("未找到活跃的 Service Agents")
-        st.info("这可能是因为：")
+        st.warning("No active Service Agents found")
+        st.info("This might be because:")
         st.markdown("""
-        - 🔌 节点 2 和 3 (Service Agent 节点) 未运行
-        - 📡 API 连接失败
-        - 🤖 Service Agents 未启动
+        - 🔌 Nodes 2 and 3 (Service Agent nodes) are not running
+        - 📡 API connection failed
+        - 🤖 Service Agents are not started
         
-        **解决方案：**
+        **Solutions:**
         ```bash
-        # 启动自动化测试系统
+        # Start automation test system
         ./scripts/automation/start_automation_test.sh
         
-        # 检查节点状态
+        # Check node status
         curl http://localhost:8101/pinai_intent/execution/agents/status
         curl http://localhost:8102/pinai_intent/execution/agents/status
         ```

@@ -32,14 +32,14 @@ from utils import get_system_health_score, calculate_delta
 
 
 class AutoRefreshManager:
-    """管理自动刷新机制的类"""
+    """Auto-refresh mechanism manager class"""
     
     def __init__(self, interval: int = 5):
         self.interval = interval
         self.last_refresh = time.time()
     
     def should_refresh(self) -> bool:
-        """检查是否应该刷新"""
+        """Check if refresh is needed"""
         return time.time() - self.last_refresh >= self.interval
     
     def trigger_refresh(self):
@@ -48,11 +48,11 @@ class AutoRefreshManager:
         # Don't call st.rerun() directly here, let main() handle it
     
     def get_countdown(self) -> int:
-        """获取倒计时秒数"""
+        """Get countdown seconds"""
         return max(0, self.interval - int(time.time() - self.last_refresh))
     
     def get_progress(self) -> float:
-        """获取刷新进度 (0.0 到 1.0)"""
+        """Get refresh progress (0.0 to 1.0)"""
         elapsed = time.time() - self.last_refresh
         return min(1.0, elapsed / self.interval)
     
@@ -67,20 +67,20 @@ class AutoRefreshManager:
         with col1:
             if countdown > 0:
                 # Show progress bar with countdown
-                st.progress(progress, text=f"🔄 下次自动刷新: {countdown} 秒")
+                st.progress(progress, text=f"🔄 Next auto-refresh: {countdown} seconds")
                 
                 # Add a small status indicator
-                status_text = f"⏱️ 自动刷新间隔: 5秒 | 剩余: {countdown}秒"
+                status_text = f"⏱️ Auto-refresh interval: 5s | Remaining: {countdown}s"
                 st.caption(status_text)
             else:
-                st.progress(1.0, text="🔄 正在刷新数据...")
-                st.caption("⚡ 正在获取最新数据...")
+                st.progress(1.0, text="🔄 Refreshing data...")
+                st.caption("⚡ Fetching latest data...")
         
         with col2:
             # Manual refresh button with better styling
-            if st.button("🔄 立即刷新", 
+            if st.button("🔄 Refresh Now", 
                         key="manual_refresh", 
-                        help="点击立即刷新所有数据",
+                        help="Click to refresh all data immediately",
                         type="primary"):
                 # Reset the refresh timer and trigger refresh
                 self.last_refresh = time.time()
@@ -89,7 +89,7 @@ class AutoRefreshManager:
         
         # Add last refresh time info
         last_refresh_time = datetime.fromtimestamp(self.last_refresh).strftime("%H:%M:%S")
-        st.caption(f"📅 上次刷新时间: {last_refresh_time}")
+        st.caption(f"📅 Last refresh time: {last_refresh_time}")
 
 
 def setup_page_config() -> None:
@@ -265,7 +265,7 @@ def process_dashboard_data(data: Dict[str, Any]) -> tuple:
     """
     # Validate input data
     if not validate_api_data(data):
-        st.warning("API数据格式无效，使用默认值")
+        st.warning("Invalid API data format, using default values")
         return (
             create_empty_dashboard_metrics(),
             {},
