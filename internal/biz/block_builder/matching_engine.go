@@ -26,31 +26,54 @@ func NewMatchingEngine(config *BuilderConfig, logger *zap.Logger) *MatchingEngin
 
 func (me *MatchingEngine) FindBestMatch(intent *common.Intent, bids []*transport.BidMessage) (*transport.MatchResult, error) {
 	if len(bids) == 0 {
+		me.logger.Error("No bids available for matching", zap.String("intent_id", intent.ID))
 		return nil, fmt.Errorf("no bids available for matching")
 	}
 	
 	me.logger.Info("Finding best match",
 		zap.String("intent_id", intent.ID),
+		zap.String("intent_type", intent.Type),
 		zap.Int("bid_count", len(bids)),
 		zap.String("algorithm", me.config.MatchingAlgorithm),
 	)
 	
 	var winningBid *transport.BidMessage
 	var err error
+	var algorithmUsed string
 	
 	switch me.config.MatchingAlgorithm {
 	case "highest_bid":
+		algorithmUsed = "highest_bid"
 		winningBid, err = me.findHighestBid(bids)
 	case "reputation_weighted":
+		algorithmUsed = "reputation_weighted"
 		winningBid, err = me.findReputationWeightedBid(bids)
 	case "random":
+		algorithmUsed = "random"
 		winningBid, err = me.findRandomBid(bids)
 	default:
+		me.logger.Warn("Unknown matching algorithm, falling back to highest_bid",
+			zap.String("requested_algorithm", me.config.MatchingAlgorithm),
+		)
+		algorithmUsed = "highest_bid"
 		winningBid, err = me.findHighestBid(bids) // 默认使用最高出价
 	}
 	
 	if err != nil {
-		return nil, fmt.Errorf("matching algorithm failed: %w", err)
+		me.logger.Error("Matching algorithm execution failed",
+			zap.String("intent_id", intent.ID),
+			zap.String("algorithm", algorithmUsed),
+			zap.Error(err),
+		)
+		return nil, fmt.Errorf("matching algorithm '%s' failed: %w", algorithmUsed, err)
+	}
+	
+	if winningBid == nil {
+		me.logger.Error("Matching algorithm returned nil winning bid",
+			zap.String("intent_id", intent.ID),
+			zap.String("algorithm", algorithmUsed),
+		)
+		return nil, fmt.Errorf("matching algorithm '%s' returned no winner", algorithmUsed)
 	}
 	
 	result := &transport.MatchResult{
@@ -62,16 +85,18 @@ func (me *MatchingEngine) FindBestMatch(intent *common.Intent, bids []*transport
 		Status:         MatchStatusMatched,
 		BlockBuilderID: me.config.BuilderID,
 		Metadata: map[string]string{
-			"algorithm":   me.config.MatchingAlgorithm,
+			"algorithm":   algorithmUsed,
 			"agent_type":  winningBid.AgentType,
 			"intent_type": intent.Type,
 		},
 	}
 	
-	me.logger.Info("Match found",
+	me.logger.Info("Match found successfully",
 		zap.String("intent_id", intent.ID),
+		zap.String("algorithm", algorithmUsed),
 		zap.String("winning_agent", result.WinningAgent),
 		zap.String("winning_bid", result.WinningBid),
+		zap.String("winning_agent_type", winningBid.AgentType),
 	)
 	
 	return result, nil
@@ -158,9 +183,15 @@ func (me *MatchingEngine) findRandomBid(bids []*transport.BidMessage) (*transpor
 		return nil, fmt.Errorf("no valid bids found")
 	}
 	
-	// 随机选择
-	rand.Seed(time.Now().UnixNano())
-	randomIndex := rand.Intn(len(validBids))
+	// 使用 Go 1.20+ 推荐的随机数生成方式
+	rng := rand.New(rand.NewSource(time.Now().UnixNano()))
+	randomIndex := rng.Intn(len(validBids))
+	
+	me.logger.Debug("Random bid selected",
+		zap.Int("total_valid_bids", len(validBids)),
+		zap.Int("selected_index", randomIndex),
+		zap.String("selected_agent", validBids[randomIndex].AgentID),
+	)
 	
 	return validBids[randomIndex], nil
 }
@@ -183,9 +214,9 @@ func (me *MatchingEngine) calculateSimpleReputation(agentID, agentType string) f
 		baseReputation = 0.9
 	}
 	
-	// 添加一些随机性来模拟真实的声誉差异
-	rand.Seed(time.Now().UnixNano())
-	variation := (rand.Float64() - 0.5) * 0.2 // ±10%的变化
+	// 使用 Go 1.20+ 推荐的随机数生成方式添加变化
+	rng := rand.New(rand.NewSource(time.Now().UnixNano()))
+	variation := (rng.Float64() - 0.5) * 0.2 // ±10%的变化
 	
 	reputation := baseReputation + variation
 	
@@ -195,6 +226,15 @@ func (me *MatchingEngine) calculateSimpleReputation(agentID, agentType string) f
 	}
 	if reputation > 2.0 {
 		reputation = 2.0
+	}
+	
+	if me.logger.Core().Enabled(zap.DebugLevel) {
+		me.logger.Debug("Calculated reputation",
+			zap.String("agent_id", agentID),
+			zap.String("agent_type", agentType),
+			zap.Float64("base_reputation", baseReputation),
+			zap.Float64("final_reputation", reputation),
+		)
 	}
 	
 	return reputation

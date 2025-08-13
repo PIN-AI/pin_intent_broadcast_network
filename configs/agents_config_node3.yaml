@@ -1,5 +1,5 @@
 # Service Agent Configuration for Node3
-# Node3专用配置 - Service Agent 2 (数据代理)
+# Node3专用配置 - Service Agent 1 (交易代理)
 
 automation:
   enabled: true
@@ -8,117 +8,115 @@ automation:
 
 # Service Agents Configuration for Node3
 agents:
-  - agent_id: "data-agent-auto-001"
-    name: "数据代理 #1"
-    description: "专注于数据访问和分析类型意图的自动出价代理"
+  - agent_id: "trading-agent-auto-002"
+    name: "交易代理 #2"
+    description: "专注于交易类型意图的自动出价代理"
     auto_start: true
-    
+
     # Agent类型和能力配置
-    agent_type: "data_access"
+    agent_type: "trading"
     capabilities:
-      - "data_analysis"
-      - "database_querying" 
-      - "api_integration"
-      - "data_transformation"
-    
+      - "cryptocurrency_trading"
+      - "token_swapping"
+      - "liquidity_provision"
+      - "arbitrage"
+
     # 出价策略配置
     bidding_strategy:
-      type: "conservative"        # 保守策略，选择性出价
-      base_price: "1.2"          # 较高基础出价
-      profit_margin: 0.25        # 25%利润率
-      risk_tolerance: "low"      # 低风险容忍度
-    
-    # 出价配置  
+      type: "aggressive" # 激进策略，每个intent都出价
+      base_price: "1.3" # 基础出价
+      profit_margin: 0.20 # 20%利润率
+      risk_tolerance: "medium" # 中等风险容忍度
+
+    # 出价配置
     bid_strategy:
-      type: "conservative"
-      base_fee: "1200"           # 基础费用
-      profit_margin: 0.25
-      risk_factor: 0.05
-    
+      type: "aggressive"
+      base_fee: "1000" # 基础费用
+      profit_margin: 0.20
+      risk_factor: 0.1
+
     # 出价范围
-    min_bid_amount: "600"        # 最小出价
-    max_bid_amount: "60000"      # 最大出价
-      
+    min_bid_amount: "500" # 最小出价
+    max_bid_amount: "50000" # 最大出价
+
     # Intent过滤配置
     intent_filter:
-      allowed_types: 
-        - "data_access"
-        - "analytics"
-        - "computation"
+      allowed_types:
+        - "trade"
+        - "swap"
+        - "exchange"
       blocked_types: []
-      allowed_senders: []          # 空数组表示接受所有发送者
+      allowed_senders: [] # 空数组表示接受所有发送者
       blocked_senders: []
-      min_priority: 0              # 接受所有优先级
+      min_priority: 0 # 接受所有优先级
       max_priority: 10
-      required_tags: []            # 不要求特定标签
-      
+      required_tags: [] # 不要求特定标签
+
     # 性能配置
-    max_concurrent_intents: 8      # 最大并发处理意图数
-    response_timeout: 35           # 响应超时时间(秒)
-    retry_attempts: 3              # 重试次数
-    
-    # P2P订阅配置  
+    max_concurrent_intents: 10 # 最大并发处理意图数
+    response_timeout: 30 # 响应超时时间(秒)
+    retry_attempts: 3 # 重试次数
+
+    # P2P订阅配置
     subscriptions:
       intent_topics:
         - "/intent-network/intents/1.0.0"
-        - "intent-broadcast.data_access"
-        - "intent-broadcast.analytics"
-        - "intent-broadcast.computation"
+        - "intent-broadcast.trade"
+        - "intent-broadcast.swap"
+        - "intent-broadcast.exchange"
       bid_topics:
         - "/intent-network/bids/1.0.0"
       match_result_topics:
         - "/intent-network/matches/1.0.0"
 
-  - agent_id: "analytics-agent-001"
-    name: "分析代理 #1"
-    description: "处理分析和计算类型意图的专业代理"
+  - agent_id: "general-agent-001"
+    name: "通用代理 #1"
+    description: "处理通用类型意图的备用代理"
     auto_start: true
-    
-    agent_type: "analytics"
+
+    agent_type: "general"
     capabilities:
-      - "statistical_analysis"
-      - "machine_learning"
-      - "data_visualization"
-    
+      - "general_services"
+      - "basic_computation"
+
     bidding_strategy:
-      type: "balanced"             # 平衡策略
-      base_price: "1.5"
-      profit_margin: 0.30          # 30%利润率（分析类服务价值更高）
-      risk_tolerance: "medium"
-    
-    # 出价配置  
+      type: "balanced" # 平衡策略
+      base_price: "0.8"
+      profit_margin: 0.15 # 15%利润率
+      risk_tolerance: "low"
+
+    # 出价配置
     bid_strategy:
       type: "balanced"
-      base_fee: "1500"
-      profit_margin: 0.30
-      risk_factor: 0.1
-    
+      base_fee: "800"
+      profit_margin: 0.15
+      risk_factor: 0.05
+
     # 出价范围
-    min_bid_amount: "750"
-    max_bid_amount: "75000"
-      
+    min_bid_amount: "400"
+    max_bid_amount: "30000"
+
     intent_filter:
-      allowed_types: 
-        - "analytics"
-        - "machine_learning"
-        - "statistics"
+      allowed_types:
         - "general"
+        - "computation"
+        - "data_access"
       blocked_types: []
       allowed_senders: []
       blocked_senders: []
       min_priority: 0
       max_priority: 10
       required_tags: []
-      
-    max_concurrent_intents: 6
-    response_timeout: 40
+
+    max_concurrent_intents: 5
+    response_timeout: 25
     retry_attempts: 2
-    
+
     subscriptions:
       intent_topics:
         - "/intent-network/intents/1.0.0"
-        - "intent-broadcast.analytics"
         - "intent-broadcast.general"
+        - "intent-broadcast.computation"
       bid_topics:
         - "/intent-network/bids/1.0.0"
       match_result_topics:
@@ -137,27 +135,27 @@ global_settings:
   p2p_network:
     enabled: true
     bootstrap_peers: []
-    
+
   # 监控配置
   monitoring:
     metrics_enabled: true
-    metrics_interval: 30      # 秒
+    metrics_interval: 30 # 秒
     status_check_interval: 10 # 秒
-    
+
   # 日志配置
   logging:
     level: "info"
-    file_path: "logs/node3_data_agent.log"
+    file_path: "logs/Node3_trading_agent.log"
     max_file_size_mb: 100
     max_backups: 5
-    
+
   # 出价配置
   bidding:
     timeout_seconds: 30
     retry_attempts: 3
     commitment_enabled: true
     commitment_algorithm: "sha256"
-    
+
   # 性能优化配置
   performance:
     worker_pool_size: 10
@@ -165,7 +163,7 @@ global_settings:
     batch_processing: true
     batch_size: 50
     processing_timeout: "60s"
-    
+
   # 安全配置
   security:
     signature_verification: true
@@ -174,7 +172,7 @@ global_settings:
       enabled: true
       max_requests_per_second: 100
       burst_capacity: 200
-      
+
   # 存储配置
   storage:
     session_persistence: false

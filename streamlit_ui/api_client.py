@@ -146,14 +146,35 @@ class NodeAPIClient:
         agents_data = result.get("agents", [])
         
         for agent_data in agents_data:
+            # Handle string to int conversion safely
+            processed_intents = agent_data.get("processedIntents", agent_data.get("total_bids_submitted", "0"))
+            successful_bids = agent_data.get("successfulBids", agent_data.get("successful_bids", "0"))
+            last_activity = agent_data.get("lastActivity", agent_data.get("last_activity", "0"))
+            
+            # Convert strings to integers safely
+            try:
+                processed_intents = int(processed_intents) if processed_intents else 0
+            except (ValueError, TypeError):
+                processed_intents = 0
+                
+            try:
+                successful_bids = int(successful_bids) if successful_bids else 0
+            except (ValueError, TypeError):
+                successful_bids = 0
+                
+            try:
+                last_activity = int(last_activity) if last_activity else 0
+            except (ValueError, TypeError):
+                last_activity = 0
+            
             agent = AgentInfo(
-                agent_id=agent_data.get("agent_id", "unknown"),
-                agent_type=agent_data.get("agent_type", "unknown"),
+                agent_id=agent_data.get("agentId", agent_data.get("agent_id", "unknown")),
+                agent_type=agent_data.get("agentType", agent_data.get("agent_type", "unknown")),
                 status=agent_data.get("status", "unknown"),
-                total_bids_submitted=agent_data.get("total_bids_submitted", 0),
-                successful_bids=agent_data.get("successful_bids", 0),
-                total_earnings=agent_data.get("total_earnings", "0.0"),
-                last_activity=agent_data.get("last_activity", 0)
+                total_bids_submitted=processed_intents,
+                successful_bids=successful_bids,
+                total_earnings=agent_data.get("totalEarnings", agent_data.get("total_earnings", "0.0")),
+                last_activity=last_activity
             )
             agents.append(agent)
         
@@ -267,15 +288,7 @@ class NodeAPIClient:
         
         
         for intent_data in intents_data:
-            intent = IntentInfo(
-                intent_id=intent_data.get("intent_id", "unknown"),
-                intent_type=intent_data.get("type", "unknown"),
-                status=intent_data.get("status", "unknown"),
-                sender_id=intent_data.get("sender_id", "unknown"),
-                created_at=intent_data.get("created_at", 0),
-                broadcast_count=intent_data.get("broadcast_count", 0),
-                bid_count=intent_data.get("bid_count", 0)
-            )
+            intent = safe_extract_intent_data(intent_data)
             intents.append(intent)
         
         return IntentListResponse(intents=intents, error=None)
@@ -313,16 +326,7 @@ class NodeAPIClient:
         matches_data = result.get("matches", [])
         
         for match_data in matches_data:
-            match = MatchResult(
-                match_id=match_data.get("match_id", "unknown"),
-                intent_id=match_data.get("intent_id", "unknown"),
-                winning_agent_id=match_data.get("winning_agent_id", "unknown"),
-                winning_bid_amount=match_data.get("winning_bid_amount", "0.0"),
-                total_bids=match_data.get("total_bids", 0),
-                match_algorithm=match_data.get("match_algorithm", "unknown"),
-                matched_at=match_data.get("matched_at", 0),
-                status=match_data.get("status", "unknown")
-            )
+            match = safe_extract_match_data(match_data)
             matches.append(match)
         
         return MatchHistoryResponse(matches=matches, error=None)
@@ -404,8 +408,8 @@ class NodeAPIClient:
         # Add metadata about the fetch operation
         data["_fetch_metadata"] = {
             "timestamp": time.time(),
-            "total_tasks": len(tasks),  # 总任务数
-            "successful_tasks": sum(  # 成功任务数
+            "total_tasks": len(tasks),  # Total number of tasks
+            "successful_tasks": sum(  # Number of successful tasks
                 1 for result in results 
                 if not (isinstance(result, dict) and result.get("error"))
             ),
@@ -416,3 +420,54 @@ class NodeAPIClient:
         }
         
         return data
+
+
+def safe_extract_intent_data(intent_data: dict) -> IntentInfo:
+    """Safely extract intent data, trying multiple field names."""
+    # Handle timestamp conversion safely
+    timestamp = intent_data.get("timestamp", intent_data.get("created_at", "0"))
+    try:
+        created_at = int(timestamp) if timestamp else 0
+    except (ValueError, TypeError):
+        created_at = 0
+    
+    return IntentInfo(
+        intent_id=intent_data.get("id", intent_data.get("intent_id", "unknown")),
+        intent_type=intent_data.get("type", intent_data.get("intent_type", "unspecified")),
+        status=intent_data.get("status", "unknown"),
+        sender_id=intent_data.get("senderId", intent_data.get("sender_id", intent_data.get("sender", "unknown"))),
+        created_at=created_at,
+        broadcast_count=intent_data.get("broadcast_count", 1),  # Default to 1 if not specified
+        bid_count=intent_data.get("bid_count", 0)  # This field doesn't exist in API, always 0
+    )
+
+
+def safe_extract_match_data(match_data: dict) -> MatchResult:
+    """Safely extract match data, trying multiple field names."""
+    # Handle timestamp conversion safely - API returns milliseconds, convert to seconds
+    timestamp = match_data.get("matchedAt", match_data.get("matched_at", match_data.get("timestamp", "0")))
+    try:
+        matched_at = int(timestamp) if timestamp else 0
+        # If timestamp is in milliseconds (13 digits), convert to seconds
+        if matched_at > 1000000000000:  # Greater than year 2001 in milliseconds
+            matched_at = matched_at // 1000
+    except (ValueError, TypeError):
+        matched_at = 0
+    
+    # Handle total_bids conversion safely
+    total_bids = match_data.get("totalBids", match_data.get("total_bids_received", match_data.get("total_bids", "0")))
+    try:
+        total_bids = int(total_bids) if total_bids else 0
+    except (ValueError, TypeError):
+        total_bids = 0
+    
+    return MatchResult(
+        match_id=match_data.get("match_id", f"match_{match_data.get('intentId', 'unknown')[:8]}"),
+        intent_id=match_data.get("intentId", match_data.get("intent_id", "unknown")),
+        winning_agent_id=match_data.get("winningAgent", match_data.get("winning_agent_id", match_data.get("winner", "unknown"))),
+        winning_bid_amount=match_data.get("winningBid", match_data.get("winning_bid_amount", match_data.get("bid_amount", "0.0"))),
+        total_bids=total_bids,
+        match_algorithm=match_data.get("algorithm", match_data.get("matching_algorithm", "unknown")),
+        matched_at=matched_at,
+        status=match_data.get("status", "unknown")
+    )
