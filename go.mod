@@ -11,7 +11,7 @@ require (
 	github.com/libp2p/go-libp2p-kad-dht v0.25.0
 	github.com/libp2p/go-libp2p-pubsub v0.10.0
 	github.com/multiformats/go-multiaddr v0.12.0
-	github.com/stretchr/testify v1.8.4
+	github.com/stretchr/testify v1.10.0
 	go.uber.org/automaxprocs v1.5.1
 	go.uber.org/zap v1.26.0
 	google.golang.org/genproto/googleapis/api v0.0.0-20240528184218-531527333157
@@ -111,6 +111,7 @@ require (
 	github.com/quic-go/webtransport-go v0.6.0 // indirect
 	github.com/raulk/go-watchdog v1.3.0 // indirect
 	github.com/spaolacci/murmur3 v1.1.0 // indirect
+	github.com/stretchr/objx v0.5.2 // indirect
 	github.com/whyrusleeping/go-keyspace v0.0.0-20160322163242-5b898ac5add1 // indirect
 	go.opencensus.io v0.24.0 // indirect
 	go.opentelemetry.io/otel v1.24.0 // indirect

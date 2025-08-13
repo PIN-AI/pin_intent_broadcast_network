@@ -1,82 +1,133 @@
-# Block Builder Configuration for Node4
-# Node4专用配置 - 只运行Block Builder，不启动Service Agent
+# Service Agent Configuration for Node3
+# Node3专用配置 - Service Agent 1 (交易代理)
 
 automation:
   enabled: true
   auto_start: true
   log_level: "info"
 
-agents: []  # Node4不运行Service Agent
+# Service Agents Configuration for Node3
+agents:
+  - agent_id: "trading-agent-auto-002"
+    name: "交易代理 #2"
+    description: "专注于交易类型意图的自动出价代理"
+    auto_start: true
 
-# Block Builders Configuration  
-# Node4启用Block Builder进行匹配
+    # Agent类型和能力配置
+    agent_type: "trading"
+    capabilities:
+      - "cryptocurrency_trading"
+      - "token_swapping"
+      - "liquidity_provision"
+      - "arbitrage"
+
+    # 出价策略配置
+    bidding_strategy:
+      type: "aggressive" # 激进策略，每个intent都出价
+      base_price: "1.3" # 基础出价
+      profit_margin: 0.20 # 20%利润率
+      risk_tolerance: "medium" # 中等风险容忍度
+
+    # 出价配置
+    bid_strategy:
+      type: "aggressive"
+      base_fee: "1000" # 基础费用
+      profit_margin: 0.20
+      risk_factor: 0.1
+
+    # 出价范围
+    min_bid_amount: "500" # 最小出价
+    max_bid_amount: "50000" # 最大出价
+
+    # Intent过滤配置
+    intent_filter:
+      allowed_types:
+        - "trade"
+        - "swap"
+        - "exchange"
+      blocked_types: []
+      allowed_senders: [] # 空数组表示接受所有发送者
+      blocked_senders: []
+      min_priority: 0 # 接受所有优先级
+      max_priority: 10
+      required_tags: [] # 不要求特定标签
+
+    # 性能配置
+    max_concurrent_intents: 10 # 最大并发处理意图数
+    response_timeout: 30 # 响应超时时间(秒)
+    retry_attempts: 3 # 重试次数
+
+    # P2P订阅配置
+    subscriptions:
+      intent_topics:
+        - "/intent-network/intents/1.0.0"
+        - "intent-broadcast.trade"
+        - "intent-broadcast.swap"
+        - "intent-broadcast.exchange"
+      bid_topics:
+        - "/intent-network/bids/1.0.0"
+      match_result_topics:
+        - "/intent-network/matches/1.0.0"
+
+  - agent_id: "general-agent-001"
+    name: "通用代理 #1"
+    description: "处理通用类型意图的备用代理"
+    auto_start: true
+
+    agent_type: "general"
+    capabilities:
+      - "general_services"
+      - "basic_computation"
+
+    bidding_strategy:
+      type: "balanced" # 平衡策略
+      base_price: "0.8"
+      profit_margin: 0.15 # 15%利润率
+      risk_tolerance: "low"
+
+    # 出价配置
+    bid_strategy:
+      type: "balanced"
+      base_fee: "800"
+      profit_margin: 0.15
+      risk_factor: 0.05
+
+    # 出价范围
+    min_bid_amount: "400"
+    max_bid_amount: "30000"
+
+    intent_filter:
+      allowed_types:
+        - "general"
+        - "computation"
+        - "data_access"
+      blocked_types: []
+      allowed_senders: []
+      blocked_senders: []
+      min_priority: 0
+      max_priority: 10
+      required_tags: []
+
+    max_concurrent_intents: 5
+    response_timeout: 25
+    retry_attempts: 2
+
+    subscriptions:
+      intent_topics:
+        - "/intent-network/intents/1.0.0"
+        - "intent-broadcast.general"
+        - "intent-broadcast.computation"
+      bid_topics:
+        - "/intent-network/bids/1.0.0"
+      match_result_topics:
+        - "/intent-network/matches/1.0.0"
+
+# Block Builders Configuration
+# Node3不启动Block Builder
 builders:
-  enabled: true  # Node4启动Block Builder
-  auto_start: true
-  
-  configs:
-    - builder_id: "primary-builder-001"
-      name: "主要区块构建器"
-      description: "处理大部分意图匹配和区块构建任务"
-      auto_start: true
-      
-      # 匹配算法配置
-      matching_algorithm: "highest_bid"     # 最高出价获胜
-      settlement_mode: "simulated"          # 模拟结算模式
-      
-      # 时间配置
-      bid_collection_window: "15s"          # 出价收集窗口 15秒
-      matching_interval: "10s"              # 匹配处理间隔 10秒
-      cleanup_interval: "1m"                # 清理间隔 1分钟
-      
-      # 容量配置
-      max_concurrent_intents: 50            # 最大并发意图数
-      min_bids_required: 1                  # 最少需要的出价数
-      max_session_lifetime: "5m"            # 最大会话生存时间
-      
-      # P2P订阅配置
-      subscriptions:
-        intent_topics:
-          - "/intent-network/intents/1.0.0"
-          - "intent-broadcast.trade"
-          - "intent-broadcast.swap"
-          - "intent-broadcast.exchange"
-          - "intent-broadcast.general"
-        bid_topics:
-          - "/intent-network/bids/1.0.0"
-        match_result_topics:
-          - "/intent-network/matches/1.0.0"
-
-    - builder_id: "secondary-builder-001"
-      name: "辅助区块构建器"
-      description: "处理次要意图匹配任务，提供冗余支持"
-      auto_start: false  # Node4只运行主要builder
-      
-      # 匹配算法配置
-      matching_algorithm: "reputation_weighted"  # 声誉加权算法
-      settlement_mode: "simulated"
-      
-      # 时间配置
-      bid_collection_window: "20s"          # 更长的收集窗口
-      matching_interval: "15s"
-      cleanup_interval: "2m"
-      
-      # 容量配置
-      max_concurrent_intents: 30
-      min_bids_required: 2                  # 需要更多出价
-      max_session_lifetime: "10m"
-      
-      # P2P订阅配置
-      subscriptions:
-        intent_topics:
-          - "/intent-network/intents/1.0.0"
-          - "intent-broadcast.computation"
-          - "intent-broadcast.data_access"
-          - "intent-broadcast.analytics"
-        bid_topics:
-          - "/intent-network/bids/1.0.0"
-        match_result_topics:
-          - "/intent-network/matches/1.0.0"
+  enabled: false
+  auto_start: false
+  configs: []
 
 # 全局配置
 global_settings:
@@ -84,47 +135,27 @@ global_settings:
   p2p_network:
     enabled: true
     bootstrap_peers: []
-    
+
   # 监控配置
   monitoring:
     metrics_enabled: true
-    metrics_interval: 30      # 秒
+    metrics_interval: 30 # 秒
     status_check_interval: 10 # 秒
-    
+
   # 日志配置
   logging:
     level: "info"
-    file_path: "logs/node4_builder.log"
+    file_path: "logs/Node3_trading_agent.log"
     max_file_size_mb: 100
     max_backups: 5
-    
+
   # 出价配置
   bidding:
     timeout_seconds: 30
     retry_attempts: 3
     commitment_enabled: true
     commitment_algorithm: "sha256"
-    
-  # 匹配配置 (Block Builder相关)
-  matching:
-    # 匹配算法权重配置
-    algorithm_weights:
-      highest_bid: 1.0
-      reputation_weighted:
-        bid_weight: 0.7
-        reputation_weight: 0.3
-      random:
-        seed_rotation_interval: "1h"
-    
-    # 声誉系统配置（简化版）
-    reputation_system:
-      enabled: true
-      base_score: 1.0
-      max_score: 2.0
-      min_score: 0.1
-      success_bonus: 0.1
-      failure_penalty: -0.05
-      
+
   # 性能优化配置
   performance:
     worker_pool_size: 10
@@ -132,7 +163,7 @@ global_settings:
     batch_processing: true
     batch_size: 50
     processing_timeout: "60s"
-    
+
   # 安全配置
   security:
     signature_verification: true
@@ -141,10 +172,10 @@ global_settings:
       enabled: true
       max_requests_per_second: 100
       burst_capacity: 200
-    
+
   # 存储配置
   storage:
-    session_persistence: false    # 暂不持久化
+    session_persistence: false
     match_history_retention: "24h"
     metrics_retention: "7d"
     cleanup_enabled: true

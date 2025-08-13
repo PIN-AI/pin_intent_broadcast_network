@@ -25,13 +25,13 @@ builders:
       settlement_mode: "simulated"          # 模拟结算模式
       
       # 时间配置
-      bid_collection_window: "15s"          # 出价收集窗口 15秒
-      matching_interval: "10s"              # 匹配处理间隔 10秒
+      bid_collection_window: "10s"          # 出价收集窗口 10秒 (优化测试速度)
+      matching_interval: "2s"               # 匹配处理间隔 2秒 (提高响应速度)
       cleanup_interval: "1m"                # 清理间隔 1分钟
       
       # 容量配置
       max_concurrent_intents: 50            # 最大并发意图数
-      min_bids_required: 1                  # 最少需要的出价数
+      min_bids_required: 1                  # 最少需要的出价数 (确保单个出价也能匹配)
       max_session_lifetime: "5m"            # 最大会话生存时间
       
       # P2P订阅配置
