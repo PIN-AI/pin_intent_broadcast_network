@@ -15,12 +15,12 @@ from data_models import (
 )
 
 
-def format_timestamp(timestamp: Union[int, float], format_string: str = "%H:%M:%S") -> str:
+def format_timestamp(timestamp: Union[int, float, str], format_string: str = "%H:%M:%S") -> str:
     """
     Format Unix timestamp to readable string.
     
     Args:
-        timestamp: Unix timestamp (seconds)
+        timestamp: Unix timestamp (seconds) or string
         format_string: DateTime format string
     
     Returns:
@@ -30,12 +30,17 @@ def format_timestamp(timestamp: Union[int, float], format_string: str = "%H:%M:%
         return "N/A"
     
     try:
+        if isinstance(timestamp, str):
+            # Try to convert string to float first
+            timestamp = float(timestamp)
+        
         if isinstance(timestamp, (int, float)):
             dt = datetime.fromtimestamp(timestamp)
+            return dt.strftime(format_string)
         else:
-            dt = timestamp
-        return dt.strftime(format_string)
-    except (ValueError, OSError):
+            # If it's already a datetime object
+            return timestamp.strftime(format_string)
+    except (ValueError, OSError, TypeError):
         return "Invalid"
 
 
@@ -129,12 +134,12 @@ def format_number(value: Union[int, float], thousands_separator: bool = True) ->
         return "0"
 
 
-def get_time_ago(timestamp: Union[int, float]) -> str:
+def get_time_ago(timestamp: Union[int, float, str]) -> str:
     """
     Get human-readable time ago string.
     
     Args:
-        timestamp: Unix timestamp
+        timestamp: Unix timestamp or string
     
     Returns:
         Time ago string (e.g., "2m ago", "1h ago")
@@ -143,6 +148,9 @@ def get_time_ago(timestamp: Union[int, float]) -> str:
         return "Never"
     
     try:
+        if isinstance(timestamp, str):
+            timestamp = float(timestamp)
+        
         now = time.time()
         diff = now - timestamp
         

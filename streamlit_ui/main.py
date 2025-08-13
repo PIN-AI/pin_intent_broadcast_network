@@ -26,9 +26,70 @@ from ui_components import (
     render_intent_monitoring_panel, render_bidding_activity_panel,
     render_matching_results_panel, render_p2p_network_panel,
     render_performance_metrics_panel, render_sidebar_info,
-    render_error_panel, render_refresh_indicator
+    render_error_panel, render_refresh_indicator, render_component_with_error_handling
 )
 from utils import get_system_health_score, calculate_delta
+
+
+class AutoRefreshManager:
+    """管理自动刷新机制的类"""
+    
+    def __init__(self, interval: int = 5):
+        self.interval = interval
+        self.last_refresh = time.time()
+    
+    def should_refresh(self) -> bool:
+        """检查是否应该刷新"""
+        return time.time() - self.last_refresh >= self.interval
+    
+    def trigger_refresh(self):
+        """Mark that refresh should be triggered"""
+        self.last_refresh = time.time()
+        # Don't call st.rerun() directly here, let main() handle it
+    
+    def get_countdown(self) -> int:
+        """获取倒计时秒数"""
+        return max(0, self.interval - int(time.time() - self.last_refresh))
+    
+    def get_progress(self) -> float:
+        """获取刷新进度 (0.0 到 1.0)"""
+        elapsed = time.time() - self.last_refresh
+        return min(1.0, elapsed / self.interval)
+    
+    def render_indicator(self):
+        """Render improved refresh indicator with better visual feedback"""
+        countdown = self.get_countdown()
+        progress = self.get_progress()
+        
+        # Create more prominent refresh status display
+        col1, col2 = st.columns([3, 1])
+        
+        with col1:
+            if countdown > 0:
+                # Show progress bar with countdown
+                st.progress(progress, text=f"🔄 下次自动刷新: {countdown} 秒")
+                
+                # Add a small status indicator
+                status_text = f"⏱️ 自动刷新间隔: 5秒 | 剩余: {countdown}秒"
+                st.caption(status_text)
+            else:
+                st.progress(1.0, text="🔄 正在刷新数据...")
+                st.caption("⚡ 正在获取最新数据...")
+        
+        with col2:
+            # Manual refresh button with better styling
+            if st.button("🔄 立即刷新", 
+                        key="manual_refresh", 
+                        help="点击立即刷新所有数据",
+                        type="primary"):
+                # Reset the refresh timer and trigger refresh
+                self.last_refresh = time.time()
+                st.session_state.should_refresh = True
+                st.rerun()
+        
+        # Add last refresh time info
+        last_refresh_time = datetime.fromtimestamp(self.last_refresh).strftime("%H:%M:%S")
+        st.caption(f"📅 上次刷新时间: {last_refresh_time}")
 
 
 def setup_page_config() -> None:
@@ -292,26 +353,22 @@ def process_dashboard_data(data: Dict[str, Any]) -> tuple:
 def render_dashboard() -> None:
     """Render the main dashboard with all panels and enhanced error handling."""
     # Display header
-    st.title(UI_TEXT["dashboard_title"])
-    render_refresh_indicator()
+    st.title("PIN Intent Network - Real-time Monitoring Dashboard")
     
-    # Check if it's time to refresh
-    ui_state = st.session_state.ui_state
-    current_time = time.time()
+    # Initialize AutoRefreshManager if not exists
+    if "refresh_manager" not in st.session_state:
+        st.session_state.refresh_manager = AutoRefreshManager(REFRESH_INTERVAL_SECONDS)
     
-    # Force refresh every 5 seconds
-    if current_time - ui_state.last_refresh >= REFRESH_INTERVAL_SECONDS:
-        ui_state.last_refresh = current_time
-        st.rerun()
+    refresh_manager = st.session_state.refresh_manager
     
     try:
         # Fetch all data with progress indication
-        with st.spinner("正在获取PIN节点数据..."):
+        with st.spinner("Fetching PIN node data..."):
             data = fetch_all_data()
         
         # Validate data before processing
         if not validate_api_data(data):
-            st.error("API数据验证失败，显示备用仪表板")
+            st.error("API data validation failed, showing fallback dashboard")
             render_fallback_dashboard()
             return
         
@@ -335,92 +392,103 @@ def render_dashboard() -> None:
         )
         
         if not has_valid_data:
-            st.warning("暂无有效数据，请检查PIN节点状态")
+            st.warning("No valid data available, please check PIN node status")
             render_fallback_dashboard()
             return
         
-        # Render top metrics
+        # System metrics overview at the top
+        st.subheader("📊 System Metrics Overview")
         render_top_metrics(dashboard_metrics)
         
         st.markdown("---")
         
-        # Main content layout
-        left_col, right_col = st.columns([3, 2])
+        # Single column layout with components in specified order
         
-        # Left column panels
-        with left_col:
-            st.subheader(UI_TEXT["node_status_title"])
-            render_nodes_status_panel(nodes_data)
-            
-            st.markdown("---")
-            st.subheader(UI_TEXT["intent_monitoring_title"])
-            render_intent_monitoring_panel(intents_data)
-            
-            st.markdown("---")
-            st.subheader(UI_TEXT["bidding_activity_title"])
-            render_bidding_activity_panel(agents_data)
+        # � Iintent Flow Monitoring
+        st.subheader("📡 Intent Flow Monitoring")
+        render_component_with_error_handling("Intent Flow Monitoring", render_intent_monitoring_panel, intents_data)
         
-        # Right column panels
-        with right_col:
-            st.subheader(UI_TEXT["matching_results_title"])
-            render_matching_results_panel(matches_data)
-            
-            st.markdown("---")
-            st.subheader(UI_TEXT["p2p_network_title"])
-            render_p2p_network_panel(network_data)
-            
-            st.markdown("---")
-            st.subheader(UI_TEXT["performance_metrics_title"])
-            render_performance_metrics_panel(data.get("metrics", {}))
+        st.markdown("---")
+        
+        # 💰 Bidding Activity Tracking
+        st.subheader("💰 Bidding Activity Tracking")
+        render_component_with_error_handling("Bidding Activity Tracking", render_bidding_activity_panel, agents_data)
+        
+        st.markdown("---")
+        
+        # 🎯 Matching Results
+        st.subheader("🎯 Matching Results")
+        render_component_with_error_handling("Matching Results", render_matching_results_panel, matches_data)
+        
+        st.markdown("---")
+        
+        # 🖥️ Node Status Overview
+        st.subheader("🖥️ Node Status Overview")
+        render_component_with_error_handling("Node Status Overview", render_nodes_status_panel, nodes_data)
+        
+        st.markdown("---")
+        
+        # 🌐 P2P Network Status
+        st.subheader("🌐 P2P Network Status")
+        render_component_with_error_handling("P2P Network Status", render_p2p_network_panel, network_data)
+        
+        st.markdown("---")
+        
+        # Refresh controls at the bottom
+        st.subheader("🔄 Auto-Refresh Controls")
+        refresh_manager.render_indicator()
+        
+        # Store refresh status for main() function to handle
+        st.session_state.should_refresh = refresh_manager.should_refresh()
         
         # Render sidebar
-        render_sidebar_info(ui_state, dashboard_metrics)
+        render_sidebar_info(st.session_state.ui_state, dashboard_metrics)
         
         # Reset error count on successful refresh
         st.session_state.error_count = 0
         
     except Exception as e:
-        st.error(f"仪表板错误：{str(e)}")
+        st.error(f"Dashboard error: {str(e)}")
         st.session_state.error_count += 1
         
         # Show fallback content after multiple errors
         if st.session_state.error_count > 3:
-            st.warning("多次连接失败，显示离线模式...")
+            st.warning("Multiple connection failures, showing offline mode...")
         else:
-            st.info("显示缓存数据或默认值...")
+            st.info("Showing cached data or default values...")
         
         render_fallback_dashboard()
 
 
 def render_fallback_dashboard() -> None:
     """Render fallback dashboard when data fetching fails."""
-    st.warning("⚠️ 无法连接到PIN节点。显示备用信息。")
+    st.warning("⚠️ Unable to connect to PIN nodes. Showing fallback information.")
     
     # Show basic node information
-    st.subheader("预期节点配置")
+    st.subheader("Expected Node Configuration")
     
     col1, col2 = st.columns(2)
     
     with col1:
         st.markdown("""
-        **节点1 (8100):** Intent发布者
-        - 发布意图并提供API服务
-        - 状态: 未知
+        **Node 1 (8100):** Intent Publisher
+        - Publishes intents and provides API services
+        - Status: Unknown
         
-        **节点2 (8101):** 服务代理1 (交易)
-        - 交易代理，具有自动竞标功能
-        - 状态: 未知
+        **Node 2 (8101):** Service Agent 1 (Trading)
+        - Trading agent with automatic bidding
+        - Status: Unknown
         """)
     
     with col2:
         st.markdown("""
-        **节点3 (8102):** 服务代理2 (数据)
-        - 数据代理，具有自动竞标功能
-        - 状态: 未知
+        **Node 3 (8102):** Service Agent 2 (Data)
+        - Data agent with automatic bidding
+        - Status: Unknown
         
-        **节点4 (8103):** 区块构建者
-        - 意图匹配协调器
-        - 状态: 未知
+        **Node 4 (8103):** Block Builder
+        - Intent matching coordinator
+        - Status: Unknown
         """)
     
     st.markdown("---")
@@ -428,37 +496,37 @@ def render_fallback_dashboard() -> None:
     # Connection status with retry button
     col1, col2, col3 = st.columns([2, 1, 2])
     with col2:
-        if st.button("🔄 重试连接", key="retry_connection"):
+        if st.button("🔄 Retry Connection", key="retry_connection"):
             st.session_state.error_count = 0
             st.rerun()
     
     st.info("""
-    **故障排除指南：**
-    1. 确保所有4个PIN节点都在运行
-    2. 检查节点在端口8100-8103上可访问
-    3. 验证网络连接
-    4. 运行 `./scripts/automation/start_automation_test.sh` 启动自动化系统
-    5. 检查端口是否被其他进程占用
+    **Troubleshooting Guide:**
+    1. Ensure all 4 PIN nodes are running
+    2. Check nodes are accessible on ports 8100-8103
+    3. Verify network connection
+    4. Run `./scripts/automation/start_automation_test.sh` to start automation system
+    5. Check if ports are occupied by other processes
     """)
     
     # Show system requirements
-    with st.expander("🔧 系统要求和检查"):
+    with st.expander("🔧 System Requirements and Checks"):
         st.markdown("""
-        **启动PIN系统：**
+        **Start PIN System:**
         ```bash
-        # 启动完整的4节点自动化测试
+        # Start complete 4-node automation test
         ./scripts/automation/start_automation_test.sh
         
-        # 检查节点状态
+        # Check node status
         ./scripts/automation/monitor_automation.sh
         
-        # 检查端口占用
+        # Check port usage
         netstat -tulpn | grep :810
         ```
         
-        **手动API测试：**
+        **Manual API Testing:**
         ```bash
-        # 测试节点健康状态
+        # Test node health status
         curl http://localhost:8100/health
         curl http://localhost:8101/health
         curl http://localhost:8102/health
@@ -466,35 +534,6 @@ def render_fallback_dashboard() -> None:
         ```
         """)
 
-
-def handle_auto_refresh() -> None:
-    """Handle automatic refresh mechanism."""
-    ui_state = st.session_state.ui_state
-    current_time = time.time()
-    
-    time_since_refresh = current_time - ui_state.last_refresh
-    time_until_refresh = REFRESH_INTERVAL_SECONDS - time_since_refresh
-    
-    # Create a prominent refresh indicator in the sidebar
-    st.sidebar.markdown("---")
-    if time_until_refresh <= 0:
-        # Time to refresh
-        ui_state.last_refresh = current_time
-        st.sidebar.success("🔄 Refreshing dashboard...")
-        st.rerun()
-    else:
-        # Show countdown
-        countdown_seconds = int(time_until_refresh)
-        progress = (REFRESH_INTERVAL_SECONDS - time_until_refresh) / REFRESH_INTERVAL_SECONDS
-        
-        st.sidebar.markdown("### 🔄 Auto Refresh")
-        st.sidebar.progress(progress)
-        st.sidebar.markdown(f"**Next refresh in: {countdown_seconds}s**")
-        
-        # Add a refresh button for manual refresh
-        if st.sidebar.button("🔄 Refresh Now", use_container_width=True):
-            ui_state.last_refresh = current_time
-            st.rerun()
 
 
 def main() -> None:
@@ -508,8 +547,12 @@ def main() -> None:
     # Render main dashboard
     render_dashboard()
     
-    # Handle auto-refresh at the end
-    handle_auto_refresh()
+    # Handle auto-refresh at the end of main() to ensure it's not interrupted
+    if hasattr(st.session_state, 'should_refresh') and st.session_state.should_refresh:
+        if "refresh_manager" in st.session_state:
+            st.session_state.refresh_manager.last_refresh = time.time()
+        time.sleep(0.1)  # Small delay to ensure UI updates
+        st.rerun()
     
     # Add footer information
     st.markdown("---")

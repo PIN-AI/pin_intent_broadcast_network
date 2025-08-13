@@ -52,6 +52,22 @@ class IntentInfo:
     created_at: int
     broadcast_count: int
     bid_count: int
+    
+    def __post_init__(self):
+        """Validate and normalize data fields"""
+        # Validate and normalize intent_type
+        if self.intent_type in ["unknown", "", None]:
+            self.intent_type = "unspecified"
+        
+        # Validate sender_id
+        if not self.sender_id or self.sender_id == "":
+            self.sender_id = "unknown"
+        
+        # Ensure count fields are not negative
+        if self.broadcast_count < 0:
+            self.broadcast_count = 0
+        if self.bid_count < 0:
+            self.bid_count = 0
 
 
 @dataclass
@@ -65,6 +81,20 @@ class MatchResult:
     match_algorithm: str
     matched_at: int
     status: str
+    
+    def __post_init__(self):
+        """Validate and normalize data fields"""
+        # Ensure total_bids is not negative
+        if self.total_bids < 0:
+            self.total_bids = 0
+        
+        # Validate winning_agent_id
+        if not self.winning_agent_id or self.winning_agent_id == "":
+            self.winning_agent_id = "unknown"
+        
+        # Validate winning_bid_amount
+        if not self.winning_bid_amount or self.winning_bid_amount == "":
+            self.winning_bid_amount = "0.0"
 
 
 @dataclass

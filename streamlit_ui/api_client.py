@@ -147,13 +147,13 @@ class NodeAPIClient:
         
         for agent_data in agents_data:
             agent = AgentInfo(
-                agent_id=agent_data.get("agent_id", "unknown"),
-                agent_type=agent_data.get("agent_type", "unknown"),
+                agent_id=agent_data.get("agentId", agent_data.get("agent_id", "unknown")),
+                agent_type=agent_data.get("agentType", agent_data.get("agent_type", "unknown")),
                 status=agent_data.get("status", "unknown"),
-                total_bids_submitted=agent_data.get("total_bids_submitted", 0),
-                successful_bids=agent_data.get("successful_bids", 0),
-                total_earnings=agent_data.get("total_earnings", "0.0"),
-                last_activity=agent_data.get("last_activity", 0)
+                total_bids_submitted=int(agent_data.get("processedIntents", agent_data.get("total_bids_submitted", 0))),
+                successful_bids=int(agent_data.get("successfulBids", agent_data.get("successful_bids", 0))),
+                total_earnings=agent_data.get("totalEarnings", agent_data.get("total_earnings", "0.0")),
+                last_activity=int(agent_data.get("lastActivity", agent_data.get("last_activity", 0)))
             )
             agents.append(agent)
         
@@ -267,15 +267,7 @@ class NodeAPIClient:
         
         
         for intent_data in intents_data:
-            intent = IntentInfo(
-                intent_id=intent_data.get("intent_id", "unknown"),
-                intent_type=intent_data.get("type", "unknown"),
-                status=intent_data.get("status", "unknown"),
-                sender_id=intent_data.get("sender_id", "unknown"),
-                created_at=intent_data.get("created_at", 0),
-                broadcast_count=intent_data.get("broadcast_count", 0),
-                bid_count=intent_data.get("bid_count", 0)
-            )
+            intent = safe_extract_intent_data(intent_data)
             intents.append(intent)
         
         return IntentListResponse(intents=intents, error=None)
@@ -313,16 +305,7 @@ class NodeAPIClient:
         matches_data = result.get("matches", [])
         
         for match_data in matches_data:
-            match = MatchResult(
-                match_id=match_data.get("match_id", "unknown"),
-                intent_id=match_data.get("intent_id", "unknown"),
-                winning_agent_id=match_data.get("winning_agent_id", "unknown"),
-                winning_bid_amount=match_data.get("winning_bid_amount", "0.0"),
-                total_bids=match_data.get("total_bids", 0),
-                match_algorithm=match_data.get("match_algorithm", "unknown"),
-                matched_at=match_data.get("matched_at", 0),
-                status=match_data.get("status", "unknown")
-            )
+            match = safe_extract_match_data(match_data)
             matches.append(match)
         
         return MatchHistoryResponse(matches=matches, error=None)
@@ -416,3 +399,30 @@ class NodeAPIClient:
         }
         
         return data
+
+
+def safe_extract_intent_data(intent_data: dict) -> IntentInfo:
+    """Safely extract intent data, trying multiple field names."""
+    return IntentInfo(
+        intent_id=intent_data.get("id", intent_data.get("intent_id", "unknown")),
+        intent_type=intent_data.get("type", intent_data.get("intent_type", "unspecified")),
+        status=intent_data.get("status", "unknown"),
+        sender_id=intent_data.get("senderId", intent_data.get("sender_id", intent_data.get("sender", "unknown"))),
+        created_at=int(intent_data.get("timestamp", intent_data.get("created_at", 0))),
+        broadcast_count=intent_data.get("broadcast_count", 1),  # Default to 1 if not specified
+        bid_count=intent_data.get("bid_count", 0)
+    )
+
+
+def safe_extract_match_data(match_data: dict) -> MatchResult:
+    """Safely extract match data, trying multiple field names."""
+    return MatchResult(
+        match_id=match_data.get("match_id", f"match_{match_data.get('intentId', 'unknown')[:8]}"),
+        intent_id=match_data.get("intentId", match_data.get("intent_id", "unknown")),
+        winning_agent_id=match_data.get("winningAgent", match_data.get("winning_agent_id", match_data.get("winner", "unknown"))),
+        winning_bid_amount=match_data.get("winningBid", match_data.get("winning_bid_amount", match_data.get("bid_amount", "0.0"))),
+        total_bids=int(match_data.get("totalBids", match_data.get("total_bids_received", match_data.get("total_bids", 0)))),
+        match_algorithm=match_data.get("algorithm", match_data.get("matching_algorithm", "unknown")),
+        matched_at=int(match_data.get("matchedAt", match_data.get("matched_at", match_data.get("timestamp", 0)))),
+        status=match_data.get("status", "unknown")
+    )
