@@ -391,7 +391,7 @@ def render_matching_results_panel(matches_data: List[MatchResult]) -> None:
     with col1:
         st.subheader("Recent Matches")
         st.dataframe(
-            df[['match_id', 'winner', 'bid_amount', 'total_bids', 'status', 'time_ago']],
+            df[['match_id', 'intent_id', 'winner', 'bid_amount', 'total_bids', 'status', 'time_ago']],
             use_container_width=True,
             height=200
         )

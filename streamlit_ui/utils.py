@@ -383,9 +383,9 @@ def create_matches_dataframe(matches: List[MatchResult]) -> pd.DataFrame:
     for match in matches:
         data.append({
             "match_id": match.match_id,
-            "intent_id": truncate_string(match.intent_id, 15),
-            "winner": truncate_string(match.winning_agent_id, 20),
-            "bid_amount": format_currency(match.winning_bid_amount),
+            "intent_id": match.intent_id,  # 完整显示，不截断
+            "winner": match.winning_agent_id,  # 完整显示，不截断
+            "bid_amount": str(match.winning_bid_amount),  # 不添加货币符号，直接显示数值
             "total_bids": match.total_bids,
             "algorithm": match.match_algorithm,
             "status": match.status,
